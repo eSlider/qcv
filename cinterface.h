@@ -100,7 +100,29 @@ namespace QCV
             list_p->setPosition ( S2D<int>( f_sx_i, f_sy_i) );
         }
         
+        list_p->setScreenSize ( S2D<unsigned int> (f_img.size().width, f_img.size().height ) );
         list_p->addImage ( f_img );
+
+        return list_p;    
+    }
+
+    CDrawingList * 
+    registerDrawingList ( std::string f_title_str, 
+                          int         f_sx_i, 
+                          int         f_sy_i )
+    {
+        if (!g_drawHandler_p) 
+        {
+            //char str[256];
+            //sprintf(str, "%s:%d : ", __FILE__, __LINE__ );
+            //throw std::runtime_error(std::string(str) + std::string("Drawing list handler has not been initialized\n"));
+            return NULL;
+        }
+
+        CDrawingList *  list_p = g_drawHandler_p->getDrawingList ( f_title_str, g_parentNode_p );
+        assert(list_p);
+
+        list_p->setPosition ( S2D<int>( f_sx_i, f_sy_i) );
 
         return list_p;    
     }

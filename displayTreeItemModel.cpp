@@ -231,8 +231,6 @@ CDisplayTreeItemModel::setData ( const QModelIndex & f_index,
                                  const QVariant    & f_value, 
                                  int                 f_role_i )
 {
-    printf("Calling setdata with\n");
-            
     switch( f_role_i )
     {
 	case Qt::CheckStateRole:
@@ -241,9 +239,7 @@ CDisplayTreeItemModel::setData ( const QModelIndex & f_index,
             CDisplayNode *  node_p =
                 static_cast<CDisplayNode *>( f_index.internalPointer() );
 
-            node_p ->  setVisibility( f_value.toBool() );
-    printf("Calling setdata with node %s\n", node_p->getName().c_str());
-            
+            node_p ->  setVisibility( f_value.toBool() );            
 
             emit dataChanged(f_index, f_index);
             return true;

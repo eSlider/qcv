@@ -25,14 +25,17 @@ Otherwise just run
 That should install the library under the local directory
 of your home directory, i.e. $HOME/local.
 
+Set the LD_LIBRARY_PATH variable so that the qcv library 
+can be found:
+
+> export LD_LIBRATY_PATH=$HOME/local/lib:$LD_LIBRARY_PATH
+
 Check the example binaries installed in $HOME/local/bin.
 
 > cd $HOME/local/bin
 > ./toyClockExample
-
-and
-
 > ./checkStereoPair left.pgm right.pgm
+> ./sobelExample pathtoimages/*.png
+> ./imgViewer --cam path1toimages/*.png --cam path2toimages/*.jpg
 
-You need to provide full paths to the files left.pgm 
-and right.pgm. 
+You need to provide valid images as parameters.

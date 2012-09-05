@@ -39,6 +39,7 @@ include(${QT_USE_FILE})
 ##### SOURCE FILES
 
 set ( LIBQCV_SRC
+     clock.cpp
      colorEncoding.cpp
      colors.cpp
      displayCEImageList.cpp
@@ -63,6 +64,7 @@ set ( LIBQCV_SRC
      triangleList.cpp
 )
 set ( LIBQCV_HEADERS 
+     clock.h
      cinterface.h
      clipLine.h
      colorEncoding.h

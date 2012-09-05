@@ -7,6 +7,11 @@ TAGS
 moc
 *.o
 *.so
+build
+CMakeCache.txt
+cmake.check_cache
+out
+Makefile
 
 glob:*.vtg
 glob:*.vpw

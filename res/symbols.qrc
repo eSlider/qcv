@@ -1,0 +1,34 @@
+<RCC>
+  <qresource prefix="/symbols" >
+    <file alias="showAllWindows.png" >./images/showAllWindows.png</file>
+    <file alias="hideAllWindows.png" >./images/hideAllWindows.png</file>
+    <file alias="exit.png" >./images/exit.png</file>
+    <file alias="player_eject.png" >images/player_eject.png</file>
+    <file alias="player_end.png" >images/player_end.png</file>
+    <file alias="player_fwd.png" >images/player_fwd.png</file>
+    <file alias="player_pause.png" >images/player_pause.png</file>
+    <file alias="player_play.png" >images/player_play.png</file>
+    <file alias="player_rec.png" >images/player_rec.png</file>
+    <file alias="player_rew.png" >images/player_rew.png</file>
+    <file alias="player_play_back.png" >images/player_play_back.png</file>
+    <file alias="player_start.png" >images/player_start.png</file>
+    <file alias="player_stop.png" >images/player_stop.png</file>
+    <file alias="player_time.png" >images/player_time.png</file>
+    <file alias="player_volume.png" >images/player_volume.png</file>
+    <file alias="000001-black-white-pearl-icon-media-a-media21-arrow-back.png">images/000001-black-white-pearl-icon-media-a-media21-arrow-back.png</file>
+    <file alias="000002-black-white-pearl-icon-media-a-media22-arrow-forward1.png">images/000002-black-white-pearl-icon-media-a-media22-arrow-forward1.png</file>
+    <file alias="000003-black-white-pearl-icon-media-a-media23-arrows-seek-back.png">images/000003-black-white-pearl-icon-media-a-media23-arrows-seek-back.png</file>
+    <file alias="000004-black-white-pearl-icon-media-a-media24-arrows-seek-forward.png">images/000004-black-white-pearl-icon-media-a-media24-arrows-seek-forward.png</file>
+    <file alias="000005-black-white-pearl-icon-media-a-media25-arrows-skip-back.png">images/000005-black-white-pearl-icon-media-a-media25-arrows-skip-back.png</file>
+    <file alias="000006-black-white-pearl-icon-media-a-media26-arrows-skip-forward.png">images/000006-black-white-pearl-icon-media-a-media26-arrows-skip-forward.png</file>
+    <file alias="000007-black-white-pearl-icon-media-a-media27-pause-sign.png">images/000007-black-white-pearl-icon-media-a-media27-pause-sign.png</file>
+    <file alias="000008-black-white-pearl-icon-media-a-media28-stop.png">images/000008-black-white-pearl-icon-media-a-media28-stop.png</file>
+    <file alias="000009-black-white-pearl-icon-media-a-media29-record.png">images/000009-black-white-pearl-icon-media-a-media29-record.png</file>
+    <file alias="000010-black-white-pearl-icon-media-a-media291-volume1.png">images/000010-black-white-pearl-icon-media-a-media291-volume1.png</file>
+    <file alias="000011-black-white-pearl-icon-media-a-media292-minus3.png">images/000011-black-white-pearl-icon-media-a-media292-minus3.png</file>
+    <file alias="004620-black-white-pearl-icon-arrows-arrow-redo.png">images/004620-black-white-pearl-icon-arrows-arrow-redo.png</file>
+    <file alias="pencil.png">images/083353-high-resolution-dark-blue-denim-jeans-icon-business-pencil1.png</file>
+    <file alias="display.png">images/047437-rounded-glossy-black-icon-sports-hobbies-filmmaker1-sc44.png</file>
+    <file alias="param.png">images/086421-rounded-glossy-black-icon-business-tools1.png</file>
+  </qresource>
+</RCC>

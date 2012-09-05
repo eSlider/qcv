@@ -1,0 +1,14 @@
+syntax: glob
+
+*~
+*.orig
+ui_*
+TAGS
+moc
+*.o
+*.so
+
+glob:*.vtg
+glob:*.vpw
+glob:*.vpj
+glob:*.vpwhistu

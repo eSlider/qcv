@@ -1,9 +1,16 @@
 To install the source code you will need to install first 
 OpenCV 2.X and Qt 4.X. You will also need OpenGL and GLU.
+To obtain the code from SourceForge.net you will need 
+mercurial as well.
+
 If you run Ubuntu, these lines should provide you with the 
 required dependencies:
 
-> sudo apt-get install libhighgui-dev libcvaux-dev freeglut3-dev
+> sudo apt-get install libhighgui-dev libcvaux-dev freeglut3-dev mercurial
+
+Get the code from SourceForge.net
+
+> hg clone http://hg.code.sf.net/p/qcv/code qcv-code
 
 To compile the code, cd to the source code directory:
 

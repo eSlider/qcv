@@ -26,6 +26,7 @@
 #include <QSettings>
 
 #include "displayWidget.h"
+#include "helpWidget.h"
 #include "display.h"
 #include "drawingListHandler.h"
 #include "displayTreeDlg.h"
@@ -41,7 +42,7 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
           m_drawingListHandler_p (      f_handler_p ),
           m_treeDlg_p (                        NULL ),
           m_glDisplay_p (                      NULL ),
-          m_grabbing_b (                      false ),
+          m_grabbing_i (                          0 ),
 
           m_qfTopControls_p (                  NULL ),
           m_qfNumScreens_p (                   NULL ),
@@ -52,7 +53,9 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
           m_qStatusBarSplitter_p (             NULL ),
           m_qlUserMessage_p (                  NULL ),
           m_qlSystemMessage_p (                NULL ),
-          m_qpbDrawingList_p (                 NULL )
+          m_qpbDrawingList_p (                 NULL ),
+// 0 is on update only. 1 is on every paintgl event
+          m_qtwHelp_p (                        NULL )
 {
     setWindowTitle(tr("Main Display"));
     setObjectName(windowTitle());
@@ -104,6 +107,11 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
         
         updateScreenCount ( );
    }
+
+    m_qtwHelp_p = new CHelpWidget(NULL);
+
+    connect ( m_glDisplay_p, SIGNAL( glPainted() ), 
+              this,          SLOT(   glJustPainted() ) );
 
     QSettings settings;
     QString name = QString("CDisplayWidget/geometry/") + (f_parent_p?f_parent_p->objectName():QString("default"));
@@ -321,7 +329,19 @@ void CDisplayWidget::update()
 
     m_drawingListHandler_p -> setDisplayUpdateFlag ( false );
 
-    if (m_grabbing_b)
+    if ( m_grabbing_i == 1 )
+        grabFrame();
+}
+
+void CDisplayWidget::glJustPainted()
+{
+    if ( m_grabbing_i == 2 )
+        grabFrame();
+}
+
+void CDisplayWidget::grabFrame()
+{
+    if (m_grabbing_i)
     {
         char format_str[] = "png";
         
@@ -331,9 +351,9 @@ void CDisplayWidget::update()
         char fileName[256];
         
         sprintf(fileName, "grabbedDisplayWidgetImg_%05i.%s", imgNr_i, format_str );
-    
+        
         saveImage.save( fileName, format_str, 100 );
-
+        
         printf("imgNr_i = %i\n", imgNr_i);
         ++imgNr_i;
     }
@@ -385,9 +405,24 @@ CDisplayWidget::keyPressed ( CKeyEvent * f_keyEvent_p )
 {
     if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_G)
     {
-        m_grabbing_b = !m_grabbing_b;
+        if (m_grabbing_i) 
+        {
+            m_grabbing_i = 0;
+        }
+        else
+        {
+            if ( f_keyEvent_p->qtKeyEvent_p->modifiers() & Qt::ControlModifier )
+                m_grabbing_i = 2;
+            else
+                m_grabbing_i = 1;
+        }        
     }
-    
+
+    if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_H)
+    {
+        m_qtwHelp_p -> show();
+        m_qtwHelp_p -> raise();
+    }    
 }
 
 void
@@ -444,9 +479,3 @@ CDisplayWidget::showHideTreeDlg()
     else
         m_treeDlg_p->hide();
 }
-
-
-
-
-
-

@@ -150,6 +150,8 @@ void CDisplay::paintGL()
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
+    emit glPainted();
+    
     //printf("paintGL called \n");
 }
 
@@ -288,8 +290,6 @@ CMouseEvent *CDisplay::getMouseEventData( QMouseEvent * f_event_p )
     return &me;
 }
 
-
-
 void CDisplay::mouseMoveEvent( QMouseEvent * f_event_p )
 {
     // Check if mouse clicked.
@@ -333,23 +333,30 @@ void CDisplay::mouseReleaseEvent(QMouseEvent * f_event_p )
 
 void CDisplay::wheelEvent ( QWheelEvent *f_event_p )
 {
-    if (f_event_p->orientation() == Qt::Vertical)
+    if ( f_event_p->orientation() == Qt::Vertical || 
+         ( f_event_p->orientation() != Qt::Vertical &&
+           (bool)(f_event_p -> modifiers() & Qt::AltModifier) )  )
     {
         int numDegrees_i = f_event_p->delta() / 8;
         int numSteps_i   = numDegrees_i / 15;
         
         float newZoomFactor_f = m_zoomFactor_f;
-        
-        if ( f_event_p -> modifiers() & Qt::ControlModifier )
+
+        if ( (bool)(f_event_p -> modifiers() & Qt::ControlModifier) )
         {
             if (numSteps_i > 0)
                 newZoomFactor_f *= (abs(numSteps_i)+1);
             else
                 newZoomFactor_f /= (abs(numSteps_i)+1);
         }
-        else if ( f_event_p -> modifiers() & Qt::ShiftModifier )
+        else if ( (bool)(f_event_p -> modifiers() & Qt::ShiftModifier) )
         {
-            newZoomFactor_f += numSteps_i/1000.f;
+
+            newZoomFactor_f += numSteps_i/97.f;
+        }
+        else if ( (bool)(f_event_p -> modifiers() & Qt::AltModifier) )
+        {
+            newZoomFactor_f += numSteps_i/11.f;
         }
         else
             newZoomFactor_f += numSteps_i;

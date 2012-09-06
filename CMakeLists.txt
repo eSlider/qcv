@@ -55,6 +55,7 @@ set ( LIBQCV_SRC
      drawingListPreview.cpp
      ellipseList.cpp
      eventHandler.cpp
+     helpWidget.cpp
      lineList.cpp
      node.cpp
      polygonList.cpp
@@ -84,6 +85,7 @@ set ( LIBQCV_HEADERS
      ellipseList.h
      eventHandler.h
      events.h
+     helpWidget.h
      glheader.h
      ioObj.h
      lineList.h
@@ -106,6 +108,7 @@ set ( LIBQCV_MOC_HEADERS
      displayWidget.h
      drawingListPreview.h
      eventHandler.h
+     helpWidget.h
  )
 
 # Wrap ui files.

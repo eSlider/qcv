@@ -94,6 +94,8 @@ bool callBackMouse( CMouseEvent *f_mevent_p )
         list_p->clear();
         
         SRgba color(255,0,0);
+
+        if (i == 1) color=SRgb(0,0,255);
         
         list_p->setLineColor(color);
         list_p->setFillColor(SRgba(color, 40));

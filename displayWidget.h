@@ -88,6 +88,9 @@ namespace QCV
         /// Show and hide tree dialog
         virtual void showHideTreeDlg();
         
+    protected slots:
+        virtual void glJustPainted();
+        
     protected:
         void closeEvent(QCloseEvent *f_event_p);
         
@@ -100,6 +103,12 @@ namespace QCV
 
         void createForm(); 
 
+        void grabFrame();
+
+        QString keyboardString();
+
+        void help();
+        
     private:
 
         /// Drawing list handler.
@@ -112,7 +121,7 @@ namespace QCV
         CDisplay *             m_glDisplay_p;
 
         /// Is grabbing?
-        bool                   m_grabbing_b;
+        int                    m_grabbing_i;
 
         /// Top controls frame
         QFrame *               m_dispFrame_p;
@@ -146,7 +155,10 @@ namespace QCV
 
         /// Show drawing list tree
         QPushButton *          m_qpbDrawingList_p;
-    };
+
+        /// Help
+	QTabWidget *           m_qtwHelp_p;
+   };
 
     inline bool 
     CDisplayWidget::isInFSMode() const

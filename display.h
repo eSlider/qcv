@@ -92,6 +92,7 @@ namespace QCV
 
         void regionSelected  ( CRegionSelectedEvent * 
                                             f_event_p );
+        void glPainted     ( );
         
     /// Inherited members.
     protected:

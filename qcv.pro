@@ -50,6 +50,7 @@ HEADERS       =     clipLine.h \
                     ellipseList.h \ 
                     eventHandler.h \
                     glheader.h \ 
+                    helpWidget.h \ 
                     ioObj.h \ 
                     lineList.h \ 
                     linePlotter.h \ 
@@ -61,7 +62,7 @@ HEADERS       =     clipLine.h \
                     textList.h \ 
                     triangleList.h 
 
-SOURCES       =                    colorEncoding.cpp \ 
+SOURCES =           colorEncoding.cpp \ 
                     colors.cpp \ 
                     displayCEImageList.cpp \ 
                     display.cpp \ 
@@ -76,6 +77,7 @@ SOURCES       =                    colorEncoding.cpp \
                     drawingListPreview.cpp \ 
                     ellipseList.cpp \ 
                     eventHandler.cpp \
+                    helpWidget.cpp \ 
                     lineList.cpp \ 
                     node.cpp \ 
                     polygonList.cpp \ 

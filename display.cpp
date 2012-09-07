@@ -49,7 +49,8 @@ CDisplay::CDisplay( CDisplayOpNode * const f_rootNode_p,
         : QGLWidget(                    f_parent_p, 0 ),
           m_rootNode_p (                 f_rootNode_p ),
           m_zoomTL (                              0,0 ),
-          m_zoomFactor_f (                        1.f )
+          m_zoomFactor_f (                        1.f ),
+	  m_initialized_b (                     false )
 {
     /// Just now temporal.
     m_screenSize.width  = 640;
@@ -106,8 +107,8 @@ void CDisplay::initializeGL()
 
 void CDisplay::paintGL()
 {
-    //if ( g_QGLContext_p )
-    //    g_QGLContext_p->makeCurrent();
+    // Can't repaint if window hasn't been displayed yet.
+    if ( !m_initialized_b ) return;
 
 
     // Reset modelview matrix
@@ -157,6 +158,9 @@ void CDisplay::paintGL()
 
 void CDisplay::resizeGL(const int f_width_i, const int f_height_i)
 {
+    // Can't repaint if window hasn't been displayed yet.
+    if ( !m_initialized_b ) return;
+
     glViewport( 0, 0, f_width_i, f_height_i );
     glMatrixMode(GL_PROJECTION); 
     glLoadIdentity();
@@ -627,6 +631,14 @@ void CDisplay::displayScreens ( CDisplayOpNode * const f_parent_p,
     {
         displayScreens ( f_parent_p-> getOpChild (i), f_level_f );
     }
+}
+
+void
+CDisplay::showEvent ( QShowEvent * f_event_p )
+{
+  printf("show has been called\n");
+  m_initialized_b = true;
+  QGLWidget::showEvent( f_event_p );
 }
 
 bool CDisplay::showAllScreens ( )

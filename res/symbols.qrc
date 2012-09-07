@@ -30,5 +30,6 @@
     <file alias="pencil.png">images/083353-high-resolution-dark-blue-denim-jeans-icon-business-pencil1.png</file>
     <file alias="display.png">images/047437-rounded-glossy-black-icon-sports-hobbies-filmmaker1-sc44.png</file>
     <file alias="param.png">images/086421-rounded-glossy-black-icon-business-tools1.png</file>
+    <file alias="qcv_logo">images/qcv_logo.jpg</file>
   </qresource>
 </RCC>

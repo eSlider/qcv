@@ -79,7 +79,10 @@ namespace QCV
     public slots:
         bool   showAllScreens ( );
 
-   signals:
+    protected slots:
+        virtual void   showEvent ( QShowEvent * f_event_p );
+
+    signals:
         void clicked();
         void fullScreenSwitched();
         void exitFullScreen();
@@ -169,6 +172,8 @@ namespace QCV
         /// Auxiliar image for flipping the snapshot vertically.
         cv::Mat                    m_aux;
 
+	/// Flag
+	bool                       m_initialized_b;
 
     };
 }

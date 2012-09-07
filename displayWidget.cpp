@@ -116,6 +116,7 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
     QSettings settings;
     QString name = QString("CDisplayWidget/geometry/") + (f_parent_p?f_parent_p->objectName():QString("default"));
     restoreGeometry(settings.value(name).toByteArray());
+
 }
 
 CDisplayWidget::~CDisplayWidget()

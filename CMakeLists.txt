@@ -40,6 +40,12 @@ include(${QT_USE_FILE})
 
 set ( LIBQCV_SRC
      clock.cpp
+     clock.cpp
+     clockHandler.cpp
+     clockTreeDlg.cpp
+     clockTreeItemModel.cpp
+     clockTreeNode.cpp
+     clockTreeView.cpp
      colorEncoding.cpp
      colors.cpp
      displayCEImageList.cpp
@@ -63,11 +69,19 @@ set ( LIBQCV_SRC
      rectList.cpp
      textList.cpp
      triangleList.cpp
+windowListItemModel.cpp
+windowListView.cpp
 )
 set ( LIBQCV_HEADERS 
      clock.h
      cinterface.h
      clipLine.h
+     clock.h
+     clockHandler.h
+     clockTreeDlg.h
+     clockTreeItemModel.h
+     clockTreeNode.h
+     clockTreeView.h
      colorEncoding.h
      colors.h
      displayCEImageList.h
@@ -97,10 +111,15 @@ set ( LIBQCV_HEADERS
      standardTypes.h
      textList.h
      triangleList.h
+     windowListItemModel.h
+     windowListView.h
  )
 
 
 set ( LIBQCV_MOC_HEADERS 
+     clockTreeDlg.h
+     clockTreeItemModel.h
+     clockTreeView.h
      display.h
      displayTreeDlg.h
      displayTreeItemModel.h
@@ -109,6 +128,8 @@ set ( LIBQCV_MOC_HEADERS
      drawingListPreview.h
      eventHandler.h
      helpWidget.h
+     windowListView.h
+     windowListItemModel.h
  )
 
 # Wrap ui files.

@@ -110,10 +110,3 @@ CNode::addChild ( CNode * const f_child_p,
 
     return true;
 }
-
-/* ////////////  Version History ///////////////
- *  $Log: node.cpp,v $
- *  Revision 1.2  2012/11/18 15:50:15  badino
- *  badino: global changes.
- *
- *//////////////////////////////////////////////

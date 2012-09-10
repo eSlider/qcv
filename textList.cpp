@@ -207,10 +207,3 @@ CTextList::getSize () const
     return m_text_v.size();    
 }
 
-
-/* ////////////  Version History ///////////////
- *  $Log: textList.cpp,v $
- *  Revision 1.2  2012/11/18 15:50:15  badino
- *  badino: global changes.
- *
- *//////////////////////////////////////////////

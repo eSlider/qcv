@@ -238,7 +238,7 @@ namespace QCV
 
         std::string       getName() const { return ( m_container_p -> getName() ); }
         
-        CNode *           getNode() const { return  m_container_p; }
+        CNode *           getContainer() const { return  m_container_p; }
         
     protected:
         /// Children.

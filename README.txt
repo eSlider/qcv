@@ -1,5 +1,5 @@
 To install the source code you will need to install first 
-OpenCV 2.X and Qt 4.X. You will also need OpenGL and GLU.
+OpenCV 2.X and Qt 4.X. You will also need OpenGL and glut.
 To obtain the code from SourceForge.net you need mercurial
 as well. CMake is required to compile the code.
 
@@ -12,7 +12,7 @@ required dependencies:
 > sudo apt-get install opencv
 > sudo apt-get install libopencv-dev
 
-Get the code from SourceForge.net
+Get the code now from SourceForge.net
 
 > hg clone http://hg.code.sf.net/p/qcv/code qcv-code
 
@@ -24,11 +24,12 @@ To compile the code, cd to the source code directory:
 
 > cd qcv-code
 
-(or just cd qcv if you downloaded the zip file),
+(or just "cd qcv" if you downloaded the zip file),
 
 make a directory called build
 
 > mkdir build
+> cd build
 
 and run cmake
 
@@ -45,7 +46,7 @@ of your home directory, i.e. $HOME/local.
 Set the LD_LIBRARY_PATH variable so that the qcv library 
 can be found:
 
-> export LD_LIBRATY_PATH=$HOME/local/lib:$LD_LIBRARY_PATH
+> export LD_LIBRARY_PATH=$HOME/local/lib:$LD_LIBRARY_PATH
 
 Check the example binaries installed in $HOME/local/bin.
 
@@ -55,6 +56,5 @@ Check the example binaries installed in $HOME/local/bin.
 > ./sobelExample pathtoimages/*.png
 > ./imgViewer --cam path1toimages/*.png --cam path2toimages/*.jpg
 
-You will need to provide valid images as 
-parameters.
+You will need to provide valid images as parameters.
 

@@ -634,11 +634,17 @@ void CDisplay::displayScreens ( CDisplayOpNode * const f_parent_p,
 }
 
 void
+CDisplay::show ( )
+{
+    m_initialized_b = true;
+    QGLWidget::show();
+}
+
+void
 CDisplay::showEvent ( QShowEvent * f_event_p )
 {
-  printf("show has been called\n");
-  m_initialized_b = true;
-  QGLWidget::showEvent( f_event_p );
+    m_initialized_b = true;
+    resizeGL(width(), height());
 }
 
 bool CDisplay::showAllScreens ( )

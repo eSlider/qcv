@@ -22,7 +22,6 @@
 #include <QApplication>
 
 #include "../cinterface.h"
-#include "../clock.h"
 
 #include <cv.h>
 #include <highgui.h>
@@ -135,19 +134,17 @@ bool callBackKeyboard( CKeyEvent *f_kevent_p )
 void computeSobel (  )
 {
     /// Lets define some clock to measure computation time.
-    static CClock loadcl("Load");
-    static CClock compcl("Sobel computation");
-    static CClock dispcl("Display");
 
     static cv::Mat src;
     static cv::Mat gauss, gradx, absgradx, grady, absgrady, magnitude;
 
-    loadcl.start();
+    startClock("Load");
     
     src   = cv::imread ( g_files_v[g_counter_i].c_str() );
 
-    loadcl.stop();
-    compcl.start();
+    stopClock("Load");
+
+    startClock("Sobel Computation");
 
     if ( src.size().width == 0 ) return;
     
@@ -168,9 +165,9 @@ void computeSobel (  )
     /// Approximate magnitude (faster than computing sqrt(gx^2+gy^2)
     cv::addWeighted( absgradx, 0.5, absgrady, 0.5, 0, magnitude );
 
-    compcl.stop();
+    stopClock("Sobel Computation");
 
-    dispcl.start();
+    startClock("Display");
     
     displayImage (src, "Original Image", true );
     displayImage (absgradx, "Grad X", true );
@@ -178,13 +175,9 @@ void computeSobel (  )
     displayImage (magnitude, "Magnitude ", true );
 
     updateDisplay();
+    updateClocks();
 
-    dispcl.stop();
-
-    loadcl.print();
-    compcl.print();
-    dispcl.print();
-    
+    stopClock("Display");    
 }
 
 void registerDrawingLists()

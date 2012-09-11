@@ -78,6 +78,7 @@ namespace QCV
         
     public slots:
         bool   showAllScreens ( );
+        void   show ( );
 
     protected slots:
         virtual void   showEvent ( QShowEvent * f_event_p );

@@ -34,11 +34,15 @@
 
 using namespace QCV;
 
-CClockHandler::CClockHandler()
+CClockHandler::CClockHandler( CNode * f_root_p )
         : m_root_p (                NULL ),
           m_clockChanged_b (       false )
 {
-    m_root_p = new CClockOpNode ( NULL, NULL );
+    if ( f_root_p )
+    {
+        m_root_p = new CClockOpNode ( f_root_p );
+    }
+
 }
 
 CClockHandler::~CClockHandler()

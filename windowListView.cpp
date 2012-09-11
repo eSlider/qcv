@@ -62,7 +62,7 @@ CWindowListView::dataChanged( const QModelIndex & f_topLeft,
 
     QString name_str = m_window_v[f_topLeft.row()] -> objectName();
 
-    bool visible_b = !m_window_v[f_topLeft.row()] -> isVisible();
+    bool visible_b = m_window_v[f_topLeft.row()] -> isHidden();
 
     m_window_v[f_topLeft.row()] -> setVisible ( visible_b );
 
@@ -70,9 +70,10 @@ CWindowListView::dataChanged( const QModelIndex & f_topLeft,
     {
         m_window_v[f_topLeft.row()] -> restoreGeometry ( 
                 qSettings.value(name_str + QString("/geometry")).toByteArray() );
+        
     }
     else
-    {
+    { 
         qSettings.setValue(name_str + QString("/geometry"), 
                            m_window_v[f_topLeft.row()] -> saveGeometry());
     }
@@ -118,6 +119,10 @@ CWindowListView::showWindows ()
         QString name_str = m_window_v[i] -> objectName();
 
         QSettings qSettings;        
+
+        restoreGeometry ( 
+            qSettings.value(name_str + QString("/geometry")).toByteArray() );
+
         bool visible_b = qSettings.value(name_str + QString("/visible"), true).toBool();
         m_window_v[i] -> setVisible ( visible_b );    
     }
@@ -130,8 +135,8 @@ CWindowListView::saveWindowsGeometry () const
 
     for (unsigned int i = 0; i < m_window_v.size(); ++i)
     {
-        QString name_str = m_window_v[i] -> objectName();        
-    
+        QString name_str = m_window_v[i] -> objectName();
+        
         qSettings.setValue( name_str + QString("/geometry"), m_window_v[i] -> saveGeometry());
         qSettings.setValue( name_str + QString("/visible"), m_window_v[i] -> isVisible() );
     }
@@ -142,3 +147,23 @@ CWindowListView::clear ()
 {
     m_window_v.clear();    
 }
+
+void
+CWindowListView::showAllWindows()
+{
+    for (unsigned int i = 0; i < m_window_v.size(); ++i)
+    {
+        m_window_v[i]->show();
+    }
+}
+
+void 
+CWindowListView::hideAllWindows()
+{
+    for (unsigned int i = 0; i < m_window_v.size(); ++i)
+    {
+        m_window_v[i]->hide();
+    }
+}
+    
+

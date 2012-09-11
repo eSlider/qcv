@@ -63,14 +63,15 @@ set ( LIBQCV_SRC
      eventHandler.cpp
      helpWidget.cpp
      lineList.cpp
+     mainWindow.cpp
      node.cpp
      polygonList.cpp
      qrc_symbols.cpp
      rectList.cpp
      textList.cpp
      triangleList.cpp
-windowListItemModel.cpp
-windowListView.cpp
+     windowListItemModel.cpp
+     windowListView.cpp
 )
 set ( LIBQCV_HEADERS 
      clock.h
@@ -105,6 +106,7 @@ set ( LIBQCV_HEADERS
      lineList.h
      linePlotter.h
      linePlotter_inline.h
+     mainWindow.h
      node.h
      polygonList.h
      rectList.h
@@ -128,6 +130,7 @@ set ( LIBQCV_MOC_HEADERS
      drawingListPreview.h
      eventHandler.h
      helpWidget.h
+     mainWindow.h
      windowListView.h
      windowListItemModel.h
  )

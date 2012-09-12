@@ -33,6 +33,7 @@
 /* INCLUDES */
 #include <algorithm>
 #include <inttypes.h>
+#include <cv.h>
 
 /* CONSTANTS */
 
@@ -67,6 +68,32 @@ namespace QCV
                   b(f_b_8ui),
                   a(f_a_8ui)
         {
+        }
+
+        SRgba( cv::Vec3b f_other ) 
+        {
+            r = f_other[2];
+            g = f_other[1];
+            b = f_other[0];
+            a = 0;
+        }
+
+        SRgba( cv::Vec4b f_other ) 
+        {
+            r = f_other[2];
+            g = f_other[1];
+            b = f_other[0];
+            a = f_other[3];
+        }
+
+        operator cv::Vec3b ()
+        {
+            return cv::Vec3b(b,g,r);
+        }
+        
+        operator cv::Vec4b ()
+        {
+            return cv::Vec4b(b,g,r,a);
         }
 
         void set (  const int f_r_i, 
@@ -142,6 +169,20 @@ namespace QCV
         {
         }
         
+        SRgb( cv::Vec3b f_other ) 
+        {
+            r = f_other[2];
+            g = f_other[1];
+            b = f_other[0];
+        }
+
+        SRgb( cv::Vec4b f_other ) 
+        {
+            r = f_other[2];
+            g = f_other[1];
+            b = f_other[0];
+        }
+
         SRgb ( SRgba other )
         {
             r = other.r;
@@ -157,6 +198,16 @@ namespace QCV
             return (*this);
         }
 
+        operator cv::Vec3b ()
+        {
+            return cv::Vec3b(b,g,r);
+        }
+        
+        operator cv::Vec4b ()
+        {
+            return cv::Vec4b(b,g,r,0);
+        }
+ 
         bool operator == ( const SRgb & other ) const
         {
             return r == other.r && g == other.g && b == other.b;
@@ -244,6 +295,20 @@ namespace QCV
             v = std::max(std::min(1.f, f_v_f), 0.f);
         }
         
+        SHsv (cv::Vec3b f_other ) 
+        {
+            h = f_other[2];
+            s = f_other[1];
+            v = f_other[0];
+        }
+
+        SHsv( cv::Vec4b f_other ) 
+        {
+            h = f_other[2];
+            s = f_other[1];
+            v = f_other[0];
+        }
+
         const SHsv& operator = ( const SHsv & other )
         {
             h = other.h;
@@ -257,6 +322,16 @@ namespace QCV
             return h == other.h && s == other.s && v == other.v;
         }
 
+        operator cv::Vec3b ()
+        {
+            return cv::Vec3b(v,s,h);
+        }
+        
+        operator cv::Vec4b ()
+        {
+            return cv::Vec4b(v,s,h,0);
+        }
+ 
         void set (  const float f_h_f, 
                     const float f_s_f, 
                     const float f_v_f )
@@ -302,6 +377,20 @@ namespace QCV
             l = std::max(std::min(1.f,   f_l_f), 0.f);
         }
         
+        SHsl (cv::Vec3b f_other ) 
+        {
+            h = f_other[2];
+            s = f_other[1];
+            l = f_other[0];
+        }
+
+        SHsl( cv::Vec4b f_other ) 
+        {
+            h = f_other[2];
+            s = f_other[1];
+            l = f_other[0];
+        }
+
         const SHsl& operator = ( const SHsl & other )
         {
             h = other.h;
@@ -310,6 +399,16 @@ namespace QCV
             return (*this);
         }
         
+        operator cv::Vec3b ()
+        {
+            return cv::Vec3b(l,s,h);
+        }
+        
+        operator cv::Vec4b ()
+        {
+            return cv::Vec4b(l,s,h,0);
+        }
+
         bool operator == ( const SHsl & other ) const
         {
             return h == other.h && s == other.s && l == other.l;
@@ -347,6 +446,9 @@ namespace QCV
         static const SRgb red;
         static const SRgb blue;
         static const SRgb green;
+        static const SRgb cyan;
+        static const SRgb magenta;
+        static const SRgb yellow;
 
     public:
         static SRgb getRgbFromHsv ( const SHsv & f_color );

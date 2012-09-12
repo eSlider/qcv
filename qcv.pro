@@ -21,8 +21,8 @@
 #  CONFIG += qt warn_on thread debug
 CONFIG          += qt warn_on thread release
 
-CONFIG          -= release
-CONFIG          += debug
+#CONFIG          -= release
+#CONFIG          += debug
 
 DESTDIR         = lib
 TEMPLATE	= lib
@@ -32,58 +32,79 @@ OBJECTS_DIR	= obj/
 UI_DIR		= uic/
 
 # Sources
-HEADERS       =     clipLine.h \ 
-                    colorEncoding.h \ 
-                    colors.h \ 
-                    displayCEImageList.h \ 
-                    display.h \ 
-                    displayImageList.h \ 
-                    displayTreeDlg.h \ 
-                    displayTreeItemModel.h \ 
-                    displayTreeNode.h \ 
-                    displayTreeView.h \ 
-                    displayWidget.h \ 
-                    drawingElementList.h \ 
-                    drawingList.h \ 
-                    drawingListHandler.h \ 
-                    drawingListPreview.h \ 
-                    ellipseList.h \ 
+HEADERS       =     cinterface.h \
+                    clipLine.h \
+                    clock.h \
+                    clockHandler.h \
+                    clockTreeDlg.h \
+                    clockTreeItemModel.h \
+                    clockTreeNode.h \
+                    clockTreeView.h \
+                    colorEncoding.h \
+                    colors.h \
+                    displayCEImageList.h \
+                    display.h \
+                    displayImageList.h \
+                    displayTreeDlg.h \
+                    displayTreeItemModel.h \
+                    displayTreeNode.h \
+                    displayTreeView.h \
+                    displayWidget.h \
+                    drawingElementList.h \
+                    drawingList.h \
+                    drawingListHandler.h \
+                    drawingListPreview.h \
+                    ellipseList.h \
                     eventHandler.h \
-                    glheader.h \ 
-                    helpWidget.h \ 
-                    ioObj.h \ 
-                    lineList.h \ 
-                    linePlotter.h \ 
-                    linePlotter_inline.h \ 
-                    node.h \ 
-                    polygonList.h \ 
-                    rectList.h \ 
-                    standardTypes.h \ 
-                    textList.h \ 
-                    triangleList.h 
+                    events.h \
+                    glheader.h \
+                    helpWidget.h \
+                    ioObj.h \
+                    lineList.h \
+                    linePlotter.h \
+                    linePlotter_inline.h \
+                    mainWindow.h \
+                    node.h \
+                    polygonList.h \
+                    rectList.h \
+                    s2d.h \
+                    standardTypes.h \
+                    textList.h \
+                    triangleList.h \
+                    windowListItemModel.h \
+                    windowListView.h 
 
-SOURCES =           colorEncoding.cpp \ 
-                    colors.cpp \ 
-                    displayCEImageList.cpp \ 
-                    display.cpp \ 
-                    displayImageList.cpp \ 
-                    displayTreeDlg.cpp \ 
-                    displayTreeItemModel.cpp \ 
-                    displayTreeNode.cpp \ 
-                    displayTreeView.cpp \ 
-                    displayWidget.cpp \ 
-                    drawingList.cpp \ 
-                    drawingListHandler.cpp \ 
-                    drawingListPreview.cpp \ 
-                    ellipseList.cpp \ 
+SOURCES =           clock.cpp \
+                    clockHandler.cpp \
+                    clockTreeDlg.cpp \
+                    clockTreeItemModel.cpp \
+                    clockTreeNode.cpp \
+                    clockTreeView.cpp \
+                    colorEncoding.cpp \
+                    colors.cpp \
+                    displayCEImageList.cpp \
+                    display.cpp \
+                    displayImageList.cpp \
+                    displayTreeDlg.cpp \
+                    displayTreeItemModel.cpp \
+                    displayTreeNode.cpp \
+                    displayTreeView.cpp \
+                    displayWidget.cpp \
+                    drawingList.cpp \
+                    drawingListHandler.cpp \
+                    drawingListPreview.cpp \
+                    ellipseList.cpp \
                     eventHandler.cpp \
-                    helpWidget.cpp \ 
-                    lineList.cpp \ 
-                    node.cpp \ 
-                    polygonList.cpp \ 
-                    rectList.cpp \ 
-                    textList.cpp \ 
-                    triangleList.cpp  
+                    helpWidget.cpp \
+                    lineList.cpp \
+                    mainWindow.cpp \
+                    node.cpp \
+                    polygonList.cpp \
+                    rectList.cpp \
+                    textList.cpp \
+                    triangleList.cpp \
+                    windowListItemModel.cpp \
+                    windowListView.cpp
 
 # OpenCV (recommend to run "pkg-config --libs opencv" and "pkg-config --cflags opencv" to find out the correct values).
 # OPENCV_PATH       = 
@@ -99,13 +120,13 @@ RESOURCES     = res/symbols.qrc
 
 QT            *= opengl xml
 
-# Conflict with IPP V5.1
 LIBS 	         += -lgomp
 QMAKE_CXXFLAGS   += -fopenmp
 QMAKE_LFLAGS     += -fopenmp
 
 # install
 
+target.path = lib
 sources.files = $$SOURCES $$HEADERS
 sources.path = $$[LOCAL_PATH]
 INSTALLS += target sources

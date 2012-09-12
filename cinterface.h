@@ -136,7 +136,7 @@ namespace QCV
             list_p->setPosition ( S2D<int>( f_sx_i, f_sy_i) );
         }
         
-        list_p->setScreenSize ( S2D<unsigned int> (f_img.size().width, f_img.size().height ) );
+        list_p->setScreenSize ( f_img.size() );
         list_p->addImage ( f_img );
 
         return list_p;    
@@ -230,7 +230,7 @@ namespace QCV
     static 
     void setScreenSize( cv::Size size )
     {
-        g_disp_p->setScreenSize(S2D<unsigned int> (size.width, size.height) );
+        g_disp_p->setScreenSize( size );
     }
 
     static 
@@ -248,7 +248,7 @@ namespace QCV
     static 
     void setScreenCount( cv::Size size )
     {
-        g_disp_p->setScreenCount(S2D<unsigned int> (size.width, size.height) );
+        g_disp_p->setScreenCount(size);
     }
 
     static 

@@ -42,9 +42,10 @@
  *******************************************************************************/
 
 /* INCLUDES */
-#include <limits>
 #include <vector>
 #include "ioObj.h"
+
+#include "s2d.h"
 
 /* CONSTANTS */
 
@@ -80,85 +81,7 @@ namespace QCV
         
     };
     
-    template <class Type>
-    class S2D: public CIOObj
-    {
-    public:
-        /// Constructor.
-        S2D ( const Type f_x = std::numeric_limits<Type>::max(), 
-              const Type f_y = std::numeric_limits<Type>::max() )
-                : x ( f_x ),
-                  y ( f_y ) {}
-
-        int operator < ( const S2D<Type> &f_other ) const
-        { 
-            return ( y < f_other.y || 
-                     ( y == f_other.y && 
-                       x < f_other.y ) );
-        }
-
-        bool operator == ( const S2D<Type> &f_other ) const
-        { 
-            return ( y == f_other.y && x == f_other.x );
-        }
-
-        bool operator != ( const S2D<Type> &f_other ) const
-        { 
-            return ! (operator == ( f_other ));
-        }
-
-        bool isValid () const
-        { 
-            return ( x != std::numeric_limits<Type>::max() || 
-                     y != std::numeric_limits<Type>::max() );
-        }
-
-        void invalidate () 
-        { 
-            x = std::numeric_limits<Type>::max();
-            y = std::numeric_limits<Type>::max();
-        }
-
-        union
-        {
-            Type val[2];
-            
-            struct {             
-                /// x
-                Type x;
-                
-                /// y
-                Type y;
-            };
-            
-            struct {
-                /// width
-                Type width;
-                
-                /// height
-                Type height;
-            };
-            
-            struct {             
-                /// min
-                Type min;
-                
-                /// max
-                Type max;
-            };
-        };
-    };
-
-    /// We have to define the types inside a struct
-    /// because typedef does not work with templates
-    /// in C++ so far.
-    template <class Type>
-    struct SType
-    {
-        typedef S2D<Type> S2DCoord;
-        typedef S2D<Type> SPosition;
-    };
-
+    
 /**
  * @file standardTypes.h
  *

@@ -90,6 +90,8 @@ namespace QCV
         
     protected slots:
         virtual void glJustPainted();
+
+        virtual void timerEvent ( QTimerEvent * f_event_p );
         
     protected:
         void closeEvent(QCloseEvent *f_event_p);
@@ -103,7 +105,11 @@ namespace QCV
 
         void createForm(); 
 
-        void grabFrame();
+        void grabAndSaveFrame();
+
+        void grabFrameAndStoreInBuffer();
+
+        void stopGrabbingAndSaveImgs();
 
         QString keyboardString();
 
@@ -158,6 +164,21 @@ namespace QCV
 
         /// Help
 	QTabWidget *           m_qtwHelp_p;
+
+        /// Buffer for grabbing
+        std::vector<QImage *>  m_imgBuffer_v;
+        
+        /// Grab timer id
+        int                    m_grabTimerId_i;
+        
+        /// Save grabbed images timer id
+        int                    m_saveImgsTimerId_i;
+      
+        /// Save image format
+        std::string            m_imgFormat_str;
+
+        /// Formats
+        QStringList            m_items;                
    };
 
     inline bool 

@@ -24,6 +24,7 @@
 #include <QtGui>
 #include <QGLWidget>
 #include <QSettings>
+#include <QInputDialog>
 
 #include "displayWidget.h"
 #include "helpWidget.h"
@@ -55,7 +56,10 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
           m_qlSystemMessage_p (                NULL ),
           m_qpbDrawingList_p (                 NULL ),
 // 0 is on update only. 1 is on every paintgl event
-          m_qtwHelp_p (                        NULL )
+          m_qtwHelp_p (                        NULL ),
+          m_imgBuffer_v (                         0 ),
+          m_grabTimerId_i (                       0 ),
+          m_saveImgsTimerId_i (                   0 )
 {
     setWindowTitle(tr("Main Display"));
     setObjectName(windowTitle());
@@ -117,15 +121,16 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
     QString name = QString("CDisplayWidget/geometry/") + (f_parent_p?f_parent_p->objectName():QString("default"));
     restoreGeometry(settings.value(name).toByteArray());
 
+    /// Setup image format for grabbing.
+    m_items << tr("jpg") << tr("png") << tr("ppm");
+    m_imgFormat_str = m_items[0].toStdString();
+    
 }
 
 CDisplayWidget::~CDisplayWidget()
 {
     if ( m_treeDlg_p )
-        delete m_treeDlg_p;
-    
-    printf("Destructing CDisplayWidget\n");
-     
+        delete m_treeDlg_p;    
 }
 
 void 
@@ -134,8 +139,6 @@ CDisplayWidget::closeEvent(QCloseEvent *f_event_p)
     QSettings settings;
     QString name = QString("CDisplayWidget/geometry/") + (parent()?parent()->objectName():QString("default"));
     settings.setValue(name, saveGeometry());
-
-    printf("Saving geometry of CDisplayWidget\n");
 
     m_treeDlg_p -> close();
     
@@ -321,11 +324,7 @@ void CDisplayWidget::update ( int f_forceUpdate_b )
 }
 
 void CDisplayWidget::update()
-{
-    //printf("Setting visible\n");
-    
-    //m_glDisplay_p -> setVisible(true);
-    //printf("Updating GL\n");
+{    
     m_glDisplay_p -> updateGL();
     
     QWidget::update();
@@ -333,34 +332,65 @@ void CDisplayWidget::update()
     m_drawingListHandler_p -> setDisplayUpdateFlag ( false );
 
     if ( m_grabbing_i == 1 )
-        grabFrame();
+        grabAndSaveFrame();
 }
 
 void CDisplayWidget::glJustPainted()
 {
     if ( m_grabbing_i == 2 )
-        grabFrame();
+        grabAndSaveFrame();
 }
 
-void CDisplayWidget::grabFrame()
+void CDisplayWidget::grabAndSaveFrame()
 {
     if (m_grabbing_i)
     {
-        char format_str[] = "png";
-        
         static int imgNr_i = 0;
         QImage saveImage = m_glDisplay_p -> renderGL();
         
-        char fileName[256];
+        char fileName_p[256];
         
-        sprintf(fileName, "grabbedDisplayWidgetImg_%05i.%s", imgNr_i, format_str );
+        sprintf(fileName_p, "grabbedDisplayWidgetImg_%05i.%s", imgNr_i, m_imgFormat_str.c_str() );
         
-        saveImage.save( fileName, format_str, 100 );
+        saveImage.save( fileName_p, m_imgFormat_str.c_str(), 100 );
         
-        printf("imgNr_i = %i\n", imgNr_i);
+        printf("file \"%s\" saved\n", fileName_p);
+
         ++imgNr_i;
     }
 }
+
+void 
+CDisplayWidget::stopGrabbingAndSaveImgs()
+{
+    m_grabbing_i = 0;
+    m_saveImgsTimerId_i = startTimer ( 1 );
+    /// We might want to check here if timer has failed,
+    /// in order to save all imgs in a single loop.
+}
+
+void CDisplayWidget::grabFrameAndStoreInBuffer()
+{
+    if (m_grabbing_i)
+    {
+        QImage * saveImage_p = new QImage();
+
+        if (!saveImage_p)
+        {
+            /// Buffer full? 
+            stopGrabbingAndSaveImgs();
+            return;
+        }
+
+        *saveImage_p = m_glDisplay_p -> renderGL();
+        
+        m_imgBuffer_v.push_back ( saveImage_p );
+
+        if ( (m_imgBuffer_v.size() % 100) == 0 )
+            printf("Image buffer size is %zi\n", m_imgBuffer_v.size());
+    }
+}
+
 
 void CDisplayWidget::switchFullScreen ()
 {
@@ -397,7 +427,8 @@ void CDisplayWidget::switchFullScreen ()
     }
 }
 
-void CDisplayWidget::exitFullScreen ()
+void
+CDisplayWidget::exitFullScreen ()
 {
     if ( isInFSMode() )
         switchFullScreen();
@@ -406,27 +437,120 @@ void CDisplayWidget::exitFullScreen ()
 void
 CDisplayWidget::keyPressed ( CKeyEvent * f_keyEvent_p )
 {
-    if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_G)
+    if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_G && m_saveImgsTimerId_i == 0)
     {
         if (m_grabbing_i) 
         {
-            m_grabbing_i = 0;
+            if (m_grabbing_i == 3)
+            {
+                stopGrabbingAndSaveImgs();
+            }
+            else
+            {
+                m_grabbing_i = 0;
+            }
+
+            killTimer ( m_grabTimerId_i );
         }
         else
         {
-            if ( f_keyEvent_p->qtKeyEvent_p->modifiers() & Qt::ControlModifier )
-                m_grabbing_i = 2;
-            else
-                m_grabbing_i = 1;
-        }        
+            bool ok_b;
+            
+            m_imgFormat_str = QInputDialog::getItem(this, 
+                                                    "Display Grabbing",
+                                                    "Image Format", 
+                                                    m_items, 
+                                                    0, 
+                                                    false, 
+                                                    &ok_b).toStdString();
+            if ( ok_b )
+            {
+                if ( !(f_keyEvent_p->qtKeyEvent_p->modifiers() & Qt::AltModifier) && 
+                     f_keyEvent_p->qtKeyEvent_p->modifiers() & Qt::ControlModifier )
+                    m_grabbing_i = 2;
+                if ( f_keyEvent_p->qtKeyEvent_p->modifiers() & Qt::AltModifier && 
+                     f_keyEvent_p->qtKeyEvent_p->modifiers() & Qt::ControlModifier )
+                {
+                    int ms_i = QInputDialog::getInt ( this, 
+                                                      "Display Grabbing", 
+                                                      "Enter grabbing time interval", 
+                                                      100, 
+                                                      0, 
+                                                      2147483647, 
+                                                      1, 
+                                                      &ok_b );
+                    if (ok_b)
+                    {
+                        m_grabTimerId_i = startTimer ( ms_i );
+                        m_grabbing_i = 3;
+                    }                
+                }
+                else
+                    m_grabbing_i = 1;
+            }        
+        }
     }
-
-    if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_H)
+    if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_Escape && m_saveImgsTimerId_i != 0)
+    {
+        if ( m_saveImgsTimerId_i ) 
+        {
+            killTimer(m_saveImgsTimerId_i);
+            m_saveImgsTimerId_i = 0;
+            
+            for (int i = 0; i < m_imgBuffer_v.size(); ++i)
+            {
+                delete m_imgBuffer_v[i];
+            }
+            m_imgBuffer_v.clear();
+        }
+    }
+    
+    else if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_H)
     {
         m_qtwHelp_p -> show();
         m_qtwHelp_p -> raise();
     }    
 }
+
+void CDisplayWidget::timerEvent ( QTimerEvent * f_event_p )
+{
+    if ( f_event_p->timerId() == m_grabTimerId_i )
+    {    
+        if ( m_grabbing_i == 3 )
+            grabFrameAndStoreInBuffer();
+        else
+        {
+            m_grabbing_i = 0;
+            /// Timer should be active otherwise
+            killTimer(m_grabTimerId_i);
+            m_grabTimerId_i = 0;
+        }
+    }
+    else if ( f_event_p->timerId() == m_saveImgsTimerId_i )
+    {
+        m_grabbing_i = 0;
+
+        if ( m_imgBuffer_v.size() == 0 )
+        {
+            killTimer ( m_saveImgsTimerId_i );
+            m_saveImgsTimerId_i = 0;
+        }
+        else
+        {
+            char fileName_p[256];
+            
+            sprintf(fileName_p, "grabbedDisplayWidgetImg_%05i.%s", m_imgBuffer_v.size()-1, m_imgFormat_str.c_str() );
+            
+            m_imgBuffer_v.back()->save( fileName_p, m_imgFormat_str.c_str(), 100 );
+            
+            printf("file \"%s\" saved\n", fileName_p);
+            
+            delete m_imgBuffer_v.back();
+            m_imgBuffer_v.pop_back();
+        }
+    }   
+}
+
 
 void
 CDisplayWidget::mouseMoved ( CMouseEvent *  f_event_p )

@@ -79,7 +79,6 @@ CDrawingListHandler::getDrawingList ( std::string  f_name_str,
         sprintf( str, 
                  "The maximal amount of container levels of %i has been achieved.",
                  MAX_CONTAINER_LEVELS  );
-        printf ( "%s", str );
     }
 
     --level_i;

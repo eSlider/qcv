@@ -137,7 +137,7 @@ CClock::getLoopTime() const
 void
 CClock::print() const
 {
-    printf("Clock \"%s\" - Total Time: %lf Cycles: %ui Time/Cycle: %lf\n",
+    printf("Clock \"%s\" - Total Time: %lf Cycles: %u Time/Cycle: %lf\n",
            m_name_str.c_str(),
            m_totalTime_d,
            m_count_ui,

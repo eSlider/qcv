@@ -61,15 +61,15 @@ namespace QCV
 
 
     /// Construction, Destruction
-    public:        
-        CClockHandler();
+    public:
+        CClockHandler( CNode * f_root_p = NULL );
         virtual ~CClockHandler();
 
     /// Get and sets.
     public:
         /// Get pointer to clock.
         CClock *    getClock ( std::string f_name_str, 
-                                           CNode * f_op_p );
+                               CNode *     f_op_p );
 
         /// Get root node.
         CClockOpNode  * getRootNode ( ) const;

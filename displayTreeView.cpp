@@ -69,13 +69,13 @@ CDisplayTreeView::loadParameters()
 
     setColumnWidth ( 0,
             qSettings.value(QString("DisplayTreeView/Column0_Width"), 
-                            20).toInt() );
+                            260).toInt() );
     setColumnWidth ( 1,
             qSettings.value(QString("DisplayTreeView/Column1_Width"), 
-                            20).toInt() );
+                            75).toInt() );
     setColumnWidth ( 2,
             qSettings.value(QString("DisplayTreeView/Column2_Width"), 
-                            20).toInt() );
+                            75).toInt() );
 }
 
 CDisplayTreeView::~CDisplayTreeView ()

@@ -135,6 +135,8 @@ CDisplayWidget::closeEvent(QCloseEvent *f_event_p)
     QString name = QString("CDisplayWidget/geometry/") + (parent()?parent()->objectName():QString("default"));
     settings.setValue(name, saveGeometry());
 
+    printf("Saving geometry of CDisplayWidget\n");
+
     m_treeDlg_p -> close();
     
     QWidget::closeEvent(f_event_p);

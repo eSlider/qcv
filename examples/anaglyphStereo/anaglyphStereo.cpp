@@ -22,6 +22,7 @@
 #include <QApplication>
 
 #include "../cinterface.h"
+#include "../clock.h"
 
 #include <cv.h>
 #include <highgui.h>
@@ -31,17 +32,25 @@ using namespace QCV;
 bool callBackKeyboard    ( CKeyEvent *f_kevent_p );
 bool callBackTimer       ( CTimerEvent *f_cevent_p );
 
-void computeSobel (  );
+void loadAndShowFrame (  );
 void registerDrawingLists ( );
 
-std::vector<std::string> g_files_v;
+typedef std::vector <std::string>   CStringVector;
+typedef std::vector <CStringVector> CStringVectorVector;
+
+/// Filenames for all cameras
+CStringVectorVector      g_files_v(2);
+/// Current frame
 int                      g_counter_i;
+/// Max number of frames between all cameras
+int                      g_maxImages_i;
 
 int main(int f_argc_i, char *f_argv_p[])
 {
-    if (f_argc_i < 2)
+    if ( f_argc_i < 3 || ( std::string(f_argv_p[1]) != "--left" && std::string(f_argv_p[1]) != "--right" ) )
     {
-        printf("Usage %s img1 img2 ... imgN\n", f_argv_p[0]);
+        printf("Usage %s --left imgl1 imgl2 ... imglN --right imgr1 imgr2 ... imgrN\n", f_argv_p[0]);
+        printf("Example: %s --left imgs/*c0*.png --right imgs/*c1*.jpg\n", f_argv_p[0]);
         exit(1);        
     }
     
@@ -49,19 +58,31 @@ int main(int f_argc_i, char *f_argv_p[])
     
     /// Initialize application
     initialize("Top Level Drawing Lists");
-    
+
+    /// Load image filename data in vectors
     g_counter_i = 0;
+
+    int idx_i = 0;
     for (int i = 1; i < f_argc_i; ++i)
-        g_files_v.push_back ( f_argv_p[i] );
+    {
+        if (std::string(f_argv_p[i]) == std::string("--left"))
+            idx_i = 0;
+        else if (std::string(f_argv_p[i]) == std::string("--right"))
+            idx_i = 1;
+        else
+        {
+            g_maxImages_i = std::max((int)g_files_v[idx_i].size(), g_maxImages_i);    
+            g_files_v[idx_i].push_back ( f_argv_p[i] );
+        }        
+    }
     
-    /// Drawing list
-    registerDrawingLists();
+    g_maxImages_i = std::max((int)g_files_v[idx_i].size(), g_maxImages_i);
+
+    /// Set screen count.
+    setScreenCount ( cv::Size(1,1) );    
   
     /// Load first image
-    computeSobel ( );
-    
-    /// Set screen count.
-    setScreenCount ( cv::Size(2,2));
+    loadAndShowFrame ( );
     
     /// Set callback functions
     setKeyPressedEventCBF ( &callBackKeyboard );
@@ -76,8 +97,8 @@ int main(int f_argc_i, char *f_argv_p[])
 bool callBackTimer( CTimerEvent *f_cevent_p )
 {
     ++g_counter_i;
-    g_counter_i %= g_files_v.size();
-    computeSobel ( );
+    g_counter_i %= g_maxImages_i;
+    loadAndShowFrame ( );
 }
 
 
@@ -88,14 +109,24 @@ bool callBackKeyboard( CKeyEvent *f_kevent_p )
     
     switch (f_kevent_p -> qtKeyEvent_p -> key() )
     {
-        /// Move one frame forward
+        /// Move one frame backward
     case  Qt::Key_Left:
         --g_counter_i;
         break;
 
-        /// Move one frame backward
+        /// Move one frame forward
     case  Qt::Key_Right:
         ++g_counter_i;
+        break;
+
+        /// Move five frames forward
+    case  Qt::Key_Up:
+        g_counter_i+=5;
+        break;
+
+        /// Move five frames backward
+    case  Qt::Key_Down:
+        g_counter_i-=5;
         break;
 
         /// Play/Pause
@@ -113,7 +144,7 @@ bool callBackKeyboard( CKeyEvent *f_kevent_p )
 
         /// Advance 20 frames.
     case  Qt::Key_PageUp:
-        g_counter_i=std::min((int)g_files_v.size()-1,g_counter_i+20);
+        g_counter_i=std::min((int)g_maxImages_i-1,g_counter_i+20);
         break;
 
         /// Back 20 frames.
@@ -122,72 +153,45 @@ bool callBackKeyboard( CKeyEvent *f_kevent_p )
         break;
     }
 
-    g_counter_i = ( g_counter_i + 100*g_files_v.size())%g_files_v.size();
+    g_counter_i = ( g_counter_i + 100*g_maxImages_i)%g_maxImages_i;
     
     /// Compute and show now.
-    computeSobel ( );
-    
-    
+    loadAndShowFrame ( );
+
     return true;
 }
 
-void computeSobel (  )
+void loadAndShowFrame (  )
 {
-    /// Lets define some clock to measure computation time.
-
     static cv::Mat src;
-    static cv::Mat gauss, gradx, absgradx, grady, absgrady, magnitude;
 
-    startClock("Load");
-    
-    src   = cv::imread ( g_files_v[g_counter_i].c_str() );
+    cv::Size size(0,0);
 
-    stopClock("Load");
+    for (int c = 0; c < g_files_v.size(); ++c)
+    {
+        CDrawingList *list_p = getDrawingList ( std::string("Anaglyph") + (c?"Left":"Right") );
+        list_p -> clear();
+        
+        if ( g_counter_i < g_files_v[c].size() )
+        {
+            src = cv::imread (  g_files_v[c][g_counter_i].c_str() );
 
-    startClock("Sobel Computation");
+            if ( src.size().width > 0 )
+            {
+                if ( c == 0 )
+                    list_p -> setColorMask (0, 1, 1, 0);
+                else
+                    list_p -> setColorMask (1, 0, 0, 0);
 
-    if ( src.size().width == 0 ) return;
-    
-    /// Set screen size to current image size.
-    setScreenSize ( src.size() );
+                list_p -> addImage ( src );
 
-    /// Gauss filter.
-    cv::GaussianBlur( src, gauss, cv::Size(3,3), 0, 0, cv::BORDER_DEFAULT );
+                size = src.size();
+            }
+        }
+    }
 
-    /// Sobel Vert
-    cv::Sobel( gauss, gradx, CV_16S, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
-    cv::convertScaleAbs( gradx, absgradx );
+    setScreenSize ( size );
 
-    /// Sobel Hor
-    cv::Sobel( gauss, grady, CV_16S, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
-    cv::convertScaleAbs( grady, absgrady );
-    
-    /// Approximate magnitude (faster than computing sqrt(gx^2+gy^2)
-    cv::addWeighted( absgradx, 0.5, absgrady, 0.5, 0, magnitude );
-
-    stopClock("Sobel Computation");
-
-    startClock("Display");
-    
-    displayImage (src, "Original Image", true );
-    displayImage (absgradx, "Grad X", true );
-    displayImage (absgrady, "Grad Y", true );
-    displayImage (magnitude, "Magnitude ", true );
-
-    updateDisplay();
-    updateClocks();
-
-    stopClock("Display");    
+    updateDisplay();    
 }
 
-void registerDrawingLists()
-{
-    /// Position drawing list in default location.
-    /// User might want to change the order of display by
-    /// drag-and-drop later.
-
-    registerDrawingList ( "Original Image", 0, 0 );
-    registerDrawingList ( "Grad X",         1, 0 );
-    registerDrawingList ( "Grad Y",         0, 1 );
-    registerDrawingList ( "Magnitude ",     1, 1 );
-}

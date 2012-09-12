@@ -186,7 +186,7 @@ namespace QCV
     /// Constructor/Destructor
     public:
         
-        CDisplayOpNode ( CNode *                 f_op_p,
+        CDisplayOpNode ( CNode *                     f_op_p,
                          CDisplayTreeNodeAbstract *  f_parent_p = NULL );
 
         virtual ~CDisplayOpNode ( );

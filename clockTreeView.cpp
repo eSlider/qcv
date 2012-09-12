@@ -54,18 +54,17 @@ CClockTreeView::loadParameters()
  
     setColumnWidth ( 0,
                      qSettings.value(QString("ClockTreeView/Column0_Width"), 
-                                     20 ).toInt() );
+                                     260 ).toInt() );
     setColumnWidth ( 1,
                      qSettings.value(QString("ClockTreeView/Column1_Width"), 
-                                     20 ).toInt());
+                                     83 ).toInt());
     setColumnWidth ( 2,
                      qSettings.value(QString("ClockTreeView/Column2_Width"), 
-                                     20 ).toInt() );
+                                     75 ).toInt() );
 }
 
 CClockTreeView::~CClockTreeView ()
-{
-    
+{    
     saveParameters();
 }
 
@@ -74,6 +73,8 @@ CClockTreeView::saveParameters()
 {
     QSettings qSettings;
 
+    printf("Saving column widths %i %i %i\n", columnWidth(0), columnWidth(1),columnWidth(2) );
+    
     qSettings.setValue(QString("ClockTreeView/Column0_Width"), columnWidth(0));
     qSettings.setValue(QString("ClockTreeView/Column1_Width"), columnWidth(1));
     qSettings.setValue(QString("ClockTreeView/Column2_Width"), columnWidth(2));

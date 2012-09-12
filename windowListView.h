@@ -51,14 +51,23 @@ namespace QCV
         CWindowListView ( QWidget * m_parent_p = 0 );
         ~CWindowListView();
 
-        void insertWindow( QWidget * f_widget_p, bool f_showNow_b = true );
+        void insertWindow( QWidget * f_widget_p, 
+                           bool f_showNow_b = false );
+
+    public slots:
         void clear ( );
         void showWindows( );
         void saveWindowsGeometry() const;
+
+    public slots:
+
+        void showAllWindows();
+        void hideAllWindows();
         
     protected:
         void dataChanged( const QModelIndex & f_topLeft, 
                           const QModelIndex & f_bottomRight );
+
     protected:
         
         typedef enum

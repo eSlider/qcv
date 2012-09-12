@@ -42,10 +42,7 @@ extern QGLContext * g_QGLContext_p;
 using namespace QCV;
 
 static int cv2GLDType ( int f_cvFormat_i)
-{
-    //printf("f_cvFormat_i = %i, CV_8UC1 = %i  CV_8UC2 = %i, CV_8S = %i CV_8U = %i CV_16S = %i, CV_16U = %i\n",
-    //       f_cvFormat_i,  CV_8UC1, CV_8UC2,  CV_8UC3, CV_8S, CV_8U, CV_16S, CV_16U);
-    
+{    
     switch (f_cvFormat_i)
     {
        case CV_8S: 
@@ -92,8 +89,6 @@ static int cv2GLDType ( int f_cvFormat_i)
           return GL_DOUBLE;
     }
 
-    printf("Returning unsigned byte\n");
-    
 
     return GL_UNSIGNED_BYTE;    
 }
@@ -261,10 +256,7 @@ bool CDisplayImageList::add ( cv::Mat             f_image,
         glPixelTransferf ( GL_GREEN_SCALE, newImage_p->scale_f );
         glPixelTransferf ( GL_GREEN_BIAS,  newImage_p->bias_f  );        
         glPixelTransferf ( GL_BLUE_SCALE,  newImage_p->scale_f );
-        glPixelTransferf ( GL_BLUE_BIAS,   newImage_p->bias_f  );        
-
-        //printf("teximage2d with imageformat %i and datatype = %i (GL_UNSINGED_BYTE = %i, GL_LUMINANCE= %i)\n",
-        //       newImage_p->image.getImageFormat(), newImage_p->image.getDataType(), GL_UNSIGNED_BYTE, GL_LUMINANCE );
+        glPixelTransferf ( GL_BLUE_BIAS,   newImage_p->bias_f  );
 
         glTexImage2D( GL_TEXTURE_RECTANGLE_NV,
                       0,                                     // base level (only 0 allowed for GL_TEXTURE_RECTANGLE_NV).
@@ -275,8 +267,6 @@ bool CDisplayImageList::add ( cv::Mat             f_image,
                       cv2GLFormat2(newImage_p->image),        // 
                       cv2GLDType(newImage_p->image.type()),  // 
                       newImage_p->image.data );              // data.
-
-        //printf("newImage_p->image.data = %p\n", newImage_p->image.data);
     }
 
     return true; //res_b;

@@ -11,8 +11,6 @@ set (CMAKE_VERBOSE_MAKEFILE true)
 #DEPENDENCIES
 #################################################
 
-#include("$ENV{QCV_DIR}/cmake/helpfunctions.cmake")
-
 #Qt
 set(QT_USE_QTOPENGL true)
 set(QT_USE_QTXML true)

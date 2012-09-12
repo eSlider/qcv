@@ -158,7 +158,7 @@ add_library ( qcv SHARED ${LIBQCV_SRC}
                           )
 
 target_link_libraries(qcv  ${QT_LIBRARIES} 
-                           -lglut -lGL -lGLU )
+                           -lglut -lGL -lGLU ${OpenCV_LIBS})
 
 ### Set library to be installed under lib directory
 install ( TARGETS qcv LIBRARY DESTINATION lib)

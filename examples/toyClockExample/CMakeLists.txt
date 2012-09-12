@@ -18,7 +18,6 @@ find_package(Qt4 REQUIRED)
 
 #OpenCV
 find_package ( OpenCV REQUIRED )
-message ( STATUS  ${OpenCV_LIBS} )
 
 #OpenGL
 find_package(GLU REQUIRED)

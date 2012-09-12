@@ -119,23 +119,24 @@ CHelpWidget::setStrings()
     QString footer_str = "</table></center>";
 
     m_keyboardString=header_str;
-    m_keyboardString += addHelpLine("H",               "Show this help");
-    m_keyboardString += addHelpLine("G",               "Start or stop grabbing display updates. Filename format is grabbedDisplayWidgetImg_%05i.png at the current directory");
-    m_keyboardString += addHelpLine("Ctrl-G",          "Grab all display repaints. It can be deactivated by pressing key G");
-    m_keyboardString += addHelpLine("F",               "Change to full screen mode")
+    m_keyboardString += addHelpLine("H",               "Show this help.");
+    m_keyboardString += addHelpLine("G",               "Start or stop grabbing display updates. Filename format is grabbedDisplayWidgetImg_%05i.png at the current directory.");
+    m_keyboardString += addHelpLine("Ctrl-G",          "Grab all display repaints. It can be deactivated by pressing key G.");
+    m_keyboardString += addHelpLine("Ctrl-Alt-G",      "Grab display at regular time interval. Images will be saved after pressing G again. When saving the images, the key Esc can be pressed to cancel saving images.");
+    m_keyboardString += addHelpLine("F",               "Change to full screen mode.")
 ;
-    m_keyboardString += addHelpLine("F1:F35",          "Zoom a particular screen. The function value number corresponds to the nth screen in the array order. Example: on a 4-column-3-row screen, F6 corresponds to screen column 2, row 1.");
+    m_keyboardString += addHelpLine("F1:F35",          "Zoom a particular screen. The function value number corresponds to the nth screen in the array order. Example: on a 4-column-3-row screen, F6 corresponds to screen column 2, row 1..");
     m_keyboardString += addHelpLine("Ctrl-F1:F35",     "Move the current zoomed area to a different screen.");
-    m_keyboardString += addHelpLine("Alt-Left",        "Unconstrained motion of the current zoomed area to the screen to the left");
-    m_keyboardString += addHelpLine("Alt-Right",       "Unconstrained motion of the current zoomed area to the screen to the screen to the right");
-    m_keyboardString += addHelpLine("Alt-Up",          "Unconstrained motion of the current zoomed area to the screen to the immediate upper screen");
-    m_keyboardString += addHelpLine("Alt-Down",        "Unconstrained motion of the current zoomed area to the screen to the immediate lower screen");
-    m_keyboardString += addHelpLine("Wheel",           "Zoom in/out");
-    m_keyboardString += addHelpLine("Ctrl-Wheel",      "Fast zoom in/out");
-    m_keyboardString += addHelpLine("Alt-Wheel",       "Slow zoom in/out");
-    m_keyboardString += addHelpLine("Shift-Wheel",     "Fine zoom in/out");
+    m_keyboardString += addHelpLine("Alt-Left",        "Unconstrained motion of the current zoomed area to the screen to the left.");
+    m_keyboardString += addHelpLine("Alt-Right",       "Unconstrained motion of the current zoomed area to the screen to the screen to the right.");
+    m_keyboardString += addHelpLine("Alt-Up",          "Unconstrained motion of the current zoomed area to the screen to the immediate upper screen.");
+    m_keyboardString += addHelpLine("Alt-Down",        "Unconstrained motion of the current zoomed area to the screen to the immediate lower screen.");
+    m_keyboardString += addHelpLine("Wheel",           "Zoom in/out.");
+    m_keyboardString += addHelpLine("Ctrl-Wheel",      "Fast zoom in/out.");
+    m_keyboardString += addHelpLine("Alt-Wheel",       "Slow zoom in/out.");
+    m_keyboardString += addHelpLine("Shift-Wheel",     "Fine zoom in/out.");
 
-    m_keyboardString += addHelpLine("Ctrl-Mouse Move", "Moved zoomed display");
+    m_keyboardString += addHelpLine("Ctrl-Mouse Move", "Moved zoomed display.");
 
     m_keyboardString += footer_str;    
 }

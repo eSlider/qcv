@@ -110,6 +110,8 @@ struct SLine
 /// Moving lines drawing list
 std::vector <SLine> g_lines;
 
+/// Speed of rotation
+double g_rotSpeed_d = 0.12;
 
 bool callBackTimer ( CTimerEvent * /* f_clockEvent_p */ )
 {
@@ -148,7 +150,7 @@ bool callBackTimer ( CTimerEvent * /* f_clockEvent_p */ )
     list_p -> setOffset ( (scrWidth_i/scale_d  - scrWidth_i)/2.f, 
                           (scrHeight_i/scale_d - scrHeight_i)/2.f);
     /// Rotate
-    list_p -> setRotation ( list_p->getRotation() + 0.12 );
+    list_p -> setRotation ( list_p->getRotation() + g_rotSpeed_d );
 
     /// Border drawing list.
     list_p    = getDrawingList ( "Screen Border" );
@@ -187,5 +189,9 @@ bool callBackKeyboard( CKeyEvent *f_kevent_p )
                 g_lines.push_back( SLine ( scrWidth_i, scrHeight_i) );
         }
     }
+    else if ( f_kevent_p -> qtKeyEvent_p -> key() == Qt::Key_F1 )    
+        g_rotSpeed_d = std::max(std::min(1.1*g_rotSpeed_d, 1.2), 0.012);
+    else if ( f_kevent_p -> qtKeyEvent_p -> key() == Qt::Key_F2 )
+        g_rotSpeed_d = std::max(g_rotSpeed_d/1.1-0.01, 0.);
 }
 

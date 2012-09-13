@@ -32,11 +32,14 @@
 
 using namespace QCV;
 
-const SRgb QCV::CColor::red    = SRgb(255,0,0);
-const SRgb QCV::CColor::blue   = SRgb(0,0,255);
-const SRgb QCV::CColor::green  = SRgb(0,255,0);
-const SRgb QCV::CColor::white  = SRgb(255,255,255);
-const SRgb QCV::CColor::black  = SRgb(0,0,0);
+const SRgb QCV::CColor::red     = SRgb(255,0,0);
+const SRgb QCV::CColor::blue    = SRgb(0,0,255);
+const SRgb QCV::CColor::green   = SRgb(0,255,0);
+const SRgb QCV::CColor::white   = SRgb(255,255,255);
+const SRgb QCV::CColor::black   = SRgb(0,0,0);
+const SRgb QCV::CColor::cyan    = SRgb(0,255,255);
+const SRgb QCV::CColor::magenta = SRgb(255,0,255);
+const SRgb QCV::CColor::yellow  = SRgb(255,255,0);
 
 
 SHsl CColor::getHslFromRgb ( const SRgb & f_color )

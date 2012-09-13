@@ -23,9 +23,6 @@
 
 #include "../cinterface.h"
 
-#include <cv.h>
-#include <highgui.h>
-
 using namespace QCV;
 
 int main(int f_argc_i, char *f_argv_p[])
@@ -45,7 +42,7 @@ int main(int f_argc_i, char *f_argv_p[])
     CDrawingList *list_p = getDrawingList ( "My Hello World Label" );
     
     /// Set line color. By default is black
-    list_p -> setLineColor ( SRgb (255, 255, 255) );
+    list_p -> setLineColor ( cv::Vec3b (255, 255, 255) );
     
     /// Add some text.
     list_p->addText ( "Hello World!", 100, 200, 64, false );

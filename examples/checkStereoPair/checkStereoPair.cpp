@@ -23,9 +23,6 @@
 
 #include "../cinterface.h"
 
-#include <cv.h>
-#include <highgui.h>
-
 using namespace QCV;
 
 bool callBackMouse    ( CMouseEvent *f_mevent_p );

@@ -587,33 +587,38 @@ void CDisplay::displayScreens ( CDisplayOpNode * const f_parent_p,
                     
                     glTranslatef( pos.x * m_screenSize.width, 
                                   pos.y * m_screenSize.height, 
-                                  0.0 );
-                    
+                                  0.0 );                    
+
                     glScalef( list_p -> getScaleX(),
-                              list_p -> getScaleY(), 
-                              1.0);
+                              list_p -> getScaleY(),
+                              1.0f );
                     
                     glTranslatef( list_p -> getOffsetX(),
                                   list_p -> getOffsetY(), 
-                                  0.0 );
-
+                                  0.0f );
+                    
                     if (fabs(list_p->getRotation()) > 1.e-4)
                     {
-                        glTranslatef( m_screenSize.width/2,
-                                      m_screenSize.height/2,
-                                      0.0 );
+                        glTranslatef( m_screenSize.width/2.f,
+                                      m_screenSize.height/2.f,
+                                      0.0f );
+
                         glRotated( list_p -> getRotation(), 0, 0, 1. );
 
-                        glTranslatef( -m_screenSize.height/2,
-                                      -m_screenSize.width/2,
-                                      0.0 );
+                        glTranslatef( -m_screenSize.width/2.f,
+                                      -m_screenSize.height/2.f,
+                                      0.0f );
 
-                        float scale_f = m_screenSize.width/(float)m_screenSize.height;
-                        if (scale_f > 1.f) scale_f = 1./scale_f;
+                        // float scale_f = m_screenSize.width/(float)m_screenSize.height;
+                        // if (scale_f > 1.f) scale_f = 1./scale_f;
 
-                        glScalef(  scale_f,
-                                   scale_f,
-                                   0.0 );
+                        // glScalef(  scale_f,
+                        //            scale_f,
+                        //            0.0 );
+
+                        // glTranslatef(  m_screenSize.width/4*scale_f,
+                        //                m_screenSize.height/4*scale_f,
+                        //                0.0 );
                     }
 
                     list_p -> show();

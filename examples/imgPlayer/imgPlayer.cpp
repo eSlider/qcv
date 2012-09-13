@@ -22,10 +22,6 @@
 #include <QApplication>
 
 #include "../cinterface.h"
-#include "../clock.h"
-
-#include <cv.h>
-#include <highgui.h>
 
 using namespace QCV;
 

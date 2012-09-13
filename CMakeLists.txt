@@ -19,7 +19,7 @@ set (CMAKE_VERBOSE_MAKEFILE true)
 find_package(Qt4 REQUIRED)
 
 #OpenGL
-find_package(GLU REQUIRED)
+#find_package(GLU REQUIRED)
 set(QT_USE_QTOPENGL true)
 set(QT_USE_QTXML true)
 
@@ -158,7 +158,7 @@ add_library ( qcv SHARED ${LIBQCV_SRC}
                           )
 
 target_link_libraries(qcv  ${QT_LIBRARIES} 
-                           -lglut -lGL -lGLU ${OpenCV_LIBS})
+                           -lglut -lGL ${OpenCV_LIBS})
 
 ### Set library to be installed under lib directory
 install ( TARGETS qcv LIBRARY DESTINATION lib)

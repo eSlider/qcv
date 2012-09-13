@@ -792,3 +792,15 @@ CDrawingList::getScreenSize ( ) const
 {
     return m_screenSize;
 }
+
+unsigned int
+CDrawingList::getScreenWidth ( ) const
+{
+    return m_screenSize.width;
+}
+
+unsigned int
+CDrawingList::getScreenHeight ( ) const
+{
+    return m_screenSize.height;
+}

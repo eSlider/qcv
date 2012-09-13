@@ -20,7 +20,7 @@ find_package(Qt4 REQUIRED)
 find_package ( OpenCV REQUIRED )
 
 #OpenGL
-find_package(GLU REQUIRED)
+#find_package(GLU REQUIRED)
 
 #Qcv
 set (QCV_LIB qcv )

@@ -25,6 +25,7 @@
 
 using namespace QCV;
 
+bool callBackKeyboard    ( CKeyEvent *f_kevent_p );
 bool callBackTimer    ( CTimerEvent *f_cevent_p );
 
 int main(int f_argc_i, char *f_argv_p[])
@@ -35,14 +36,15 @@ int main(int f_argc_i, char *f_argv_p[])
     initialize("Top Level Drawing Lists");
     
     /// Set screen size.
-    setScreenSize( cv::Size(640,480) );
+    setScreenSize( cv::Size(640,640) );
 
     /// Set screen count.
     setScreenCount( cv::Size(1,1) );
     
     /// Set callback functions.
     setTimerEventCBF ( &callBackTimer, 10 );
-
+    setKeyPressedEventCBF ( &callBackKeyboard );
+ 
     /// Run qt application.
     int retval_i = app.exec();
 
@@ -76,6 +78,10 @@ struct SLine
     float dx1,dy1,dx2,dy2;
     SRgb  color;
 
+    SLine()
+    {
+    }
+    
     SLine(int scrWidth_i, int scrHeight_i )
     {
         x1 = rndf(0.1f*scrWidth_i, 0.9f*scrWidth_i);
@@ -91,7 +97,7 @@ struct SLine
         color.g = rndi(20, 255);
         color.b = rndi(20, 255);
     }
-    
+
     void advance( int scrWidth_i, int scrHeight_i )
     {
         x1+=dx1; if ( x1 < 0 ) x1 = dx1 = rndf( 0.1f, 2.f ); if ( x1 > scrWidth_i  ) x1 = scrWidth_i  - (dx1 = - rndf ( 0.1f, 2.f ));
@@ -101,28 +107,85 @@ struct SLine
     }
 };
 
+/// Moving lines drawing list
+std::vector <SLine> g_lines;
+
+
 bool callBackTimer ( CTimerEvent * /* f_clockEvent_p */ )
 {
     int scrWidth_i  = getScreenWidth();
     int scrHeight_i = getScreenHeight();
 
-    static std::vector <SLine> lines;
+    startClock ("Lines motion");    
+    if ( g_lines.size() == 0 )
+        for (int i = 0; i < 30; ++ i)
+            g_lines.push_back( SLine ( scrWidth_i, scrHeight_i) );
 
-    if ( lines.size() == 0 )
-        for (size_t i = 0; i < 30; ++i)
-            lines.push_back ( SLine ( scrWidth_i, scrHeight_i) );
+    for (size_t i = 0; i < g_lines.size()-1;++i)
+        g_lines[i].advance( scrWidth_i, scrHeight_i );
+    stopClock ("Lines motion");    
 
-    CDrawingList * list_p    = getDrawingList ( "Overlay" );  
+    startClock ("Drawing");    
+
+    CDrawingList * list_p    = getDrawingList ( "Moving Lines" );  
+
     list_p->clear();
 
-    for (size_t i = 0; i < lines.size()-1;++i)
+    list_p->setLineColor ( 255, 255, 255 );
+    list_p->addRectangle ( 0,0,list_p->getScreenWidth(), list_p->getScreenHeight());
+
+    for (size_t i = 0; i < g_lines.size()-1;++i)
     {        
-        lines[i].advance( scrWidth_i, scrHeight_i );
-        list_p->setLineColor ( lines[i].color );
-        list_p->addLine ( lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2 );
+        list_p->setLineColor ( g_lines[i].color );
+        list_p->addLine ( g_lines[i].x1, g_lines[i].y1, g_lines[i].x2, g_lines[i].y2 );
     }
 
+    /// Scale and center
+    double diagDist_d = sqrt(scrWidth_i*scrWidth_i + scrHeight_i*scrHeight_i);
+    double scale_d = std::min(scrWidth_i, scrHeight_i) / diagDist_d;
+
+    list_p -> setScale ( scale_d );
+    list_p -> setOffset ( (scrWidth_i/scale_d  - scrWidth_i)/2.f, 
+                          (scrHeight_i/scale_d - scrHeight_i)/2.f);
+    /// Rotate
+    list_p -> setRotation ( list_p->getRotation() + 0.12 );
+
+    /// Border drawing list.
+    list_p    = getDrawingList ( "Screen Border" );
+    list_p->clear();
+    list_p->setLineColor ( 255, 255, 255 );
+    list_p->addRectangle ( 0,0,list_p->getScreenWidth(), list_p->getScreenHeight());
+
+    stopClock ("Drawing");    
+
+    startClock ("GL Paint");    
     updateDisplay();
+    stopClock ("GL Paint");
+
+    updateClocks();
+
     return true;
+}
+
+bool callBackKeyboard( CKeyEvent *f_kevent_p )
+{
+    int scrWidth_i  = getScreenWidth();
+    int scrHeight_i = getScreenHeight();
+
+    int num_i = f_kevent_p -> qtKeyEvent_p -> key() - Qt::Key_0;
+    
+    if ( num_i > 0 && num_i < 9)
+    {
+        int newSize_i = (int)pow(10, num_i)*3;
+        int diff_i = newSize_i - (int)g_lines.size();
+
+        if (diff_i < 0)
+            g_lines.resize ( newSize_i );
+        else
+        {            
+            for (int i = 0; i < diff_i; ++i)
+                g_lines.push_back( SLine ( scrWidth_i, scrHeight_i) );
+        }
+    }
 }
 

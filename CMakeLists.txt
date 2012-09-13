@@ -168,6 +168,7 @@ install (FILES ${LIBQCV_HEADERS} DESTINATION include/qcv )
 
 #####################################
 
+add_subdirectory ( modules )
 add_subdirectory ( examples )
 
 install(FILES DESTINATION bin/ PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

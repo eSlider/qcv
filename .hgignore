@@ -12,6 +12,7 @@ CMakeCache.txt
 cmake.check_cache
 out
 Makefile
+ignore
 
 glob:*.vtg
 glob:*.vpw

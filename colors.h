@@ -70,14 +70,6 @@ namespace QCV
         {
         }
 
-        SRgba( cv::Vec3b f_other ) 
-        {
-            r = f_other[2];
-            g = f_other[1];
-            b = f_other[0];
-            a = 0;
-        }
-
         SRgba( cv::Vec4b f_other ) 
         {
             r = f_other[2];
@@ -86,11 +78,6 @@ namespace QCV
             a = f_other[3];
         }
 
-        operator cv::Vec3b ()
-        {
-            return cv::Vec3b(b,g,r);
-        }
-        
         operator cv::Vec4b ()
         {
             return cv::Vec4b(b,g,r,a);
@@ -176,13 +163,6 @@ namespace QCV
             b = f_other[0];
         }
 
-        SRgb( cv::Vec4b f_other ) 
-        {
-            r = f_other[2];
-            g = f_other[1];
-            b = f_other[0];
-        }
-
         SRgb ( SRgba other )
         {
             r = other.r;
@@ -201,12 +181,7 @@ namespace QCV
         operator cv::Vec3b ()
         {
             return cv::Vec3b(b,g,r);
-        }
-        
-        operator cv::Vec4b ()
-        {
-            return cv::Vec4b(b,g,r,0);
-        }
+        }        
  
         bool operator == ( const SRgb & other ) const
         {
@@ -302,13 +277,6 @@ namespace QCV
             v = f_other[0];
         }
 
-        SHsv( cv::Vec4b f_other ) 
-        {
-            h = f_other[2];
-            s = f_other[1];
-            v = f_other[0];
-        }
-
         const SHsv& operator = ( const SHsv & other )
         {
             h = other.h;
@@ -325,11 +293,6 @@ namespace QCV
         operator cv::Vec3b ()
         {
             return cv::Vec3b(v,s,h);
-        }
-        
-        operator cv::Vec4b ()
-        {
-            return cv::Vec4b(v,s,h,0);
         }
  
         void set (  const float f_h_f, 
@@ -384,13 +347,6 @@ namespace QCV
             l = f_other[0];
         }
 
-        SHsl( cv::Vec4b f_other ) 
-        {
-            h = f_other[2];
-            s = f_other[1];
-            l = f_other[0];
-        }
-
         const SHsl& operator = ( const SHsl & other )
         {
             h = other.h;
@@ -402,11 +358,6 @@ namespace QCV
         operator cv::Vec3b ()
         {
             return cv::Vec3b(l,s,h);
-        }
-        
-        operator cv::Vec4b ()
-        {
-            return cv::Vec4b(l,s,h,0);
         }
 
         bool operator == ( const SHsl & other ) const

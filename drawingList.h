@@ -350,10 +350,13 @@ namespace QCV
         virtual bool          setRotation( double f_angle_d ) { m_rotAngle_d = f_angle_d; return true; }
         virtual double        getRotation( ) const { return m_rotAngle_d; }
 
-        bool setScreenSize ( const S2D<unsigned int> f_size );
+        virtual bool          setScreenSize ( const S2D<unsigned int> f_size );
 
-        S2D<unsigned int>   
-             getScreenSize (  ) const;
+        virtual S2D<unsigned int>   
+                              getScreenSize (  ) const;
+
+        virtual unsigned int getScreenWidth ( )  const;
+        virtual unsigned int getScreenHeight ( ) const;
 
     //// Actions
     public:

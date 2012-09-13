@@ -33,6 +33,9 @@
 #include <stdio.h>
 #include <iostream> 
 
+#include <cv.h>
+#include <highgui.h>
+
 namespace QCV
 {
     CDisplayWidget *      g_disp_p         = NULL;

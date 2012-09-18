@@ -783,7 +783,7 @@ bool
 CDrawingList::setScreenSize ( const S2D<unsigned int> f_size )
 {
     if ( f_size  != m_screenSize )
-        m_screenSize = f_size;        
+        m_screenSize = f_size;
 
     return true;
 }

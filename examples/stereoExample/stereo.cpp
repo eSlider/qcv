@@ -33,6 +33,9 @@ CStereoOp::CStereoOp ( COperatorBase * const f_parent_p )
 {
     registerDrawingLists();
     registerParameters();
+
+    if ( !getParentOp() )
+        addChild ( new CStereoOp ( this ) );    
 }
 
 
@@ -285,6 +288,8 @@ bool CStereoOp::show()
     CDrawingList *list_p  = getDrawingList ( "Left Image");
     setScreenSize ( m_leftImg.size() );    
 
+    printf("%i %i\n",     list_p->getScreenWidth(),    list_p->getScreenHeight() );
+    
     list_p -> clear();    
     list_p->addImage ( m_leftImg, 0, 0 );
     list_p -> setLineColor ( SRgb ( 255, 255 ,255 ));

@@ -226,8 +226,6 @@ namespace QCV
         /// Plots handling.
         /// to be implemented.
 
-        S2D<unsigned int>                 m_screenSize;
-
     /// Protected static members
     protected:    
 

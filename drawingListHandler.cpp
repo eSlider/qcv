@@ -119,12 +119,12 @@ CDrawingListHandler::getDrawingList ( std::string  f_name_str,
     if (!child_p)
     {
         CDrawingList * drawList_p = (CDrawingList *) new CDrawingList ( f_name_str );
-        drawList_p->setScreenSize(m_screenSize);
         child_p    = new CDisplayNode ( drawList_p );
         node_p -> appendChild ( child_p );
         return drawList_p;
     }
 
+    child_p->getDrawingList()->setScreenSize(m_screenSize);
     return child_p -> getDrawingList();
 }
 

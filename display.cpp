@@ -107,8 +107,8 @@ void CDisplay::initializeGL()
 
 void CDisplay::paintGL()
 {
-    printf("g_QGLContext_p = %p thiscontext = %p\n", 
-           g_QGLContext_p, context());
+    // printf("g_QGLContext_p = %p thiscontext = %p\n", 
+    //        g_QGLContext_p, context());
 
     // Can't repaint if window hasn't been displayed yet.
     if ( !m_initialized_b ) return;

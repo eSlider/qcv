@@ -268,8 +268,6 @@ void CSeqControler::loopModeChanged( bool f_val_b )
 
 void CSeqControler::exitOnLastFrameChanged( bool f_val_b )
 {
-    //printf("New val of exitonlastframe is %i\n", f_val_b );
-    
     m_deviceCtrl_p -> setExitOnLastFrame ( f_val_b );
 }
 

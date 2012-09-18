@@ -21,8 +21,7 @@ CClockHandler          COperatorBase::m_clockHandler;
 COperatorBase::COperatorBase (  COperatorBase * const f_parent_p /* = NULL */, 
                                 const std::string f_name_str /* = "Unnamed OperatorBase" */ )
     : CNode (      f_parent_p, f_name_str ),
-      m_paramSet_p (                 NULL ),
-      m_screenSize (             640, 480 )
+      m_paramSet_p (                 NULL )
 {
     m_paramSet_p = new CParameterSet(NULL);
     m_paramSet_p -> setName ( f_name_str );
@@ -339,11 +338,11 @@ COperatorBase::addDrawingListParameter ( std::string f_id_str,
 bool
 COperatorBase::setScreenSize ( S2D<unsigned int> f_size )
 {
-    m_screenSize = f_size;
+    m_drawingListHandler.setScreenSize(f_size);
     return true;
 }
 
 S2D<unsigned int> COperatorBase::getScreenSize (  ) const
 {
-    return m_screenSize;
+    return m_drawingListHandler.getScreenSize();
 }

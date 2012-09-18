@@ -54,7 +54,8 @@ namespace QCV
             g_mainWindow_p = new CSimpleWindow();
             assert(g_mainWindow_p);
 
-            g_rootNode_p = new CNode ( new CNode (NULL, "Real Root"), f_title_str );
+            //CNode * root_p = new CNode (NULL, "Real Root");
+            g_rootNode_p = new CNode ( NULL, f_title_str );
             assert(g_rootNode_p);
 
             g_drawHandler_p = new CDrawingListHandler( g_rootNode_p );

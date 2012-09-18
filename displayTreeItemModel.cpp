@@ -41,10 +41,10 @@ CDisplayTreeItemModel::CDisplayTreeItemModel (  CDisplayOpNode *  f_rootNode_p,
         : QAbstractItemModel (      f_parent_p ),
           m_rootNode_p (                  NULL )
 {
-    //m_rootNode_p = new CDisplayOpNode ( NULL, NULL );
-    //m_rootNode_p -> appendChild( f_rootNode_p );
-    //m_rootNode_p = new CDisplayOpNode ( NULL, NULL );
-    m_rootNode_p = f_rootNode_p;
+    m_rootNode_p = new CDisplayOpNode ( NULL, NULL );
+    m_rootNode_p -> appendChild( f_rootNode_p );
+
+    //m_rootNode_p = f_rootNode_p;
 }
 
 CDisplayTreeItemModel::~CDisplayTreeItemModel ()

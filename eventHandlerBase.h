@@ -19,10 +19,10 @@
  * software, if you do not agree to this license.
  */
 
-#ifndef __EVENTHANDLER_H
-#define __EVENTHANDLER_H
+#ifndef __EVENTHANDLERBASE_H
+#define __EVENTHANDLERBASE_H
 
-#include <QWidget>
+#include <QObject>
 
 /*@@@**************************************************************************
  ** \file  eventhandler
@@ -32,38 +32,31 @@
 *****             (C) Hernan Badino 2012 - All Rights Reserved            *****
 ******************************************************************************/
 
-#include "eventHandlerBase.h"
-
 namespace QCV
-{
-    class CEventHandler: public CEventHandlerBase
+{    
+    /// PROTOTYPES
+    class CKeyEvent;
+    class CMouseEvent;
+    class CMouseEvent;
+    class CMouseEvent;
+    class CWheelEvent;
+    class CTimerEvent;
+    class CRegionSelectedEvent;
+    class CDisplayWidget;
+
+    class CEventHandlerBase : public QObject
     {
         Q_OBJECT
  
         public:
-        CEventHandler (  CDisplayWidget * f_disp_p, 
-                         QObject * f_parent_p = NULL );
+
+        CEventHandlerBase (  CDisplayWidget * f_disp_p, 
+                             QObject * f_parent_p = NULL );
     
-        ~CEventHandler () 
-        {
-        }
-
-    public:
-        /// Set callback functions pointers.
-        bool  setKeyPressedEventCBF(       bool (*f_keyEv_p)           (CKeyEvent *   ));
-        bool  setMousePressedEventCBF (    bool (*f_mousePressedEv_p)  (CMouseEvent * ));
-        bool  setMouseReleasedEventCBF (   bool (*f_mouseReleasedEv_p) (CMouseEvent * ));
-        bool  setMouseMovedEventCBF (      bool (*f_mouseMovedEv_p)    (CMouseEvent * ));
-        bool  setWheelTurnedEventCBF (     bool (*f_wheelTurnedEv_p)   (CWheelEvent * ));
-        bool  setTimerEventCBF (           bool (*f_timerEv_p)         (CTimerEvent * ),
-                                           const int f_ms_s = 1 );    
-        /// Not implemented et
-        bool  setRegionSelectedEventCBF (  bool (*f_regionSelectedEv_p)(CRegionSelectedEvent * ));
-
-    /// Protected slots
+        virtual ~CEventHandlerBase ();
+        
+        /// Protected methods
     protected slots:
-    
-    
         /// Key Pressed event.
         virtual void keyPressed     ( CKeyEvent *    f_event_p );
         virtual void mousePressed   ( CMouseEvent *  f_event_p );
@@ -76,19 +69,9 @@ namespace QCV
         
     /// Members
     protected:
-        /// Timer Id
-        int               m_timerId_i;
-
-        /// Call back function pointers.
-        bool              (*m_keyEv_p)            (CKeyEvent *   );
-        bool              (*m_mousePressedEv_p)   (CMouseEvent * );
-        bool              (*m_mouseReleasedEv_p)  (CMouseEvent * );
-        bool              (*m_mouseMovedEv_p)     (CMouseEvent * );
-        bool              (*m_wheelTurnedEv_p)    (CWheelEvent * );
-        bool              (*m_timerEv_p)          (CTimerEvent * );    
-        bool              (*m_regionSelectedEv_p) (CRegionSelectedEvent *   );    
-
+        /// Associated display widget
+        CDisplayWidget *  m_dispWidget_p;
     };
 } /// QCV
 
-#endif
+#endif // __EVENTHANDLERBASE_H

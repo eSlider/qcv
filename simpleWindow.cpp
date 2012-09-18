@@ -36,14 +36,14 @@
 #include <QToolBar>
 #include <QMenuBar>
 
-#include "mainWindow.h"
+#include "simpleWindow.h"
 #include "windowListView.h"
 
 #include <stdio.h>
 
 using namespace QCV;
 
-CMainWindow::CMainWindow ( )
+CSimpleWindow::CSimpleWindow ( )
         : m_listView_p (           NULL )
 {
     QStringList list = QCoreApplication::arguments ();
@@ -69,7 +69,7 @@ CMainWindow::CMainWindow ( )
     createMenues();
 }
 
-CMainWindow::~CMainWindow( )
+CSimpleWindow::~CSimpleWindow( )
 {   
     /// Write geometry.
     QSettings qSettings;
@@ -80,7 +80,7 @@ CMainWindow::~CMainWindow( )
     delete m_listView_p;
 }
 
-void CMainWindow::createMenues()
+void CSimpleWindow::createMenues()
 {
     // Create first menu and toolbar entries.
     QToolBar *qtbWindow_p = this -> addToolBar ( tr("Windows") );
@@ -137,26 +137,26 @@ void CMainWindow::createMenues()
 }
 
 void
-CMainWindow::show()
+CSimpleWindow::show()
 {   
     m_listView_p -> showWindows();
 
     QMainWindow::show();
 }
 
-void CMainWindow::about() 
+void CSimpleWindow::about() 
 {
     QMessageBox::about( this,
                         "About CVFramework ",
                         tr("This app was coded for educational purposes") );
 }
 
-void CMainWindow::hideAllWindows() 
+void CSimpleWindow::hideAllWindows() 
 {
     QMessageBox::about( this,"Hiding all windows.", "Bye" );
 }
 
-void CMainWindow::showAllWindows() 
+void CSimpleWindow::showAllWindows() 
 {
     QMessageBox::about( this,
                         "Showing all windows.",
@@ -164,13 +164,13 @@ void CMainWindow::showAllWindows()
 }
 
 void 
-CMainWindow::insertWindow( QWidget * f_widget_p, 
+CSimpleWindow::insertWindow( QWidget * f_widget_p, 
                            bool f_showNow_b )
 {
     m_listView_p -> insertWindow ( f_widget_p, f_showNow_b );
 }
 
-void CMainWindow::closeEvent ( QCloseEvent *  f_event_p)
+void CSimpleWindow::closeEvent ( QCloseEvent *  f_event_p)
 {
     qApp->quit();
     f_event_p->accept();    

@@ -20,15 +20,15 @@
  */
 
 
-#ifndef __MAINWINDOW_H
-#define __MAINWINDOW_H
+#ifndef __SIMPLEWINDOW_H
+#define __SIMPLEWINDOW_H
 
 /**
  *******************************************************************************
  *
- * @file mainWindow.h
+ * @file simplewindow.h
  *
- * \class CMainWindow
+ * \class CSimpleWindow
  * \author Hernan Badino (hernan.badino@gmail.com)
  *
  * \brief The class implements the main window dialog of the framework.
@@ -48,7 +48,7 @@ namespace QCV
 /* NAMESPACE PROTOTYPES */
     class CWindowListView;
     
-    class CMainWindow: public QMainWindow
+    class CSimpleWindow: public QMainWindow
     {
         Q_OBJECT
 
@@ -56,8 +56,8 @@ namespace QCV
                 
     public:
         
-        CMainWindow ( );
-        virtual ~CMainWindow();
+        CSimpleWindow ( );
+        virtual ~CSimpleWindow();
         
     public slots:
         /// Hide all windows.
@@ -92,4 +92,4 @@ namespace QCV
     };
 }
 
-#endif // __MAINWINDOW_H
+#endif // __SIMPLEWINDOW_H

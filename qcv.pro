@@ -63,7 +63,7 @@ HEADERS       =     cinterface.h \
                     lineList.h \
                     linePlotter.h \
                     linePlotter_inline.h \
-                    mainWindow.h \
+                    simpleWindow.h \
                     node.h \
                     polygonList.h \
                     rectList.h \
@@ -97,7 +97,7 @@ SOURCES =           clock.cpp \
                     eventHandler.cpp \
                     helpWidget.cpp \
                     lineList.cpp \
-                    mainWindow.cpp \
+                    simpleWindow.cpp \
                     node.cpp \
                     polygonList.cpp \
                     rectList.cpp \

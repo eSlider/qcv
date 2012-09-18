@@ -20,7 +20,7 @@
  */
 
 /*@@@**************************************************************************
-* \file  clockHandler
+* \file  stringop
 * \author Hernan Badino
 * \notes 
 *******************************************************************************
@@ -28,56 +28,63 @@
 ******************************************************************************/
 
 /* INCLUDES */
-#include "node.h"
-#include "clockHandler.h"
-#include "clockTreeNode.h"
+#include "stringOp.h"
 
 using namespace QCV;
 
-CClockHandler::CClockHandler( CNode * f_root_p )
-        : m_root_p (                NULL ),
-          m_clockChanged_b (       false )
+CStringOp::CStringOp ( )
+{}
+
+CStringOp::~CStringOp ( )
+{}
+
+bool 
+CStringOp::trimLeft ( std::string &fr_str )
 {
-    //if ( f_root_p )
-    {
-        m_root_p = new CClockOpNode ( f_root_p );
-    }
-
-}
-
-CClockHandler::~CClockHandler()
-{
-    delete m_root_p;    
-}
-
-CClock * 
-CClockHandler::getClock ( std::string  f_name_str, 
-                          CNode *      f_op_p )
-{
-    if (not f_op_p) return NULL;
-
-    //printf("m_root_p = %p\n", m_root_p);
-    
-    CClockOpNode * node_p = m_root_p -> getOpChild ( f_op_p );
-
-    if ( !node_p )
-    {
-        node_p = new CClockOpNode ( f_op_p );
-        m_root_p -> appendChild ( node_p );
-    }
-
-    /// Search now for clock.
-    CClockNode * child_p = node_p -> getClockChild ( f_name_str );
-
-    // If not found, then create.
-    if (!child_p)
-    {
-        CClock * clock_p = (CClock *) new CClock ( f_name_str );
-        child_p    = new CClockNode ( clock_p );
+    unsigned int i;
         
-        node_p -> appendChild ( child_p );
-        return clock_p;
+    for ( i = 0; 
+          ( i < fr_str.length() && 
+            isspace(fr_str[i]) );
+          ++i) { }
+    
+        
+    if (i)
+    {
+        std::string newStr = fr_str.substr( i );
+        fr_str = newStr;
     }
+        
+    return true;
+}
 
-    return child_p -> getClock();
+bool 
+CStringOp::trimRight ( std::string &fr_str )
+{
+    int i;
+    
+    for ( i = fr_str.length() - 1; 
+          ( i >= 0 && 
+            isspace(fr_str[i]) );
+          --i) {}
+
+    if ( i < (int)fr_str.length() - 1 )
+    {
+        std::string newStr = fr_str.substr( 0, i + 1 );
+        fr_str = newStr;
+    }
+    
+    return true;
+}
+
+bool 
+CStringOp::trim ( std::string &fr_str )
+{
+    bool res1_b;
+    bool res2_b;
+    
+    res1_b = trimLeft  ( fr_str );
+    res2_b = trimRight ( fr_str );
+
+    return res1_b && res2_b;
 }

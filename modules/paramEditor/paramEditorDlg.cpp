@@ -111,11 +111,12 @@ CParameterEditorDlg::CParameterEditorDlg  ( CParameterSet *  f_rootNode_p,
     
     m_qfParamPage_p -> setFrameShape (  QFrame::Panel );
     m_qfParamPage_p -> setFrameShadow ( QFrame::Sunken );
-    
+    scrollArea_p -> resize ( 400, 800);
     m_splitter_p -> addWidget ( m_qtvCategory_p );
     m_splitter_p -> addWidget ( scrollArea_p );
-    QSettings settings;
-    m_splitter_p -> restoreState( settings.value("ParameterSplitter/position").toByteArray() );
+
+    //QSettings settings;
+    //m_splitter_p -> restoreState( settings.value("ParameterSplitter/position").toByteArray() );
 
     /// Tree View Model
     if ( f_rootNode_p )
@@ -127,11 +128,13 @@ CParameterEditorDlg::CParameterEditorDlg  ( CParameterSet *  f_rootNode_p,
     /// Grid layout in the frame.
     new QGridLayout(m_qfParamPage_p);
 
-    //QGridLayout * paramPageLayout_p = new QGridLayout(m_qfParamPage_p);
-    //paramPageLayout_p -> setVerticalSpacing (25);
+    QGridLayout * paramPageLayout_p = new QGridLayout(m_qfParamPage_p);
+    paramPageLayout_p -> setVerticalSpacing (25);
 
     connect ( m_qtvCategory_p, SIGNAL( clicked             ( const QModelIndex & )),
               this,            SLOT  ( reloadParameterPage ( const QModelIndex & )) );
+
+    resize( 600, 600 );
 }
 
 CParameterEditorDlg::~CParameterEditorDlg ()

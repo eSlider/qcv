@@ -43,6 +43,7 @@ CDrawingList::CDrawingList( std::string f_name_str )
           m_fillColor (             255, 255, 255, 0 ),
           m_lineWidth_f (                          1 ),
           m_overlayLevel_i (                       0 ),
+          m_screenSize (                    640, 480 ),
           m_scaleX_d (                            1. ),
           m_scaleY_d (                            1. ),
           m_offsetX_d (                           0. ),

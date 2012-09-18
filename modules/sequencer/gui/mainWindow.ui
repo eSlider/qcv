@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CMainWindowDlg</class>
+ <widget class="QMainWindow" name="CMainWindowDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>281</width>
+    <height>494</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Main Window</string>
+  </property>
+  <widget class="QWidget" name="m_qwCentralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QListView" name="m_qlvWindows">
+      <property name="resizeMode">
+       <enum>QListView::Fixed</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="m_qmMenu">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>281</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="m_windows">
+    <property name="title">
+     <string>&amp;Windows</string>
+    </property>
+    <addaction name="m_qaShowAll"/>
+    <addaction name="m_qaHideAll"/>
+    <addaction name="separator"/>
+    <addaction name="m_qaExit"/>
+   </widget>
+   <widget class="QMenu" name="m_about">
+    <property name="title">
+     <string>&amp;About</string>
+    </property>
+    <addaction name="m_qaAbout"/>
+   </widget>
+   <addaction name="m_windows"/>
+   <addaction name="m_about"/>
+  </widget>
+  <action name="m_qaShowAll">
+   <property name="text">
+    <string>&amp;Show All</string>
+   </property>
+  </action>
+  <action name="m_qaHideAll">
+   <property name="text">
+    <string>&amp;Hide All</string>
+   </property>
+  </action>
+  <action name="m_qaExit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="m_qaAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_qaExit</sender>
+   <signal>activated()</signal>
+   <receiver>CMainWindowDlg</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>140</x>
+     <y>246</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_qaHideAll</sender>
+   <signal>activated()</signal>
+   <receiver>CMainWindowDlg</receiver>
+   <slot>hideAllWindows()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>140</x>
+     <y>246</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_qaShowAll</sender>
+   <signal>activated()</signal>
+   <receiver>CMainWindowDlg</receiver>
+   <slot>showAllWindows()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>140</x>
+     <y>246</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_qaAbout</sender>
+   <signal>activated()</signal>
+   <receiver>CMainWindowDlg</receiver>
+   <slot>about()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>140</x>
+     <y>246</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>showAllWindows()</slot>
+  <slot>hideAllWindows()</slot>
+  <slot>about()</slot>
+ </slots>
+</ui>

@@ -21,50 +21,25 @@
 
 #include "eventHandler.h"
 #include "events.h"
-#include "displayWidget.h"
 
 #include <stdio.h>
 #include <QEvent>
-
-#include "displayWidget.h"
-#include "display.h"
 
 using namespace QCV;
 
 
 CEventHandler::CEventHandler( CDisplayWidget *  f_disp_p, 
                               QObject *         f_parent_p ):
-    QObject (                  f_parent_p ),
-    m_timerId_i (                       0 ),
-    m_dispWidget_p (             f_disp_p ),
-    m_keyEv_p (                      NULL ),
-    m_mousePressedEv_p (             NULL ),
-    m_mouseReleasedEv_p (            NULL ),
-    m_mouseMovedEv_p (               NULL ),
-    m_wheelTurnedEv_p (              NULL ),
-    m_timerEv_p (                    NULL ),
-    m_regionSelectedEv_p (           NULL )
+    CEventHandlerBase ( f_disp_p, f_parent_p ),
+    m_timerId_i (                          0 ),
+    m_keyEv_p (                         NULL ),
+    m_mousePressedEv_p (                NULL ),
+    m_mouseReleasedEv_p (               NULL ),
+    m_mouseMovedEv_p (                  NULL ),
+    m_wheelTurnedEv_p (                 NULL ),
+    m_timerEv_p (                       NULL ),
+    m_regionSelectedEv_p (              NULL )
 {
-    CDisplay *disp_p = m_dispWidget_p -> getDisplay();
-    
-    // Connections Display <-> This
-    QObject::connect( disp_p, SIGNAL(mousePressed ( CMouseEvent *  )), 
-                      this,   SLOT(  mousePressed ( CMouseEvent * )));
-    
-    QObject::connect( disp_p, SIGNAL(mouseReleased ( CMouseEvent * )), 
-                      this,   SLOT(   mouseReleased ( CMouseEvent * )));
-
-    QObject::connect( disp_p, SIGNAL(mouseMoved ( CMouseEvent * )), 
-                      this,   SLOT(  mouseMoved ( CMouseEvent * )));
-
-    QObject::connect( disp_p, SIGNAL(wheelTurned ( CWheelEvent * )), 
-                      this,   SLOT(  wheelTurned ( CWheelEvent * )));
-
-    QObject::connect( disp_p, SIGNAL(keyPressed ( CKeyEvent * )), 
-                      this,   SLOT(  keyPressed ( CKeyEvent * )));
-    
-    QObject::connect( disp_p, SIGNAL(regionSelected ( CRegionSelectedEvent * )), 
-                      this,   SLOT(  regionSelected ( CRegionSelectedEvent * )));
 }
 
 void 

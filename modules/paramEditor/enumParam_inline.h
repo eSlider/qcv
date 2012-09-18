@@ -85,7 +85,7 @@ CEnumParameter<_EnumType>::setValueFromString ( std::string f_val_str )
     double val_d = strtod ( begin_p, &end_p );
     
     if ( end_p != begin_p && 
-         isfinite(val_d) &&
+         std::isfinite(val_d) &&
          !errno )
     {
         m_value_e = (_EnumType)val_d;

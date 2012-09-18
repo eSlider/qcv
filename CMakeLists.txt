@@ -61,9 +61,10 @@ set ( LIBQCV_SRC
      drawingListPreview.cpp
      ellipseList.cpp
      eventHandler.cpp
+     eventHandlerBase.cpp
      helpWidget.cpp
      lineList.cpp
-     mainWindow.cpp
+     simpleWindow.cpp
      node.cpp
      polygonList.cpp
      qrc_symbols.cpp
@@ -99,6 +100,7 @@ set ( LIBQCV_HEADERS
      drawingListPreview.h
      ellipseList.h
      eventHandler.h
+     eventHandlerBase.h
      events.h
      helpWidget.h
      glheader.h
@@ -106,7 +108,7 @@ set ( LIBQCV_HEADERS
      lineList.h
      linePlotter.h
      linePlotter_inline.h
-     mainWindow.h
+     simpleWindow.h
      node.h
      polygonList.h
      rectList.h
@@ -129,8 +131,9 @@ set ( LIBQCV_MOC_HEADERS
      displayWidget.h
      drawingListPreview.h
      eventHandler.h
+     eventHandlerBase.h
      helpWidget.h
-     mainWindow.h
+     simpleWindow.h
      windowListView.h
      windowListItemModel.h
  )

@@ -61,9 +61,9 @@ C3DVectorParameter::~C3DVectorParameter()
 std::string
 C3DVectorParameter::getStringFromValue ( ) const
 {
-    std::string str1 = CStringOp::numToString<double> ( m_value.at(0),  0, std::numeric_limits<float>::digits );
-    std::string str2 = CStringOp::numToString<double> ( m_value.at(1),  0, std::numeric_limits<float>::digits );
-    std::string str3 = CStringOp::numToString<double> ( m_value.at(2),  0, std::numeric_limits<float>::digits );
+    std::string str1 = CStringOp::numToString<double> ( m_value[0],  0, std::numeric_limits<float>::digits );
+    std::string str2 = CStringOp::numToString<double> ( m_value[1],  0, std::numeric_limits<float>::digits );
+    std::string str3 = CStringOp::numToString<double> ( m_value[2],  0, std::numeric_limits<float>::digits );
 
     str1 += ",";
     str1 += str2;
@@ -87,7 +87,7 @@ C3DVectorParameter::setValueFromString ( std::string f_val_str )
     if (fields_i != 3)
         return false;
 
-    m_value.set( x_d, y_d, z_d);
+    m_value = cv::Vec3d( x_d, y_d, z_d);
 
     updateInitialValue();
     return update();

@@ -43,6 +43,7 @@
 
 #include "imageFromFile.h"
 #include "operator.h"
+#include "colorEncoding.h"
 
 /* PROTOTYPES */
 
@@ -57,16 +58,17 @@ namespace QCV
         {
         }
 
-        ADD_PARAM_ACCESS (int,  minDisparity,      MinDisparity );
-        ADD_PARAM_ACCESS (int,  SADWindowSize,     SADWindowSize );
-        ADD_PARAM_ACCESS (int,  preFilterCap,      PreFilterCap );
-        ADD_PARAM_ACCESS (int,  uniquenessRatio,   UniquenessRatio );
-        ADD_PARAM_ACCESS (int,  P1,                P1 );
-        ADD_PARAM_ACCESS (int,  P2,                P2 );
-        ADD_PARAM_ACCESS (int,  speckleWindowSize, SpeckleWindowSize );        
-        ADD_PARAM_ACCESS (int,  speckleRange,      SpeckleRange );
-        ADD_PARAM_ACCESS (int,  disp12MaxDiff,     Disp12MaxDiff );
-        ADD_PARAM_ACCESS (bool, fullDP,            FullDP );
+        ADD_PARAM_ACCESS (int,  numberOfDisparities, NumberOfDisparities );
+        ADD_PARAM_ACCESS (int,  minDisparity,        MinDisparity );
+        ADD_PARAM_ACCESS (int,  SADWindowSize,       SADWindowSize );
+        ADD_PARAM_ACCESS (int,  preFilterCap,        PreFilterCap );
+        ADD_PARAM_ACCESS (int,  uniquenessRatio,     UniquenessRatio );
+        ADD_PARAM_ACCESS (int,  P1,                  P1 );
+        ADD_PARAM_ACCESS (int,  P2,                  P2 );
+        ADD_PARAM_ACCESS (int,  speckleWindowSize,   SpeckleWindowSize );        
+        ADD_PARAM_ACCESS (int,  speckleRange,        SpeckleRange );
+        ADD_PARAM_ACCESS (int,  disp12MaxDiff,       Disp12MaxDiff );
+        ADD_PARAM_ACCESS (bool, fullDP,              FullDP );
     };
 
     class CMyStereoBM: public cv::StereoBM
@@ -76,25 +78,38 @@ namespace QCV
         {
         }
         
-        ADD_PARAM_ACCESS (int,  state->preFilterType,       PreFilterType );
-        ADD_PARAM_ACCESS (int,  state->preFilterSize,       PreFilterSize );
-        ADD_PARAM_ACCESS (int,  state->preFilterCap,        PreFilterCap );
-        ADD_PARAM_ACCESS (int,  state->uniquenessRatio,     UniquenessRatio );
-        ADD_PARAM_ACCESS (int,  state->SADWindowSize,       SADWindowSize );
-        ADD_PARAM_ACCESS (int,  state->textureThreshold,    TextureThreshold );
+        ADD_PARAM_ACCESS (int,  state->numberOfDisparities,  NumberOfDisparities );
+        ADD_PARAM_ACCESS (int,  state->preFilterType,        PreFilterType );
+        ADD_PARAM_ACCESS (int,  state->preFilterSize,        PreFilterSize );
+        ADD_PARAM_ACCESS (int,  state->preFilterCap,         PreFilterCap );
+        ADD_PARAM_ACCESS (int,  state->uniquenessRatio,      UniquenessRatio );
+        ADD_PARAM_ACCESS (int,  state->SADWindowSize,        SADWindowSize );
+        ADD_PARAM_ACCESS (int,  state->textureThreshold,     TextureThreshold );
 
-        ADD_PARAM_ACCESS (int,  state->speckleWindowSize,   SpeckleWindowSize );
-        ADD_PARAM_ACCESS (int,  state->speckleRange,        SpeckleRange );
-        ADD_PARAM_ACCESS (int,  state->trySmallerWindows,   TrySmallerWindows );
+        ADD_PARAM_ACCESS (int,  state->speckleWindowSize,    SpeckleWindowSize );
+        ADD_PARAM_ACCESS (int,  state->speckleRange,         SpeckleRange );
+        ADD_PARAM_ACCESS (int,  state->trySmallerWindows,    TrySmallerWindows );
 
-        ADD_PARAM_ACCESS (int,  state->disp12MaxDiff,       Disp12MaxDiff );
+        ADD_PARAM_ACCESS (int,  state->disp12MaxDiff,        Disp12MaxDiff );
     };
 
     typedef bool TOutputType;
 
     class CStereoOp: public COperator<TInpImgFromFileVector, TOutputType>
     {
-        /// Constructor, Desctructors
+    /// Constructor, Desctructors
+    public:    
+        typedef enum {
+            SA_SGBM,
+            SA_BM
+        } EStereoAlgorithm;            
+
+    /// Parameter access
+    public:    
+        ADD_PARAM_ACCESS (EStereoAlgorithm,  m_alg_e,        StereoAlgorithm );
+
+
+    /// Constructor, Desctructors
     public:    
         
         /// Constructors.
@@ -142,6 +157,10 @@ namespace QCV
         void registerParameters();
 
     private:
+
+        //// Stereo algorithm to use
+        EStereoAlgorithm            m_alg_e;
+        
         ///  SGBM struct
         CMyStereoSGBM               m_sgbm;
         
@@ -156,6 +175,9 @@ namespace QCV
 
         /// Output disparity image
         cv::Mat                     m_dispImg;
+
+        /// Disparity color encoding
+        CColorEncoding              m_dispCE;
     };
 }
 #endif // __OPENCVSTEREOOP_H

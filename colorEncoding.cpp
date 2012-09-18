@@ -110,7 +110,7 @@ CColorEncoding::colorFromValue ( float  f_value_f,
             break;
 
         case CET_RED2GREEN2BLUE:
-            encodeBlue2Green2Red( f_value_f, f_max_f, f_min_f, fr_color, true );
+            encodeBlue2Green2Red( f_value_f, f_min_f, f_max_f, fr_color, true );
             break;
         
         case CET_RED2DARKGREEN:

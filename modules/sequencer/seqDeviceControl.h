@@ -152,9 +152,9 @@ namespace QCV
         
     /// Virtual signals
     signals:
-        virtual void     start();
-        virtual void     cycle();
-        virtual void     reset();
+        void     start();
+        void     cycle();
+        void     reset();
         
 
     /// Protected members

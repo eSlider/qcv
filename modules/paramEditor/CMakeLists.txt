@@ -92,7 +92,8 @@ set ( LIBQCVParamEditor_HEADERS
         boolParam.h
         buttonParamEditor.h
         buttonParam.h
-        colorParamEditor.h
+        ceParameter.h
+	colorParamEditor.h
         colorParam.h
         dbl2DParamEditor.h
         dbl2DParam.h

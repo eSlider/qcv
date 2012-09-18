@@ -123,7 +123,7 @@ void CSimpleWindow::createMenues()
     qmWindows_p -> addAction ( qaExit_p );
     // Connect action to quit slot.
     connect( qaExit_p, SIGNAL(triggered(bool)), m_listView_p, SLOT(saveWindowsGeometry()) );
-    connect( qaExit_p, SIGNAL(triggered(bool)), qApp, SLOT(quit()) );
+    connect( qaExit_p, SIGNAL(triggered(bool)), this, SLOT(close()) );
 
     /// Create About Action
     QAction *qaAbout_p = new QAction ( QIcon(":/symbols/about.png"),
@@ -172,7 +172,7 @@ CSimpleWindow::insertWindow( QWidget * f_widget_p,
 
 void CSimpleWindow::closeEvent ( QCloseEvent *  f_event_p)
 {
-    qApp->quit();
     f_event_p->accept();    
+    qApp->quit();
 }
 

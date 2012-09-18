@@ -411,23 +411,10 @@ void CMainWindow::regionSelected ( CRegionSelectedEvent *  f_event_p )
 
 void CMainWindow::closeEvent ( QCloseEvent *  f_event_p)
 {
-    //printf("Close event was called\n");
     m_rootOp_p -> startClock ( "Exit" );
     m_rootOp_p -> exit();
     m_rootOp_p -> stopClock ( "Exit" );
-    //f_event_p->ignore();
+
     f_event_p->accept();
-
-    /////////////// THIS FUNCTION IS NOT BEING CALLED!!!
-
-#if 0
-    if (maybeSave()) 
-    {
-        writeSettings();
-        event->accept();
-    } else 
-    {
-        event->ignore();
-     }
-#endif
+    qApp->quit();
 }

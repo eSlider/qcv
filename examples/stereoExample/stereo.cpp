@@ -36,6 +36,8 @@
 #include "stereo.h"
 #include "paramMacros.h"
 #include "drawingList.h"
+#include "paramIOFile.h"
+#include "ceParameter.h"
 
 using namespace QCV;
 
@@ -52,8 +54,8 @@ CStereoOp::CStereoOp ( COperatorBase * const f_parent_p )
     registerDrawingLists();
     registerParameters();
 
-    if ( !getParentOp() )
-        addChild ( new CStereoOp ( this ) );    
+    CParamIOFile pio ( "parameters.xml" );
+    getParameterSet()->load ( pio );
 }
 
 
@@ -74,75 +76,99 @@ CStereoOp::registerDrawingLists()
 void
 CStereoOp::registerParameters()
 {
-
-    // ADD_INT_PARAMETER ( "Min Disparity",
-    //                     "",
-    //                     0,
-    //                     &m_sgbm,
-    //                     MinDisparity,
-    //                     CMyStereoSGBM );
-
+    CEnumParameter<EStereoAlgorithm> * algParam_p = static_cast<CEnumParameter<EStereoAlgorithm> * > (
+        ADD_ENUM_PARAMETER( "Algorithm",
+                            "Stereo algorithm to use",
+                            EStereoAlgorithm,
+                            SA_SGBM,
+                            this,
+                            StereoAlgorithm,
+                            CStereoOp ) );
+    
+    algParam_p -> addDescription ( SA_SGBM, "Semi global block matching (SGBM)" );
+    algParam_p -> addDescription ( SA_BM,   "Block matching (BM)" );
+    
 
     BEGIN_PARAMETER_GROUP("SGBM", false, SRgb(220,0,0));
 
-      ADD_INT_PARAMETER ( "Pre Filter Cap",
-                          "",
-                          0, //cv::CV_STEREO_BM_NORMALIZED_RESPONSE,
+      ADD_INT_PARAMETER ( "Number Of Disparities",
+                          "This is maximum disparity minus minimum disparity. Always greater than 0.",
+                          64,
                           &m_sgbm,
-                          PreFilterCap,
+                          NumberOfDisparities,
                           CMyStereoSGBM );
-      
+
       ADD_INT_PARAMETER ( "Window Size",
-                          "",
+                          "The matched block size. Must be an odd number >=1 . Normally, it should be\n"
+                          "somewhere in 3..11 range.",
                           15,
                           &m_sgbm,
                           SADWindowSize,
                           CMyStereoSGBM );
 
       ADD_INT_PARAMETER ( "Uniqueness Ratio",
-                          "",
+                          "The margin in percents by which the best (minimum) computed cost function\n"
+                          "value should \"win\" the second best value to consider the found match\n"
+                          "correct. Normally, some value within 5-15 range is good enough",
                           1,
                           &m_sgbm,
                           UniquenessRatio,
                           CMyStereoSGBM );
 
+      ADD_INT_PARAMETER ( "Disp LR Max Diff",
+                          "Maximum allowed difference (in integer pixel units) in the left-right\n"
+                          "disparity check. Set it to non-positive value to disable the check.",
+                          1,
+                          &m_sgbm,
+                          Disp12MaxDiff,
+                          CMyStereoSGBM );
+
       ADD_INT_PARAMETER ( "P1",
-                          "Cost parameter P1 of SGM",
+                          "Parameters that control disparity smoothness. Cost parameter P1 of SGM",
                           10,
                           &m_sgbm,
                           P1,
                           CMyStereoSGBM );
 
       ADD_INT_PARAMETER ( "P2",
-                          "Cost parameter P2 of SGM",
+                          "Parameters that control disparity smoothness. Cost parameter P2 of SGM",
                           200,
                           &m_sgbm,
                           P2,
                           CMyStereoSGBM );
 
-      ADD_INT_PARAMETER ( "SpeckeWindowSize",
-                          "",
+      ADD_INT_PARAMETER ( "Pre Filter Cap",
+                          "Truncation value for the prefiltered image pixels. The algorithm first\n"
+                          "computes x-derivative at each pixel and clips its value by [-preFilterCap,\n"
+                          "preFilterCap] interval. The result values are passed to the Birchfield-Tomasi\n"
+                          "pixel cost function.",
+                          0,
+                          &m_sgbm,
+                          PreFilterCap,
+                          CMyStereoSGBM );      
+
+      ADD_INT_PARAMETER ( "Specke Window Size",
+                          "Maximum size of smooth disparity regions to consider them noise speckles and\n"
+                          "invdalidate. Set it to 0 to disable speckle filtering. Otherwise, set it\n"
+                          "somewhere in 50-200 range",
                           1,
                           &m_sgbm,
                           SpeckleWindowSize,
                           CMyStereoSGBM );
 
       ADD_INT_PARAMETER ( "Speckle Range",
-                          "",
+                          "Maximum disparity variation within each connected component. If you do speckle\n"
+                          "filtering, set it to some positive value, multiple of 16. Normally, 16 or 32 is\n"
+                          "good enough.",
                           1,
                           &m_sgbm,
                           SpeckleRange,
                           CMyStereoSGBM );
 
-      ADD_INT_PARAMETER ( "Disp 12 Max Diff",
-                          "",
-                          1,
-                          &m_sgbm,
-                          Disp12MaxDiff,
-                          CMyStereoSGBM );
-
       ADD_BOOL_PARAMETER ( "Full DP",
-                           "",
+                           "Set it to true to run full-scale 2-pass dynamic programming algorithm. It will\n"
+                           "consume O(W*H*numDisparities) bytes, which is large for 640x480 stereo and huge\n"
+                           "for HD-size pictures.",
                            false,
                            &m_sgbm,
                            FullDP,
@@ -153,91 +179,108 @@ CStereoOp::registerParameters()
 
     BEGIN_PARAMETER_GROUP("SBM", false, SRgb(220,0,0));
 
-      ADD_INT_PARAMETER ( "preFilterType",
-                          "",
-                          0,
+      ADD_INT_PARAMETER ( "Number Of Disparities",
+                          "This is maximum disparity minus minimum disparity. Always greater than 0.",
+                          64,
                           &m_sbm,
-                          PreFilterType,
+                          NumberOfDisparities,
                           CMyStereoBM );
-    
-      ADD_INT_PARAMETER ( "preFilterSize",
-                          "",
-                          5,
-                          &m_sbm,
-                          PreFilterSize,
-                          CMyStereoBM );
-    
-      ADD_INT_PARAMETER ( "preFilterCap",
-                          "",
+
+      ADD_INT_PARAMETER ( "Disp LR Max Diff",
+                          "The maximum allowed difference between the explicitly computed left-to-right\n"
+                          "disparity map and the implicitly (by ValidateDisparity ) computed right-to-left\n"
+                          "disparity. If for some pixel the difference is larger than the specified threshold,\n"
+                          "the disparity at the pixel is invalidated. Disable it with -1.",
                           1,
                           &m_sbm,
-                          PreFilterCap,
+                          Disp12MaxDiff,
                           CMyStereoBM );
-    
-      // ADD_INT_PARAMETER ( "minDisparity",
-      //                     "",
-      //                     0,
-      //                     &m_sbm,
-      //                     MinDisparity,
-      //                     CMyStereoBM );
-    
-      // ADD_INT_PARAMETER ( "numberOfDisparities",
-      //                     "",
-      //                     DEVVAL,
-      //                     &m_sbm.state->numberOfDisparities,
-      //                     NumberOfDisparities,
-      //                     CMyStereoBM );
-    
-      ADD_INT_PARAMETER ( "textureThreshold",
-                          "",
+
+      ADD_INT_PARAMETER ( "SAD Window Size",
+                         "Could be 5x5..21x21 or higher, but with 21x21 or smaller windows the processing speed\n"
+                          "is much higher.",
+                          5,
+                          &m_sbm,
+                          SADWindowSize,
+                          CMyStereoBM );
+
+      ADD_INT_PARAMETER ( "Texture Threshold",
+                          "The textureness threshold. That is, if the sum of absolute values of x-derivatives\n"
+                          "computed over SADWindowSize by SADWindowSize pixel neighborhood is smaller than the\n"
+                          "parameter, no disparity is computed at the pixel.",
                           1,
                           &m_sbm,
                           TextureThreshold,
                           CMyStereoBM );
     
-      ADD_INT_PARAMETER ( "uniquenessRatio",
-                          "",
+
+      ADD_INT_PARAMETER ( "Uniqueness Ratio",
+                          "The minimum margin in percents between the best (minimum) cost function value and the\n"
+                          "second best value to accept the computed disparity.",
                           1,
                           &m_sbm,
                           UniquenessRatio,
+                          CMyStereoBM );    
+      
+      CEnumParameter<int> * param_p = static_cast<CEnumParameter<int> * > (
+          ADD_ENUM_PARAMETER( "Pre-Filter Type",
+                              "Type of the prefilter. CV_STEREO_BM_XSOBEL recommended",
+                              int,
+                              CV_STEREO_BM_XSOBEL,
+                              &m_sbm,
+                              PreFilterType,
+                              CMyStereoBM ) );
+      
+      param_p -> addDescription ( CV_STEREO_BM_XSOBEL, "CV_STEREO_BM_XSOBEL" );
+      param_p -> addDescription ( CV_STEREO_BM_NORMALIZED_RESPONSE, "CV_STEREO_BM_NORMALIZED_RESPONSE" );      
+
+      ADD_INT_PARAMETER ( "Pre-Filter Size",
+                          "Size corresponding to the filter type. Typical values are in the range 5x5 to 21x21.",
+                          5,
+                          &m_sbm,
+                          PreFilterSize,
                           CMyStereoBM );
     
-      ADD_INT_PARAMETER ( "speckleWindowSize",
-                          "",
+      ADD_INT_PARAMETER ( "Pre-Filter Cap",
+                          "Truncation value for the prefiltered image pixels.",
+                          1,
+                          &m_sbm,
+                          PreFilterCap,
+                          CMyStereoBM );    
+    
+      ADD_INT_PARAMETER ( "Speckle Window Size",
+                          "The maximum area of speckles to remove (set to 0 to disable speckle filtering).",
                           5,
                           &m_sbm,
                           SpeckleWindowSize,
                           CMyStereoBM );
     
-      ADD_INT_PARAMETER ( "speckleRange",
-                          "",
+      ADD_INT_PARAMETER ( "Speckle Range",
+                          "Acceptable range of disparity variation in each connected component.",
                           4,
                           &m_sbm,
                           SpeckleRange,
                           CMyStereoBM );
     
-      ADD_INT_PARAMETER ( "trySmallerWindows",
-                          "",
-                          0,
-                          &m_sbm,
-                          TrySmallerWindows,
-                          CMyStereoBM );
-    
-      ADD_INT_PARAMETER ( "disp12MaxDiff",
-                          "",
-                          1,
-                          &m_sbm,
-                          Disp12MaxDiff,
-                          CMyStereoBM );    
     END_PARAMETER_GROUP;
 
     BEGIN_PARAMETER_GROUP("Display", false, SRgb(220,0,0));
 
-      addDrawingListParameter ( "Disparity Image" );
       addDrawingListParameter ( "Left Image" );
       addDrawingListParameter ( "Right Image" );
 
+      BEGIN_PARAMETER_GROUP("Disparity", false, SRgb(220,0,0));
+
+        addDrawingListParameter ( "Disparity Image" );
+
+        addColorEncodingParameter (  m_dispCE,
+                                     getParameterSet(),
+                                     "Disparity",
+                                     "Color encoding for the disparity image" );
+      END_PARAMETER_GROUP;
+
     END_PARAMETER_GROUP;
+
 
 }
 
@@ -250,7 +293,7 @@ CStereoOp::~CStereoOp ()
 bool
 CStereoOp::cycle()
 {
-    if ( 0 && m_leftImg.size().width  > 0 && 
+    if ( m_leftImg.size().width  > 0 && 
          m_leftImg.size().height > 0 && 
          m_leftImg.size() == m_rightImg.size() )
     {
@@ -258,9 +301,10 @@ CStereoOp::cycle()
 
         int m_scale_i = 1;
         
-        unsigned int numberOfDisparities = ceil(40 / (16.0*m_scale_i)) * 16;
-
+        unsigned int numberOfDisparities = ceil(m_sgbm.numberOfDisparities / (16.0*m_scale_i)) * 16;
         m_sgbm.numberOfDisparities = numberOfDisparities;
+
+        numberOfDisparities = ceil(m_sbm.state->numberOfDisparities / (16.0*m_scale_i)) * 16;
         m_sbm.state->numberOfDisparities = numberOfDisparities;
 
         cv::Size size = m_leftImg.size();
@@ -274,13 +318,30 @@ CStereoOp::cycle()
             cv::resize(m_leftImg, tmpLeft, size);
             cv::resize(m_rightImg, tmpRight, size);
 
-            if (0) 
+            if ( m_alg_e == SA_SGBM ) 
             {
                 m_sgbm(tmpLeft, tmpRight, auxImg);
             }
             else
             {
-                m_sbm(tmpLeft, tmpRight, auxImg);
+                // Transform image to CV_8UC1 if not already in that
+                // format. BM works only with in 8 bit grayscale
+                // images.
+
+                cv::Mat l,r;
+                if ( tmpLeft.type () != CV_8UC1 )
+                    tmpLeft.convertTo ( l, CV_8UC1, 1, 0);
+                else
+                    l = tmpLeft;
+                if ( tmpRight.type () != CV_8UC1 )
+                    tmpRight.convertTo ( r, CV_8UC1, 1, 0);
+                else
+                    r = tmpRight;
+                    
+                 printf("l.type = %i leftimg.type = %i CV_8UC1 = %i\n",
+                       l.type(), m_leftImg.type(), CV_8UC1 );
+                
+               m_sbm(l, r, auxImg);
             }
 
             cv::resize(auxImg, m_dispImg, m_leftImg.size(), cv::INTER_NEAREST );
@@ -288,13 +349,49 @@ CStereoOp::cycle()
         }
         else 
         {
-            if (1) 
+            if ( m_alg_e == SA_SGBM ) 
             {
                 m_sgbm(m_leftImg, m_rightImg, m_dispImg);
             }
             else
-                m_sbm(m_leftImg, m_rightImg, m_dispImg);
+            {
+                // Transform image to CV_8UC1 if not already in that
+                // format. BM works only with in 8 bit grayscale
+                // images.
+
+                cv::Mat l,r;
+
+                if ( m_leftImg.type () != CV_8UC1 )
+                {
+                    IplImage src = (IplImage)m_leftImg;
+                    l = cv::Mat( m_leftImg.size(), CV_8UC1);
+                    IplImage dst = (IplImage)l;
+                    cvCvtColor ( &src, &dst, CV_RGB2GRAY);
+                    //m_leftImg.convertTo ( l, CV_8UC1, 1, 0);
+                }
+                else
+                    l = m_leftImg;
+
+                if ( m_rightImg.type () != CV_8UC1 )
+                {
+                    IplImage src = (IplImage)m_rightImg;
+                    r = cv::Mat( m_leftImg.size(), CV_8UC1);
+                    IplImage dst = (IplImage)r;
+                    cvCvtColor ( &src, &dst, CV_RGB2GRAY);
+                    //m_rightImg.convertTo ( r, CV_8UC1, 1, 0);
+                }
+                else
+                    r = m_rightImg;
+                    
+                printf("l.type = %i leftimg.type = %i CV_8UC1 = %i\n",
+                       l.type(), m_leftImg.type(), (int)CV_8UC1 );
+                
+                cv::imwrite("file.bmp", l);
+                
+                m_sbm(l, r, m_dispImg);
+            }
         }
+        cv::imwrite("dispimg.pgm", m_dispImg );
     }
 
     return COperatorBase::cycle();
@@ -310,16 +407,14 @@ bool CStereoOp::show()
     
     list_p -> clear();    
     list_p->addImage ( m_leftImg, 0, 0 );
-    list_p -> setLineColor ( SRgb ( 255, 255 ,255 ));
-    list_p -> addLine ( 0, 0, 640, 480);
 
     list_p = getDrawingList ( "Right Image");
     list_p -> clear();    
     list_p->addImage ( m_rightImg, 0, 0 );
 
     list_p = getDrawingList ( "Disparity Image");
-    
-    list_p->addImage ( m_dispImg, 0, 0, m_dispImg.size().width, m_dispImg.size().height, 1/90. );
+    list_p -> clear();    
+    list_p->addColorEncImage ( &m_dispImg, m_dispCE, 0, 0, m_dispImg.size().width, m_dispImg.size().height );
 
     return COperatorBase::show();
 }
@@ -339,6 +434,13 @@ bool CStereoOp::reset()
 
 bool CStereoOp::exit()
 {
+    printf("Exit Called\n");
+    
+    CParamIOFile pio;
+    
+    getParameterSet()->save ( pio );
+    pio.save ("parameters.xml");
+
     return COperatorBase::exit();
 }
 

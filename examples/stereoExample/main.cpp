@@ -34,12 +34,12 @@ int main(int f_argc_i, char *f_argv_p[])
     QApplication app (f_argc_i, f_argv_p);
 
     /// Create operator
-    CStereoOp rootOp;
+    CStereoOp *rootOp_p = new CStereoOp();
 
     CSeqDevHDImg device;
     device.loadNewSequence ( "sequence.xml" );
     
-    CDeviceOpBinder<TInpImgFromFileVector, bool> binder ( &rootOp, &device );
+    CDeviceOpBinder<TInpImgFromFileVector, bool> binder ( rootOp_p, &device );
 
     CMainWindow *mwind = new CMainWindow ( &binder );
     

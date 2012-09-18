@@ -1,10 +1,30 @@
+/*
+ * Copyright (C) 2012 Hernan Badino <hernan.badino@gmail.com>
+ *
+ * This file is part of QCV
+ *
+ * QCV is under the terms of the GNU Lesser General Public License
+ * version 3. See the GNU LGPL version 3 for details.
+ * QCV is distributed "AS IS" without ANY WARRANTY, without even the
+ * implied warranty of merchantability or fitness for a particular
+ * purpose. 
+ *
+ * In no event shall the authors or contributors be liable
+ * for any direct, indirect, incidental, special, exemplary, or
+ * consequential damages arising in any way out of the use of this
+ * software.
+ *
+ * By downloading, copying, installing or using the software you agree
+ * to this license. Do not download, install, copy or use the
+ * software, if you do not agree to this license.
+ */
+
 /*@@@**************************************************************************
-* \file  seqDevHDImg
+* \file  seqDevHDImg.cpp
 * \author Hernan Badino
-* \date  Wed Apr 22 15:44:40 GMT 2009
 * \notes 
 *******************************************************************************
-*****             (C) Hernan Badino 2010 - All Rights Reserved            *****
+*****             (C) Hernan Badino 2012 - All Rights Reserved            *****
 ******************************************************************************/
 
 /* INCLUDES */
@@ -413,13 +433,3 @@ CSeqDevHDImg::findFiles ( std::string    f_fullPath_str,
     }    
 }
 
-
-// bool
-// CSeqDevHDImg::makeRandomJump()
-// {
-//     //m_currentFrame_i = ( random() / (float)RAND_MAX ) * m_framesCount_i;
-//     m_currentFrame_i += ( random() / (float)RAND_MAX ) * 500+200;
-//     m_currentFrame_i %= m_framesCount_i;
-//     loadCurrentFrame();
-//     return true;
-// }

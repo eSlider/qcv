@@ -23,13 +23,12 @@
 #define __S2D_H
 
 #include <limits>
-#include "ioObj.h"
 #include <cv.h>
 
 namespace QCV
 {
     template <class Type>
-    class S2D: public CIOObj
+    class S2D
     {
     public:
         /// Constructor.

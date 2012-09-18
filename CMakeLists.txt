@@ -93,6 +93,7 @@ set ( LIBQCV_HEADERS
      displayTreeItemModel.h
      displayTreeNode.h
      displayTreeView.h
+     displayState.h
      displayWidget.h
      drawingElementList.h
      drawingList.h
@@ -104,7 +105,6 @@ set ( LIBQCV_HEADERS
      events.h
      helpWidget.h
      glheader.h
-     ioObj.h
      lineList.h
      linePlotter.h
      linePlotter_inline.h

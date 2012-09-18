@@ -1,10 +1,30 @@
+/*
+ * Copyright (C) 2012 Hernan Badino <hernan.badino@gmail.com>
+ *
+ * This file is part of QCV
+ *
+ * QCV is under the terms of the GNU Lesser General Public License
+ * version 3. See the GNU LGPL version 3 for details.
+ * QCV is distributed "AS IS" without ANY WARRANTY, without even the
+ * implied warranty of merchantability or fitness for a particular
+ * purpose. 
+ *
+ * In no event shall the authors or contributors be liable
+ * for any direct, indirect, incidental, special, exemplary, or
+ * consequential damages arising in any way out of the use of this
+ * software.
+ *
+ * By downloading, copying, installing or using the software you agree
+ * to this license. Do not download, install, copy or use the
+ * software, if you do not agree to this license.
+ */
+
 /*@@@**************************************************************************
- * \file  seqControler
+ * \file   seqControler.cpp
  * \author Hernan Badino
- * \date  Wed Mar  4 15:39:49 Local time zone must be set--see zic manual page 2009
  * \notes 
  *******************************************************************************
- *****             (C) Hernan Badino 2010 - All Rights Reserved            *****
+ *****             (C) Hernan Badino 2012 - All Rights Reserved            *****
  ******************************************************************************/
 
 /* INCLUDES */
@@ -275,12 +295,3 @@ void CSeqControler::skipFramesChanged( int f_skip_i )
 {
     m_deviceCtrl_p -> setFrameSkip ( f_skip_i );
 }
-
-
-
-/* ////////////  Version History ///////////////
- *  $Log: seqControler.cpp,v $
- *  Revision 1.2  2009/11/18 15:50:15  badino
- *  badino: global changes.
- *
- *//////////////////////////////////////////////

@@ -1,9 +1,30 @@
+/*
+ * Copyright (C) 2012 Hernan Badino <hernan.badino@gmail.com>
+ *
+ * This file is part of QCV
+ *
+ * QCV is under the terms of the GNU Lesser General Public License
+ * version 3. See the GNU LGPL version 3 for details.
+ * QCV is distributed "AS IS" without ANY WARRANTY, without even the
+ * implied warranty of merchantability or fitness for a particular
+ * purpose. 
+ *
+ * In no event shall the authors or contributors be liable
+ * for any direct, indirect, incidental, special, exemplary, or
+ * consequential damages arising in any way out of the use of this
+ * software.
+ *
+ * By downloading, copying, installing or using the software you agree
+ * to this license. Do not download, install, copy or use the
+ * software, if you do not agree to this license.
+ */
+
 /*@@@**************************************************************************
-* \file  mainWindow
+* \file   seqControlDlg.cpp
 * \author Hernan Badino
 * \notes 
 *******************************************************************************
-*****             (C) Hernan Badino 2010 - All Rights Reserved            *****
+*****             (C) Hernan Badino 2012 - All Rights Reserved            *****
 ******************************************************************************/
 
 /* INCLUDES */
@@ -22,7 +43,6 @@ CSeqControlDlg::CSeqControlDlg(QWidget *f_parent_p /* = 0 */ )
           m_positionMode_e (         IPM_FIRST_FRAME ),
           m_actionMode_e (               AM_DISABLED ),
           m_deviceType_e (          DT_BIDIRECTIONAL )
-//          m_jumpCount_i (                         -1 )
 {
     setupUi(this); // this sets up GUI
 
@@ -66,22 +86,6 @@ void CSeqControlDlg::setCurrentFrame( const int f_currentFrame_i )
     if (f_currentFrame_i == m_sbPauseAt_p -> value())
         m_qpbPause_p->click();
     
-    if ( m_currentFrame_i != m_prevFrame_i )
-    {
-        // if ( m_sbRandomEvery_p -> value() == 0 )
-        //     m_jumpCount_i = -1;
-        // else
-        // {
-        //     /*
-        //     if ( (m_jumpCount_i % m_sbRandomEvery_p -> value()) == 0 )
-        //     {
-        //         emit randomJump();
-        //         m_jumpCount_i = 0;
-        //     }
-        //     ++m_jumpCount_i;
-        //     */
-        // }
-    }
     m_prevFrame_i = m_currentFrame_i;
 }
 
@@ -191,9 +195,6 @@ void CSeqControlDlg::updateLabel()
     {
         qsText = QString::number(m_currentFrame_i);
     }
-
-    //if (m_jumpCount_i >= 0 )
-    //    qsText += QString(" (") + QString::number(m_sbRandomEvery_p -> value()-m_jumpCount_i) + QString(" to jump)");
 
     m_qlStatus_p -> setText( qsText );
 }

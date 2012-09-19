@@ -67,15 +67,15 @@ CHelpWidget::CHelpWidget( QWidget * f_parent_p ):
 
     tab_p = new QTextEdit(NULL);
     tab_p->setReadOnly(true);
-    insertTab(0, tab_p, "Help");
-    tab_p->setHtml(m_helpString);
+    insertTab(0, tab_p, "&Keyboard and Mouse");
+    tab_p->setHtml(m_keyboardString);
 
     height_i = tab_p->height();
 
     tab_p = new QTextEdit(NULL);
     tab_p->setReadOnly(true);
-    insertTab(1, tab_p, "&Keyboard and Mouse");
-    tab_p->setHtml(m_keyboardString);
+    insertTab(1, tab_p, "Help");
+    tab_p->setHtml(m_helpString);
 
     if ((tab_p->height() > height_i ))
         height_i = tab_p->height();
@@ -123,8 +123,9 @@ CHelpWidget::setStrings()
     m_keyboardString += addHelpLine("G",               "Start or stop grabbing display updates. Filename format is grabbedDisplayWidgetImg_%05i.png at the current directory.");
     m_keyboardString += addHelpLine("Ctrl-G",          "Grab all display repaints. It can be deactivated by pressing key G.");
     m_keyboardString += addHelpLine("Ctrl-Alt-G",      "Grab display at regular time interval. Images will be saved after pressing G again. When saving the images, the key Esc can be pressed to cancel saving images.");
-    m_keyboardString += addHelpLine("F",               "Change to full screen mode.")
-;
+    m_keyboardString += addHelpLine("F",               "Change to full screen mode.");
+    m_keyboardString += addHelpLine("&#62;",               "Zoom-in.");
+    m_keyboardString += addHelpLine("&#60;",               "Zoom-out.");
     m_keyboardString += addHelpLine("F1:F35",          "Zoom a particular screen. The function value number corresponds to the nth screen in the array order. Example: on a 4-column-3-row screen, F6 corresponds to screen column 2, row 1..");
     m_keyboardString += addHelpLine("Ctrl-F1:F35",     "Move the current zoomed area to a different screen.");
     m_keyboardString += addHelpLine("Alt-Left",        "Unconstrained motion of the current zoomed area to the screen to the left.");
@@ -137,6 +138,15 @@ CHelpWidget::setStrings()
     m_keyboardString += addHelpLine("Shift-Wheel",     "Fine zoom in/out.");
 
     m_keyboardString += addHelpLine("Ctrl-Mouse Move", "Moved zoomed display.");
+
+    m_keyboardString += "<tr bgcolor=\"#aaccaa\"><th align=\"center\">Sequencer</th><th align=\"center\">Description</th></tr>\n" ;
+
+    m_keyboardString += addHelpLine("Space or P",      "Play/Pause.");
+    m_keyboardString += addHelpLine("R",               "Reload current frame.");
+    m_keyboardString += addHelpLine("S",               "Stop and go to first frame.");
+    m_keyboardString += addHelpLine("Left",            "Previous frame.");
+    m_keyboardString += addHelpLine("Right",           "Next frame.");
+
 
     m_keyboardString += footer_str;    
 }

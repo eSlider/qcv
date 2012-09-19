@@ -44,13 +44,16 @@ using namespace QCV;
 /// Constructors.
 CStereoOp::CStereoOp ( COperatorBase * const f_parent_p )
     : COperator<TInpImgFromFileVector, TOutputType>
-      (               f_parent_p, "OpenCV Stereo" ),
-      m_sgbm (                                    ),
-      m_sbm (                                     ),
-      m_leftImg (                                 ),
-      m_rightImg (                                ),
-      m_dispImg (                                 ),
-      m_scale_i (                               1 )
+      (                  f_parent_p, "OpenCV Stereo" ),
+      m_alg_e (                                SA_BM ),
+      m_sgbm (                                       ),
+      m_sbm (                                        ),
+      m_leftImg (                                    ),
+      m_rightImg (                                   ),
+      m_dispImg (                                    ),
+      m_dispCE (   CColorEncoding::CET_BLUE2GREEN2RED,
+                               S2D<float> ( 0, 400 ) ),
+      m_scale_i (                                  2 )
 {
     registerDrawingLists();
     registerParameters();
@@ -69,10 +72,10 @@ CStereoOp::registerDrawingLists()
                          S2D<int> (1, 0),
                          true);
     registerDrawingList ("Colored Disparity Image",
-                         S2D<int> (0, 1),
-                         true);
-    registerDrawingList ("B/W Disparity Image",
                          S2D<int> (1, 1),
+                         false);
+    registerDrawingList ("B/W Disparity Image",
+                         S2D<int> (0, 1),
                          true);
 }
 
@@ -83,7 +86,7 @@ CStereoOp::registerParameters()
         ADD_ENUM_PARAMETER( "Algorithm",
                             "Stereo algorithm to use",
                             EStereoAlgorithm,
-                            SA_SGBM,
+                            m_alg_e,
                             this,
                             StereoAlgorithm,
                             CStereoOp ) );
@@ -94,7 +97,7 @@ CStereoOp::registerParameters()
 
     ADD_INT_PARAMETER ( "Downscale factor",
                         "Downscale factor for left and right images",
-                        1,
+                        m_scale_i,
                         this,
                         Downscale,
                         CStereoOp );
@@ -111,7 +114,7 @@ CStereoOp::registerParameters()
       ADD_INT_PARAMETER ( "Window Size",
                           "The matched block size. Must be an odd number >=1 . Normally, it should be\n"
                           "somewhere in 3..11 range.",
-                          15,
+                          9,
                           &m_sgbm,
                           SADWindowSize,
                           CMyStereoSGBM );
@@ -120,7 +123,7 @@ CStereoOp::registerParameters()
                           "The margin in percents by which the best (minimum) computed cost function\n"
                           "value should \"win\" the second best value to consider the found match\n"
                           "correct. Normally, some value within 5-15 range is good enough",
-                          1,
+                          5,
                           &m_sgbm,
                           UniquenessRatio,
                           CMyStereoSGBM );
@@ -135,14 +138,14 @@ CStereoOp::registerParameters()
 
       ADD_INT_PARAMETER ( "P1",
                           "Parameters that control disparity smoothness. Cost parameter P1 of SGM",
-                          10,
+                          100,
                           &m_sgbm,
                           P1,
                           CMyStereoSGBM );
 
       ADD_INT_PARAMETER ( "P2",
                           "Parameters that control disparity smoothness. Cost parameter P2 of SGM",
-                          200,
+                          1000,
                           &m_sgbm,
                           P2,
                           CMyStereoSGBM );
@@ -161,7 +164,7 @@ CStereoOp::registerParameters()
                           "Maximum size of smooth disparity regions to consider them noise speckles and\n"
                           "invdalidate. Set it to 0 to disable speckle filtering. Otherwise, set it\n"
                           "somewhere in 50-200 range",
-                          1,
+                          0,
                           &m_sgbm,
                           SpeckleWindowSize,
                           CMyStereoSGBM );
@@ -209,7 +212,7 @@ CStereoOp::registerParameters()
       ADD_INT_PARAMETER ( "SAD Window Size",
                          "Could be 5x5..21x21 or higher, but with 21x21 or smaller windows the processing speed\n"
                           "is much higher.",
-                          5,
+                          9,
                           &m_sbm,
                           SADWindowSize,
                           CMyStereoBM );
@@ -227,7 +230,7 @@ CStereoOp::registerParameters()
       ADD_INT_PARAMETER ( "Uniqueness Ratio",
                           "The minimum margin in percents between the best (minimum) cost function value and the\n"
                           "second best value to accept the computed disparity.",
-                          1,
+                          5,
                           &m_sbm,
                           UniquenessRatio,
                           CMyStereoBM );    
@@ -260,7 +263,7 @@ CStereoOp::registerParameters()
     
       ADD_INT_PARAMETER ( "Speckle Window Size",
                           "The maximum area of speckles to remove (set to 0 to disable speckle filtering).",
-                          5,
+                          9,
                           &m_sbm,
                           SpeckleWindowSize,
                           CMyStereoBM );

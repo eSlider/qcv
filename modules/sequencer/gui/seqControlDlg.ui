@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>214</height>
+    <width>640</width>
+    <height>211</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../res/symbols.qrc">
+   <iconset resource="../../../res/symbols.qrc">
     <normaloff>:/symbols/player_volume.png</normaloff>:/symbols/player_volume.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <widget class="QFrame" name="m_qfControlFrame_p">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -57,7 +57,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/000005-black-white-pearl-icon-media-a-media25-arrows-skip-back.png</normaloff>:/symbols/000005-black-white-pearl-icon-media-a-media25-arrows-skip-back.png</iconset>
         </property>
         <property name="iconSize">
@@ -92,7 +92,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/000011-black-white-pearl-icon-media-a-media292-minus3.png</normaloff>:/symbols/000011-black-white-pearl-icon-media-a-media292-minus3.png</iconset>
         </property>
         <property name="iconSize">
@@ -127,7 +127,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/000001-black-white-pearl-icon-media-a-media21-arrow-back.png</normaloff>:/symbols/000001-black-white-pearl-icon-media-a-media21-arrow-back.png</iconset>
         </property>
         <property name="iconSize">
@@ -162,7 +162,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/000008-black-white-pearl-icon-media-a-media28-stop.png</normaloff>:/symbols/000008-black-white-pearl-icon-media-a-media28-stop.png</iconset>
         </property>
         <property name="iconSize">
@@ -197,7 +197,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/000007-black-white-pearl-icon-media-a-media27-pause-sign.png</normaloff>:/symbols/000007-black-white-pearl-icon-media-a-media27-pause-sign.png</iconset>
         </property>
         <property name="iconSize">
@@ -232,7 +232,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/000002-black-white-pearl-icon-media-a-media22-arrow-forward1.png</normaloff>:/symbols/000002-black-white-pearl-icon-media-a-media22-arrow-forward1.png</iconset>
         </property>
         <property name="iconSize">
@@ -267,7 +267,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/000010-black-white-pearl-icon-media-a-media291-volume1.png</normaloff>:/symbols/000010-black-white-pearl-icon-media-a-media291-volume1.png</iconset>
         </property>
         <property name="iconSize">
@@ -302,7 +302,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/000006-black-white-pearl-icon-media-a-media26-arrows-skip-forward.png</normaloff>:/symbols/000006-black-white-pearl-icon-media-a-media26-arrows-skip-forward.png</iconset>
         </property>
         <property name="iconSize">
@@ -353,7 +353,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../res/symbols.qrc">
+         <iconset resource="../../../res/symbols.qrc">
           <normaloff>:/symbols/004620-black-white-pearl-icon-arrows-arrow-redo.png</normaloff>:/symbols/004620-black-white-pearl-icon-arrows-arrow-redo.png</iconset>
         </property>
         <property name="iconSize">
@@ -367,14 +367,14 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QSlider" name="m_qsPosition_p">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item>
+   <item row="2" column="0">
     <widget class="QLabel" name="m_qlStatus_p">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -399,7 +399,7 @@
      </property>
     </widget>
    </item>
-   <item>
+   <item row="3" column="0">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -407,7 +407,7 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QCheckBox" name="m_cbLoopMode_p">
         <property name="text">
@@ -416,13 +416,13 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <spacer name="horizontalSpacer_2">
+       <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>71</width>
+          <width>70</width>
           <height>20</height>
          </size>
         </property>
@@ -439,58 +439,26 @@
        <widget class="QSpinBox" name="m_sbSkip_p"/>
       </item>
       <item row="0" column="4">
-       <spacer name="horizontalSpacer_3">
+       <spacer name="horizontalSpacer_4">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>70</width>
+          <width>372</width>
           <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
-      <item row="0" column="5" colspan="2">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Jump Random Every</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="7">
-       <widget class="QSpinBox" name="m_sbRandomEvery_p">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>91</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>91</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="maximum">
-         <number>999999</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
+      <item row="0" column="5">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Make Pause at</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1" colspan="2">
+      <item row="0" column="6">
        <widget class="QSpinBox" name="m_sbPauseAt_p">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -515,20 +483,20 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="3" colspan="3">
-       <spacer name="horizontalSpacer_4">
+      <item row="0" column="7">
+       <spacer name="horizontalSpacer_5">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>372</width>
+          <width>17</width>
           <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
-      <item row="1" column="6" colspan="2">
+      <item row="0" column="8">
        <widget class="QCheckBox" name="m_cbExit_p">
         <property name="text">
          <string>Exit on Last Frame</string>
@@ -544,7 +512,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../res/symbols.qrc"/>
+  <include location="../../../res/symbols.qrc"/>
  </resources>
  <connections/>
 </ui>

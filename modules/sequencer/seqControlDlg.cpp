@@ -242,6 +242,9 @@ void CSeqControlDlg::updateMode ()
     }
     else if ( m_positionMode_e == IPM_FIRST_FRAME )
     {
+        if (m_actionMode_e == AM_PLAY_BACKWARD && !m_cbLoopMode_p -> isChecked())
+            m_actionMode_e = AM_PAUSE;
+
         m_qpbStop_p     -> setEnabled ( true );
         m_qpbPause_p    -> setEnabled ( m_actionMode_e == AM_PLAY ||
                                         m_actionMode_e == AM_PLAY_BACKWARD );
@@ -271,11 +274,14 @@ void CSeqControlDlg::updateMode ()
     }
     else if ( m_positionMode_e == IPM_LAST_FRAME )
     {
+        if (m_actionMode_e == AM_PLAY && !m_cbLoopMode_p -> isChecked())
+            m_actionMode_e = AM_PAUSE;
+
         m_qpbStop_p     -> setEnabled ( true );
         m_qpbPause_p    -> setEnabled ( m_actionMode_e == AM_PLAY ||
                                         m_actionMode_e == AM_PLAY_BACKWARD );
 
-        m_qpbPlay_p     -> setEnabled ( m_actionMode_e != AM_PLAY );
+        m_qpbPlay_p     -> setEnabled ( m_actionMode_e == AM_PLAY );
         m_qpbNext_p     -> setEnabled ( false );
         m_qpbEnd_p      -> setEnabled ( false );
 

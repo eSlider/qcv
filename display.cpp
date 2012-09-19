@@ -208,9 +208,7 @@ CDisplay::renderGL ()
     //setActiveWindow();
     //raise();
     if (0)
-    {
-        
-        
+    {        
         QPixmap pixmap = QGLWidget::renderPixmap(0, 0, true);
         QImage fullImage = pixmap.toImage();
         QImage saveImage;
@@ -226,6 +224,18 @@ CDisplay::renderGL ()
     }
     else
     {
+        
+        /// Must reset all PixelTransferf methods to default value
+        /// otherwise th rendering is very slow.
+        glPixelTransferf ( GL_RED_SCALE,   1. );
+        glPixelTransferf ( GL_RED_BIAS,    0. );
+        glPixelTransferf ( GL_GREEN_SCALE, 1.);
+        glPixelTransferf ( GL_GREEN_BIAS,  0.);
+        glPixelTransferf ( GL_BLUE_SCALE,  1.);
+        glPixelTransferf ( GL_BLUE_BIAS,   0.);
+
+        glPixelStorei ( GL_UNPACK_ALIGNMENT, 8);
+        
         int offset_i = 0;
         cv::Size size ( width(), height() );
 
@@ -236,27 +246,32 @@ CDisplay::renderGL ()
         }
         
         if ( m_snapshot.size() != size )
+
         {
             m_snapshot.create(size, CV_8UC3);
             m_aux.create(size, CV_8UC3);
+
         }
 
+        // printf("allocate array and read pixels into it.\n")
         // allocate array and read pixels into it.
+
         glReadPixels(offset_i, 0, size.width, size.height, GL_RGB, GL_UNSIGNED_BYTE, m_aux.data);
         
+        /// printf("Flip image vertically.\n")
         /// Flip image vertically.
         for (int i =0; i < size.height; ++i)
+
         {
-            memcpy( &m_snapshot.at<SRgb>(i,0), 
+            memcpy( &m_snapshot.at<SRgb>(i,0),
                     &m_aux.at<SRgb>(size.height-i-1,0),
                     sizeof(SRgb) * size.width);
+
         }
 
         QImage img( (unsigned char *)m_snapshot.data, size.width, size.height, QImage::Format_RGB888);
-        return img.copy();        
+        return img.copy();
     }
-    
-
 }
 
 void CDisplay::mousePressEvent( QMouseEvent * f_event_p )

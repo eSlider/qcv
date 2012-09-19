@@ -377,7 +377,7 @@ void CDisplayWidget::grabFrameAndStoreInBuffer()
 
         if (!saveImage_p)
         {
-            /// Buffer full? 
+            /// Buffer full?  
             stopGrabbingAndSaveImgs();
             return;
         }
@@ -481,6 +481,7 @@ CDisplayWidget::keyPressed ( CKeyEvent * f_keyEvent_p )
                                                       &ok_b );
                     if (ok_b)
                     {
+                        printf("Starting timer with %i ms\n", ms_i);
                         m_grabTimerId_i = startTimer ( ms_i );
                         m_grabbing_i = 3;
                     }                
@@ -514,6 +515,8 @@ CDisplayWidget::keyPressed ( CKeyEvent * f_keyEvent_p )
 
 void CDisplayWidget::timerEvent ( QTimerEvent * f_event_p )
 {
+    printf("Timer Event with id = %i bufferId = %i\n", f_event_p->timerId(), m_grabTimerId_i);
+    
     if ( f_event_p->timerId() == m_grabTimerId_i )
     {    
         if ( m_grabbing_i == 3 )
@@ -549,6 +552,7 @@ void CDisplayWidget::timerEvent ( QTimerEvent * f_event_p )
             m_imgBuffer_v.pop_back();
         }
     }   
+    printf("finished\n");
 }
 
 

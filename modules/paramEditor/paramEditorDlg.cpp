@@ -126,7 +126,7 @@ CParameterEditorDlg::CParameterEditorDlg  ( CParameterSet *  f_rootNode_p,
     }
 
     /// Grid layout in the frame.
-    new QGridLayout(m_qfParamPage_p);
+    //new QGridLayout(m_qfParamPage_p);
 
     QGridLayout * paramPageLayout_p = new QGridLayout(m_qfParamPage_p);
     paramPageLayout_p -> setVerticalSpacing (25);

@@ -187,7 +187,7 @@ namespace QCV
         void           addDrawingListParameter ( std::string f_id_str, 
                                                  std::string f_comment_str = "" );
         
-        bool           setScreenSize ( S2D<unsigned int> f_size );
+        bool              setScreenSize ( S2D<unsigned int> f_size );
         S2D<unsigned int> getScreenSize (  ) const;
 
         /// Get a drawing list to draw something.

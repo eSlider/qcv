@@ -47,7 +47,7 @@ set ( LIBQCVSequencer_SRC
 )
 
 set ( LIBQCVSequencer_HEADERS 
-     deviceOpBinder.h
+     deviceOpConnector.h
      imageFromFile.h
      mainWindow.h
      operatorBase.h

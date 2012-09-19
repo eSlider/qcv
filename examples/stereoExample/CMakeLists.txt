@@ -43,7 +43,7 @@ include(${QT_USE_FILE})
 
 set ( LIBCHECKSTEREOPAIR_SRC
                 main.cpp
-                stereo.cpp )
+                stereo.cpp imgScaler.cpp)
 
 ##########################
 

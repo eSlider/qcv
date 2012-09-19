@@ -28,6 +28,7 @@
 namespace QCV
 {
 
+    static
     CEnumParameter<CColorEncoding::EColorEncodingType_t> *
     createEnumParameter ( CColorEncoding        &f_ce,
                           std::string            f_name_str,
@@ -61,6 +62,7 @@ namespace QCV
         return param_p;
     } 
 
+    static
     bool
     addColorEncodingParameter ( CColorEncoding        &f_ce,
                                 CParameterSet *        fr_paramSet_p,

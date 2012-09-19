@@ -113,7 +113,8 @@ namespace QCV
     public:    
         
         /// Constructors.
-        CStereoOp ( COperatorBase * const f_parent_p = NULL );
+        CStereoOp ( COperatorBase * const f_parent_p = NULL,
+                    const std::string     f_name_str = "OpenCV Stereo" );
         
         /// Virtual destructor.
         virtual ~CStereoOp ();

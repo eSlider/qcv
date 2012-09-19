@@ -39,12 +39,15 @@
 #include "paramIOFile.h"
 #include "ceParameter.h"
 
+#include "imgScaler.h"
+
 using namespace QCV;
 
 /// Constructors.
-CStereoOp::CStereoOp ( COperatorBase * const f_parent_p )
+CStereoOp::CStereoOp ( COperatorBase * const f_parent_p,
+                       const std::string     f_name_str )
     : COperator<TInpImgFromFileVector, TOutputType>
-      (                  f_parent_p, "OpenCV Stereo" ),
+      (                       f_parent_p, f_name_str ),
       m_alg_e (                                SA_BM ),
       m_sgbm (                                       ),
       m_sbm (                                        ),
@@ -57,9 +60,6 @@ CStereoOp::CStereoOp ( COperatorBase * const f_parent_p )
 {
     registerDrawingLists();
     registerParameters();
-
-    CParamIOFile pio ( "parameters.xml" );
-    getParameterSet()->load ( pio );
 }
 
 void
@@ -414,7 +414,10 @@ CStereoOp::cycle()
 bool CStereoOp::show()
 {
     CDrawingList *list_p  = getDrawingList ( "Left Image");
-    setScreenSize ( m_leftImg.size() );    
+    
+    /// Set the screen size if thei is the parent operator.
+    if ( getParentOp() == NULL )
+        setScreenSize ( m_leftImg.size() );    
 
     list_p -> clear();    
     list_p->addImage ( m_leftImg );
@@ -449,19 +452,12 @@ bool CStereoOp::reset()
 
 bool CStereoOp::exit()
 {
-    CParamIOFile pio;
-    
-    printf("Saving parameters to \"parameters.xml\"\n");    
-    getParameterSet()->save ( pio );
-    pio.save ("parameters.xml");
-
     return COperatorBase::exit();
 }
 
 void 
 CStereoOp::keyPressed ( CKeyEvent * f_event_p )
 {
-    show();
     return COperatorBase::keyPressed ( f_event_p );    
 }
 
@@ -477,6 +473,7 @@ CStereoOp::setInput  ( const TInpImgFromFileVector & f_input_v )
 
     m_leftImg  = f_input_v[0].image;
     m_rightImg = f_input_v[1].image;
+    return true;
 }
 
 /// Gets the output of this operator
@@ -484,5 +481,6 @@ bool
 CStereoOp::getOutput ( TOutputType & f_output ) const
 {
     f_output = m_dispImg;
+    return true;
 }
 

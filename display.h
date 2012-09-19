@@ -66,6 +66,12 @@ namespace QCV
                               const bool         f_update_b = true );
         
         bool   setScreenCount ( S2D<unsigned int> count );
+        S2D<unsigned int>
+               getScreenCount (  ) const
+        {
+            return m_screenCount;
+        }
+        
         
         QImage renderGL ();
 

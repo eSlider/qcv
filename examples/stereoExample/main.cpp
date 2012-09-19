@@ -24,29 +24,46 @@
 
 #include "stereo.h"
 #include "mainWindow.h"
-#include "deviceOpBinder.h"
+#include "deviceOpConnector.h"
 #include "seqDevHDImg.h"
+#include "paramIOFile.h"
 
 using namespace QCV;
 
 int main(int f_argc_i, char *f_argv_p[])
 {
+    /// Create app
     QApplication app (f_argc_i, f_argv_p);
 
-    /// Create operator
-    CStereoOp *rootOp_p = new CStereoOp();
+    /// Create root operator
+    CStereoOp *rootOp_p = new CStereoOp( );
 
+    /// Load parameters from parameters.xml file 
+    CParamIOFile pio ( "parameters.xml" );
+    rootOp_p->getParameterSet() -> load ( pio );
+
+    /// Create hard disk device
     CSeqDevHDImg device;
     device.loadNewSequence ( "sequence.xml" );
-    
-    CDeviceOpBinder<TInpImgFromFileVector, cv::Mat> binder ( rootOp_p, &device );
 
-    CMainWindow *mwind = new CMainWindow ( &binder );
+    /// Let's connect the device to the root operator
+    CDeviceOpConnector<TInpImgFromFileVector, cv::Mat> connector ( rootOp_p, &device );
+
+    /// Create the main window passing the connector. 2x2 default screen count.
+    CMainWindow *mwind = new CMainWindow ( &connector, 2, 2 );
     
+    /// Show main window
     mwind->show();
 
+    /// Execute Qt app.
     int retval_i = app.exec();
 
+    /// Save parameters
+    rootOp_p->getParameterSet() -> save ( pio );
+    pio.save ("parameters.xml");
+
+    delete mwind;
+    
     return retval_i;
 }
 

@@ -19,15 +19,15 @@
  * software, if you do not agree to this license.
  */
 
-#ifndef __DEVICEOPBINDER_H
-#define __DEVICEOPBINDER_H
+#ifndef __DEVICEOPCONNECTOR_H
+#define __DEVICEOPCONNECTOR_H
 
 /**
  *******************************************************************************
  *
- * @file deviceopbinder.h
+ * @file deviceopconnector.h
  *
- * \class CDeviceOpBinder
+ * \class CDeviceOpConnector
  * \author Hernan Badino (hernan.badino@gmail.com)
  *
  * \brief
@@ -46,11 +46,11 @@
 namespace QCV
 {
 /* NAMESPACE PROTOTYPES */    
-    class CDeviceOpBinderBase
+    class CDeviceOpConnectorBase
     {
     public:
-        CDeviceOpBinderBase ( ) {};
-        virtual ~CDeviceOpBinderBase() {};
+        CDeviceOpConnectorBase ( ) {};
+        virtual ~CDeviceOpConnectorBase() {};
 
     /// Set I/O
     public:
@@ -66,16 +66,16 @@ namespace QCV
 
         
     template <class _InType, class _OutType>
-    class CDeviceOpBinder: public CDeviceOpBinderBase
+    class CDeviceOpConnector: public CDeviceOpConnectorBase
     {
     public:
                 
     public:
         
-        CDeviceOpBinder ( COperator<_InType, _OutType> * f_rootOp_p,
+        CDeviceOpConnector ( COperator<_InType, _OutType> * f_rootOp_p,
                           CSeqDeviceControl<_InType> *   f_deviceOp_p );
 
-        virtual ~CDeviceOpBinder() {};
+        virtual ~CDeviceOpConnector() {};
         
     /// Set I/O
     public:
@@ -107,7 +107,7 @@ namespace QCV
     };
 
     template <class _InType, class _OutType>
-    CDeviceOpBinder<_InType, _OutType>::CDeviceOpBinder ( COperator<_InType, _OutType> * f_rootOp_p,
+    CDeviceOpConnector<_InType, _OutType>::CDeviceOpConnector ( COperator<_InType, _OutType> * f_rootOp_p,
                                                           CSeqDeviceControl<_InType> *   f_device_p ) :
         m_device_p  (          f_device_p ),
         m_rootOp_p  (          f_rootOp_p )
@@ -115,7 +115,7 @@ namespace QCV
     }
 
     template <class _InType, class _OutType>
-    bool CDeviceOpBinder<_InType, _OutType>::setOperatorInput ( )
+    bool CDeviceOpConnector<_InType, _OutType>::setOperatorInput ( )
     {
         bool success_b = m_device_p -> registerOutputs ( m_input );
         
@@ -127,4 +127,4 @@ namespace QCV
     
 }
 
-#endif // __DEVICEOPBINDER_H
+#endif // __DEVICEOPCONNECTOR_H

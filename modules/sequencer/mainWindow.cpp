@@ -30,8 +30,10 @@
 /* CONSTANT */ 
 
 /* INCLUDES */
+#include <QSettings>
+
 #include "mainWindow.h"
-#include "deviceOpBinder.h"
+#include "deviceOpConnector.h"
 
 #include "events.h"
 #include "seqControlDlg.h"
@@ -46,9 +48,11 @@
 //#include "displayTreeNode.h"
 //#include "clockTreeNode.h"
 
-CMainWindow::CMainWindow ( CDeviceOpBinderBase * f_binder_p )
+CMainWindow::CMainWindow ( CDeviceOpConnectorBase * f_connector_p,
+                           int                      f_sx_i, 
+                           int                      f_sy_i )
     : CSimpleWindow (               ),
-      m_binder_p (       f_binder_p ),
+      m_connector_p (       f_connector_p ),
       m_device_p (             NULL ),
       m_rootOp_p (             NULL ),
       m_controler_p (          NULL ),
@@ -58,9 +62,9 @@ CMainWindow::CMainWindow ( CDeviceOpBinderBase * f_binder_p )
 {
     //QStringList list = QCoreApplication::arguments ();
     
-    assert( f_binder_p );
-    m_device_p = f_binder_p -> getDeviceCtrl();
-    m_rootOp_p = f_binder_p -> getRootOperator();
+    assert( f_connector_p );
+    m_device_p = f_connector_p -> getDeviceCtrl();
+    m_rootOp_p = f_connector_p -> getRootOperator();
 
     assert( m_device_p );
     assert( m_rootOp_p );    
@@ -70,14 +74,36 @@ CMainWindow::CMainWindow ( CDeviceOpBinderBase * f_binder_p )
 
     createBaseWidgets();
 
+    /// Load number of screens for this app
+    QSettings qSettings;
+    int sx_i = qSettings.value ( ( QString("QCVApplication/") + 
+                                   QString(m_rootOp_p->getName().c_str()) + 
+                                   QString("/ScreenXCount") ), "2").toInt();
+    int sy_i = qSettings.value ( ( QString("QCVApplication/") + 
+                                   QString(m_rootOp_p->getName().c_str()) + 
+                                   QString("/ScreenYCount") ), "2").toInt();
+    
+    m_display_p -> setScreenCount ( S2D<unsigned int>(sx_i, sy_i) );
+
+
     m_controler_p -> start();    
 }
 
 CMainWindow::~CMainWindow( )
 {    
+    /// Save number of screens for this app
+    QSettings qSettings;
+    qSettings.setValue ( ( QString("QCVApplication/") + 
+                           QString(m_rootOp_p->getName().c_str()) + 
+                           QString("/ScreenXCount") ), m_display_p->getScreenCount().x);
+    qSettings.setValue ( ( QString("QCVApplication/") + 
+                           QString(m_rootOp_p->getName().c_str()) + 
+                           QString("/ScreenYCount") ), m_display_p->getScreenCount().y);
+   
+
     /// Delete all operators.
-    if ( m_rootOp_p )
-        delete m_rootOp_p;
+    //if ( m_rootOp_p )
+    //    delete m_rootOp_p;
 
     /// Delete controler.
     if (m_controler_p)
@@ -172,7 +198,7 @@ void CMainWindow::initialize()
 
     bool success_b;
     
-    success_b = m_binder_p -> setOperatorInput ( );
+    success_b = m_connector_p -> setOperatorInput ( );
 
     m_display_p -> update(true);
 
@@ -219,7 +245,7 @@ void CMainWindow::cycle()
 
     bool success_b;
     
-    success_b = m_binder_p -> setOperatorInput (  );
+    success_b = m_connector_p -> setOperatorInput (  );
 
     m_display_p -> setScreenSize ( m_rootOp_p -> getScreenSize() );
 
@@ -257,7 +283,7 @@ void CMainWindow::stop()
 
     bool success_b;
     
-    success_b = m_binder_p -> setOperatorInput (  );
+    success_b = m_connector_p -> setOperatorInput (  );
 
     if ( success_b )
     {

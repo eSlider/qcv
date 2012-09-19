@@ -581,6 +581,13 @@ CDisplayWidget::setScreenCount ( const S2D<unsigned int> f_size )
     m_qsbNumVertScreens_p->setValue(f_size.y);    
 }
 
+S2D<unsigned int>
+CDisplayWidget::getScreenCount ( ) const
+{
+    return S2D<unsigned int> ( m_qsbNumHorScreens_p->value(), 
+                               m_qsbNumVertScreens_p->value());
+}
+
 void
 CDisplayWidget::updateScreenCount ( )
 {

@@ -42,7 +42,7 @@ namespace QCV
     CDrawingListHandler * g_drawHandler_p  = NULL;
     CNode *               g_rootNode_p     = NULL;
     CEventHandler *       g_evHandler_p    = NULL;
-    CSimpleWindow *         g_mainWindow_p   = NULL;
+    CSimpleWindow *       g_mainWindow_p   = NULL;
     CClockTreeDlg *       g_clockTree_p    = NULL;
     CClockHandler *       g_clockHandler_p = NULL;
 

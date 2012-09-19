@@ -39,7 +39,7 @@ int main(int f_argc_i, char *f_argv_p[])
     CSeqDevHDImg device;
     device.loadNewSequence ( "sequence.xml" );
     
-    CDeviceOpBinder<TInpImgFromFileVector, bool> binder ( rootOp_p, &device );
+    CDeviceOpBinder<TInpImgFromFileVector, cv::Mat> binder ( rootOp_p, &device );
 
     CMainWindow *mwind = new CMainWindow ( &binder );
     

@@ -67,9 +67,9 @@ namespace QCV
                                 std::string            f_name_str,
                                 std::string            f_comment_str )
     {
-        fr_paramSet_p -> addParameter ( createEnumParameter ( f_ce, f_name_str, f_comment_str ) );
+        fr_paramSet_p -> addParameter ( createEnumParameter ( f_ce, f_name_str + " Color Mode", f_comment_str ) );
 
-        std::string str = f_name_str + std::string(" - Range");
+        std::string str = f_name_str + std::string(" Range");
     
         fr_paramSet_p -> addParameter (
             new CFlt2DParameter ( str, f_comment_str, f_ce.getMinMaxRange(), "Min", "Max",

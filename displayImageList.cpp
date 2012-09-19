@@ -214,9 +214,6 @@ bool CDisplayImageList::add ( cv::Mat             f_image,
     if ( g_QGLContext_p )
         g_QGLContext_p->makeCurrent();
 
-    printf("g_QGLContext_p = %p\n", g_QGLContext_p );
-    
-
     //bool res_b;
     SDisplayImage * newImage_p = new SDisplayImage;
 

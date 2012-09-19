@@ -49,7 +49,8 @@ CStereoOp::CStereoOp ( COperatorBase * const f_parent_p )
       m_sbm (                                     ),
       m_leftImg (                                 ),
       m_rightImg (                                ),
-      m_dispImg (                                 )
+      m_dispImg (                                 ),
+      m_scale_i (                               1 )
 {
     registerDrawingLists();
     registerParameters();
@@ -57,7 +58,6 @@ CStereoOp::CStereoOp ( COperatorBase * const f_parent_p )
     CParamIOFile pio ( "parameters.xml" );
     getParameterSet()->load ( pio );
 }
-
 
 void
 CStereoOp::registerDrawingLists()
@@ -68,8 +68,11 @@ CStereoOp::registerDrawingLists()
     registerDrawingList ("Right Image",
                          S2D<int> (1, 0),
                          true);
-    registerDrawingList ("Disparity Image",
-                         S2D<int> (2, 0),
+    registerDrawingList ("Colored Disparity Image",
+                         S2D<int> (0, 1),
+                         true);
+    registerDrawingList ("B/W Disparity Image",
+                         S2D<int> (1, 1),
                          true);
 }
 
@@ -88,6 +91,13 @@ CStereoOp::registerParameters()
     algParam_p -> addDescription ( SA_SGBM, "Semi global block matching (SGBM)" );
     algParam_p -> addDescription ( SA_BM,   "Block matching (BM)" );
     
+
+    ADD_INT_PARAMETER ( "Downscale factor",
+                        "Downscale factor for left and right images",
+                        1,
+                        this,
+                        Downscale,
+                        CStereoOp );
 
     BEGIN_PARAMETER_GROUP("SGBM", false, SRgb(220,0,0));
 
@@ -271,8 +281,11 @@ CStereoOp::registerParameters()
 
       BEGIN_PARAMETER_GROUP("Disparity", false, SRgb(220,0,0));
 
-        addDrawingListParameter ( "Disparity Image" );
+        addDrawingListParameter ( "B/W Disparity Image", "Fast rendering of disparity image" );
 
+        addDrawingListParameter ( "Colored Disparity Image", "Colorfull but slow" );
+
+        m_dispCE.setColorEncodingType ( CColorEncoding::CET_GREEN2RED );
         addColorEncodingParameter (  m_dispCE,
                                      getParameterSet(),
                                      "Disparity",
@@ -295,12 +308,11 @@ CStereoOp::cycle()
 {
     if ( m_leftImg.size().width  > 0 && 
          m_leftImg.size().height > 0 && 
-         m_leftImg.size() == m_rightImg.size() )
+         m_leftImg.size() == m_rightImg.size() &&
+         m_leftImg.type() == m_rightImg.type() )
     {
         cv::Mat auxImg;
 
-        int m_scale_i = 1;
-        
         unsigned int numberOfDisparities = ceil(m_sgbm.numberOfDisparities / (16.0*m_scale_i)) * 16;
         m_sgbm.numberOfDisparities = numberOfDisparities;
 
@@ -309,89 +321,87 @@ CStereoOp::cycle()
 
         cv::Size size = m_leftImg.size();
     
+        cv::Mat tmpLeft, tmpRight;
+
         if (m_scale_i > 1) 
         {
-            size.width  /=  m_scale_i;
+            size.width  /= m_scale_i;
             size.height /= m_scale_i;
-        
-            cv::Mat tmpLeft, tmpRight;
-            cv::resize(m_leftImg, tmpLeft, size);
+            
+            cv::resize(m_leftImg,  tmpLeft, size);
             cv::resize(m_rightImg, tmpRight, size);
-
-            if ( m_alg_e == SA_SGBM ) 
-            {
-                m_sgbm(tmpLeft, tmpRight, auxImg);
-            }
-            else
-            {
-                // Transform image to CV_8UC1 if not already in that
-                // format. BM works only with in 8 bit grayscale
-                // images.
-
-                cv::Mat l,r;
-                if ( tmpLeft.type () != CV_8UC1 )
-                    tmpLeft.convertTo ( l, CV_8UC1, 1, 0);
-                else
-                    l = tmpLeft;
-                if ( tmpRight.type () != CV_8UC1 )
-                    tmpRight.convertTo ( r, CV_8UC1, 1, 0);
-                else
-                    r = tmpRight;
-                    
-                 printf("l.type = %i leftimg.type = %i CV_8UC1 = %i\n",
-                       l.type(), m_leftImg.type(), CV_8UC1 );
-                
-               m_sbm(l, r, auxImg);
-            }
-
-            cv::resize(auxImg, m_dispImg, m_leftImg.size(), cv::INTER_NEAREST );
-            m_dispImg *= 2;
+            auxImg = cv::Mat(size, CV_16S );
         }
-        else 
+        else
         {
-            if ( m_alg_e == SA_SGBM ) 
+            tmpLeft  = m_leftImg;
+            tmpRight = m_rightImg;
+        }
+        
+        if ( m_alg_e == SA_SGBM ) 
+        {
+            if (m_scale_i > 1)
+                m_sgbm(tmpLeft, tmpRight, auxImg);
+            else
+                m_sgbm(tmpLeft, tmpRight, m_dispImg);
+        }
+        else
+        {
+            static int oldScale_i = -1;
+            
+            if (oldScale_i != m_scale_i )
+                m_sbm.init(CV_STEREO_BM_BASIC, m_sbm.state->numberOfDisparities, m_sbm.state->SADWindowSize);
+
+            oldScale_i = m_scale_i;
+
+            // Transform image to CV_8UC1 if not already in that
+            // format. BM works only with in 8 bit grayscale
+            // images.
+            
+            cv::Mat l,r;
+            
+            if ( tmpLeft.type () != CV_8UC1 )
             {
-                m_sgbm(m_leftImg, m_rightImg, m_dispImg);
+                if ( tmpLeft.type () == CV_8UC3 )
+                {
+                    {
+                        IplImage src = (IplImage)tmpLeft;
+                        l = cv::Mat( tmpLeft.size(), CV_8UC1);
+                        IplImage dst = (IplImage)l;
+                        cvCvtColor ( &src, &dst, CV_RGB2GRAY);
+                    }
+                    
+                    {
+                        IplImage src = (IplImage)tmpRight;
+                        r = cv::Mat( tmpLeft.size(), CV_8UC1);
+                        IplImage dst = (IplImage)r;
+                        cvCvtColor ( &src, &dst, CV_RGB2GRAY);
+                    }
+                }
+                else
+                {
+                    return COperatorBase::cycle();
+                }
+                
+                if (m_scale_i > 1)
+                    m_sbm(l, r, auxImg);
+                else
+                    m_sbm(l, r, m_dispImg);
             }
             else
             {
-                // Transform image to CV_8UC1 if not already in that
-                // format. BM works only with in 8 bit grayscale
-                // images.
-
-                cv::Mat l,r;
-
-                if ( m_leftImg.type () != CV_8UC1 )
-                {
-                    IplImage src = (IplImage)m_leftImg;
-                    l = cv::Mat( m_leftImg.size(), CV_8UC1);
-                    IplImage dst = (IplImage)l;
-                    cvCvtColor ( &src, &dst, CV_RGB2GRAY);
-                    //m_leftImg.convertTo ( l, CV_8UC1, 1, 0);
-                }
+                if (m_scale_i > 1)
+                    m_sbm(tmpLeft, tmpRight, auxImg);
                 else
-                    l = m_leftImg;
-
-                if ( m_rightImg.type () != CV_8UC1 )
-                {
-                    IplImage src = (IplImage)m_rightImg;
-                    r = cv::Mat( m_leftImg.size(), CV_8UC1);
-                    IplImage dst = (IplImage)r;
-                    cvCvtColor ( &src, &dst, CV_RGB2GRAY);
-                    //m_rightImg.convertTo ( r, CV_8UC1, 1, 0);
-                }
-                else
-                    r = m_rightImg;
-                    
-                printf("l.type = %i leftimg.type = %i CV_8UC1 = %i\n",
-                       l.type(), m_leftImg.type(), (int)CV_8UC1 );
-                
-                cv::imwrite("file.bmp", l);
-                
-                m_sbm(l, r, m_dispImg);
+                    m_sbm(l, r, m_dispImg);
             }
         }
-        cv::imwrite("dispimg.pgm", m_dispImg );
+        
+        if (m_scale_i != 1)
+        {
+            cv::resize(auxImg, m_dispImg, m_leftImg.size(), cv::INTER_NEAREST );
+            m_dispImg *= m_scale_i;
+        }
     }
 
     return COperatorBase::cycle();
@@ -403,18 +413,20 @@ bool CStereoOp::show()
     CDrawingList *list_p  = getDrawingList ( "Left Image");
     setScreenSize ( m_leftImg.size() );    
 
-    printf("%i %i\n",     list_p->getScreenWidth(),    list_p->getScreenHeight() );
-    
     list_p -> clear();    
-    list_p->addImage ( m_leftImg, 0, 0 );
+    list_p->addImage ( m_leftImg );
 
     list_p = getDrawingList ( "Right Image");
     list_p -> clear();    
-    list_p->addImage ( m_rightImg, 0, 0 );
+    list_p->addImage ( m_rightImg );
 
-    list_p = getDrawingList ( "Disparity Image");
+    list_p = getDrawingList ( "Colored Disparity Image");
     list_p -> clear();    
     list_p->addColorEncImage ( &m_dispImg, m_dispCE, 0, 0, m_dispImg.size().width, m_dispImg.size().height );
+
+    list_p = getDrawingList ( "B/W Disparity Image");
+    list_p -> clear();    
+    list_p->addImage ( m_dispImg, 0, 0, m_dispImg.size().width, m_dispImg.size().height, 100);
 
     return COperatorBase::show();
 }
@@ -434,10 +446,9 @@ bool CStereoOp::reset()
 
 bool CStereoOp::exit()
 {
-    printf("Exit Called\n");
-    
     CParamIOFile pio;
     
+    printf("Saving parameters to \"parameters.xml\"\n");    
     getParameterSet()->save ( pio );
     pio.save ("parameters.xml");
 
@@ -447,7 +458,6 @@ bool CStereoOp::exit()
 void 
 CStereoOp::keyPressed ( CKeyEvent * f_event_p )
 {
-    printf("Event received\n");
     show();
     return COperatorBase::keyPressed ( f_event_p );    
 }
@@ -470,6 +480,6 @@ CStereoOp::setInput  ( const TInpImgFromFileVector & f_input_v )
 bool
 CStereoOp::getOutput ( TOutputType & f_output ) const
 {
-    return true;
+    f_output = m_dispImg;
 }
 

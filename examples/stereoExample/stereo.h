@@ -93,7 +93,7 @@ namespace QCV
         ADD_PARAM_ACCESS (int,  state->disp12MaxDiff,        Disp12MaxDiff );
     };
 
-    typedef bool TOutputType;
+    typedef cv::Mat TOutputType;
 
     class CStereoOp: public COperator<TInpImgFromFileVector, TOutputType>
     {
@@ -106,8 +106,8 @@ namespace QCV
 
     /// Parameter access
     public:    
-        ADD_PARAM_ACCESS (EStereoAlgorithm,  m_alg_e,        StereoAlgorithm );
-
+        ADD_PARAM_ACCESS         (EStereoAlgorithm,  m_alg_e,        StereoAlgorithm );
+        ADD_PARAM_ACCESS_BOUNDED (int,               m_scale_i,      Downscale, 1, 6 );
 
     /// Constructor, Desctructors
     public:    
@@ -178,6 +178,10 @@ namespace QCV
 
         /// Disparity color encoding
         CColorEncoding              m_dispCE;
+
+        /// Down-scale factor
+        int                         m_scale_i;
+        
     };
 }
 #endif // __OPENCVSTEREOOP_H

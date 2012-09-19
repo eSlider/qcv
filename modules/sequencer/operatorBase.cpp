@@ -308,8 +308,6 @@ COperatorBase::registerClock ( std::string f_name_str )
 CClock *
 COperatorBase::getClock ( std::string f_id_str )
 {
-    printf("getting clock %s\n", f_id_str.c_str());
-    
     return m_clockHandler.getClock ( f_id_str, this );
 }
 

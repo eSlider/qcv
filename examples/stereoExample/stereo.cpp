@@ -321,9 +321,11 @@ CStereoOp::cycle()
         TMatVector vec = m_leftImg;
         vec.push_back(m_rightImg);
         
-        getChild<CImageScalerOp *>("Left image scaler") -> setInput ( vec );
-        getChild<CImageScalerOp *>("Left image scaler") -> cycle();
-        getChild<CImageScalerOp *>("Left image scaler") -> getOutput ( vec );
+        if ( getChild<CImageScalerOp *>("Left image scaler") -> compute ( vec, vec ) )
+        {
+            m_leftImg  = vec[0];
+            m_rightImg = vec[1];
+        }        
 
         cv::Mat auxImg;
 

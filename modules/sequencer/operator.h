@@ -98,6 +98,20 @@ namespace QCV
 
         /// Gets the output of this operator
         virtual bool getOutput ( _OutType & f_output ) const = 0;
+
+        /// Set the input of this operator
+        virtual bool compute  ( const _InType & f_input,
+                                _OutType      & f_output )
+        {
+            if (!setInput (f_input))
+                return false;
+
+            if ( !cycle() ) return false;
+            
+            return getOutput (f_output);            
+        }
+        
+
     };
 
 } // Namespace VIC

@@ -116,7 +116,7 @@ namespace QCV
 
         void registerDrawingLists( int f_numReg_i );
 
-        void registerParameters();
+        void registerParameters( int f_numReg_i );
 
     private:
 

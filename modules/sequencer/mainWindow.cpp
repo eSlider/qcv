@@ -299,7 +299,7 @@ void CMainWindow::stop()
         success_b = m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
 
-        m_rootOp_p -> startClock ( "Cycle" );
+        m_rootOp_p -> startClock ( "Show" );
         success_b = m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
 #if defined HAVE_QGLVIEWER
@@ -313,13 +313,6 @@ void CMainWindow::stop()
     m_rootOp_p -> startClock ( "Clock Update" );
     m_clockTreeDlg_p -> updateTimes();    
     m_rootOp_p -> stopClock ( "Clock Update" );
-
-#if defined HAVE_QGLVIEWER
-    m_rootOp_p -> startClock ( "3D Viewer" );
-    m_3dViewer_p -> update();
-    m_rootOp_p -> stopClock ( "3D Viewer" );
-#endif
-
 }
 
 void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )

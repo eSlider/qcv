@@ -54,7 +54,7 @@ CImageScalerOp::CImageScalerOp ( COperatorBase * const f_parent_p,
       m_scaleSize (                         320, 240 )
 {
     registerDrawingLists( f_preferedNumImgs_i );
-    registerParameters();
+    registerParameters ( f_preferedNumImgs_i );
 }
 
 void
@@ -77,7 +77,7 @@ CImageScalerOp::registerDrawingLists( int f_numReg_i )
 }
 
 void
-CImageScalerOp::registerParameters()
+CImageScalerOp::registerParameters( int f_numReg_i )
 {
 
     BEGIN_PARAMETER_GROUP("Computation", false, SRgb(220,0,0));
@@ -121,8 +121,17 @@ CImageScalerOp::registerParameters()
 
     BEGIN_PARAMETER_GROUP("Display", false, SRgb(220,0,0));
 
-      addDrawingListParameter ( "Input Image 0" );
-      addDrawingListParameter ( "Scaled Image 0" );
+    char str[256];
+    
+    for (int i = 0; i < f_numReg_i; ++i)
+    {
+        char str[256];
+        sprintf(str, "Input Image %i", i);        
+        addDrawingListParameter ( str );
+        
+        sprintf(str, "Output Image %i", i);        
+        addDrawingListParameter ( str );
+    }
 
     END_PARAMETER_GROUP;
 

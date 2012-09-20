@@ -52,6 +52,7 @@ set ( LIBQCVSequencer_HEADERS
      mainWindow.h
      operatorBase.h
      operator.h
+     qcvVector.h
      seqControlDlg.h
      seqControler.h
      seqDevHDImg.h

@@ -364,3 +364,4 @@ S2D<unsigned int> COperatorBase::getScreenSize (  ) const
 {
     return m_drawingListHandler.getScreenSize();
 }
+

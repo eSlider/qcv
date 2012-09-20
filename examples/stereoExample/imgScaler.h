@@ -44,6 +44,7 @@
 #include "imageFromFile.h"
 #include "operator.h"
 #include "colorEncoding.h"
+#include "matVector.h"
 
 /* PROTOTYPES */
 
@@ -51,8 +52,10 @@
 
 namespace QCV
 {
-    class CImageScalerOp: public COperator<cv::Mat, cv::Mat>
+    class CImageScalerOp: public COperator<TMatVector, TMatVector>
     {
+    public:
+
     /// Constructor, Desctructors
     public:    
         typedef enum {
@@ -76,7 +79,8 @@ namespace QCV
         
         /// Constructors.
         CImageScalerOp ( COperatorBase * const f_parent_p = NULL,
-                       const std::string f_name_str = "Image Scaler" );
+                         const std::string f_name_str = "Image Scaler",
+                         const int f_preferedNumImgs_i = 1 );
         
         /// Virtual destructor.
         virtual ~CImageScalerOp ();
@@ -101,16 +105,16 @@ namespace QCV
     /// I/O registration.
     public:
         /// Set the input of this operator
-        bool setInput  ( const cv::Mat & f_input );
+        bool setInput  ( const TMatVector & f_input );
 
         /// Gets the output of this operator
-        bool getOutput ( cv::Mat & f_output ) const;
+        bool getOutput ( TMatVector & f_output ) const;
 
     protected:
 
     protected:
 
-        void registerDrawingLists();
+        void registerDrawingLists( int f_numReg_i );
 
         void registerParameters();
 
@@ -129,10 +133,10 @@ namespace QCV
         S2D<unsigned int>           m_scaleSize;
 
         /// Input image
-        cv::Mat                     m_img;
+        TMatVector                  m_img_v;
 
         /// Scaled image
-        cv::Mat                     m_scaledImg;
+        TMatVector                  m_scaledImgs_v;
 
     };
 }

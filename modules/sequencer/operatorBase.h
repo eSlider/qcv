@@ -162,6 +162,14 @@ namespace QCV
 
         /// Get the input of this operator.
         virtual COperatorBase*        getParentOp ( ) const { return static_cast<COperatorBase *> (m_parent_p); }
+        
+        /// Get a child of a given type and name
+        template <class _OpType>
+        _OpType               getChild ( std::string f_name_str );
+        
+        /// Get a child of a given type and name
+        template <class _OpType>
+        const _OpType         getChild ( std::string f_name_str ) const;
 
     /// Get/Set static methods
     public:
@@ -233,6 +241,49 @@ namespace QCV
         CParameterSet *                    m_paramSet_p;
 
     };
+
+
+/// Get a child of a given type and name
+    template <typename _OpType>
+    _OpType COperatorBase::getChild ( std::string f_name_str )
+    {
+        for (int i = 0; i < m_children_v.size(); ++i)
+        {
+            if ( m_children_v[i].ptr_p->getName() == f_name_str )
+            {
+                _OpType ptr_p = static_cast<_OpType> ( m_children_v[i].ptr_p );
+                if (!ptr_p)
+                {
+                    printf("Operator with name %s is not of type %s\n",
+                           f_name_str.c_str(), typeid(ptr_p).name() );
+                }
+                
+                return ptr_p;
+            }
+        }
+        return NULL;
+    }
+
+/// Get a child of a given type and name
+    template <typename _OpType>
+    const _OpType COperatorBase::getChild ( std::string f_name_str ) const
+    {
+        for (int i = 0; i < m_children_v.size(); ++i)
+        {
+            if ( m_children_v[i].ptr_p->getName() == f_name_str )
+            {
+                const _OpType ptr_p = static_cast<_OpType> ( m_children_v[i].ptr_p );
+                if (!ptr_p)
+                {
+                    printf("Operator with name %s is not of type %s\n",
+                           f_name_str.c_str(), typeid(ptr_p).name() );
+                }
+            
+                return ptr_p;
+            }
+        }
+        return NULL;
+    }
 
 } // Namespace VIC
 

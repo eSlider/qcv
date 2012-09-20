@@ -40,6 +40,7 @@
 #include "ceParameter.h"
 
 #include "imgScaler.h"
+#include "matVector.h"
 
 using namespace QCV;
 
@@ -60,6 +61,9 @@ CStereoOp::CStereoOp ( COperatorBase * const f_parent_p,
 {
     registerDrawingLists();
     registerParameters();
+
+    addChild ( new CImageScalerOp ( this, "Left image scaler", 2) );
+    
 }
 
 void
@@ -314,6 +318,13 @@ CStereoOp::cycle()
          m_leftImg.size() == m_rightImg.size() &&
          m_leftImg.type() == m_rightImg.type() )
     {
+        TMatVector vec = m_leftImg;
+        vec.push_back(m_rightImg);
+        
+        getChild<CImageScalerOp *>("Left image scaler") -> setInput ( vec );
+        getChild<CImageScalerOp *>("Left image scaler") -> cycle();
+        getChild<CImageScalerOp *>("Left image scaler") -> getOutput ( vec );
+
         cv::Mat auxImg;
 
         unsigned int numberOfDisparities = ceil(m_sgbm.numberOfDisparities / (16.0*m_scale_i)) * 16;

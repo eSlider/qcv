@@ -7,6 +7,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set (CMAKE_VERBOSE_MAKEFILE true)
 
+set(CMAKE_BUILD_TYPE RELEASE)
+
 #################################################
 #DEPENDENCIES
 #################################################
@@ -50,9 +52,9 @@ set ( LIBCHECKSTEREOPAIR_SRC
 
 add_definitions(${QT_DEFINITIONS})
 
-add_executable ( stereo ${LIBCHECKSTEREOPAIR_SRC} )
+add_executable ( stereoExample ${LIBCHECKSTEREOPAIR_SRC} )
 
-target_link_libraries(stereo ${QT_LIBRARIES} 
+target_link_libraries(stereoExample ${QT_LIBRARIES} 
                              -lglut -lGL -lGLU
                              ${QCVOperators_LIB} 
                              ${QCVParamEditor_LIB} 
@@ -62,5 +64,6 @@ target_link_libraries(stereo ${QT_LIBRARIES}
                              ${OpenCV_LIBS})
 
 ### Set binary to be installed under bin directory
-install(TARGETS stereo RUNTIME DESTINATION bin)
+install(TARGETS stereoExample RUNTIME DESTINATION bin)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/sequence.xml ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sequence.xml COPYONLY)

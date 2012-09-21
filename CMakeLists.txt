@@ -10,10 +10,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set (CMAKE_VERBOSE_MAKEFILE true)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${QCV_BINARY_DIR}/bin)
+
 #################################################
 #DEPENDENCIES
 #################################################
-
 
 #Qt
 find_package(Qt4 REQUIRED)

@@ -29,7 +29,7 @@
 #include "clockHandler.h"
 #include "clockTreeDlg.h"
 #include "clock.h"
-#include "mainWindow.h"
+#include "simpleWindow.h"
 #include <stdio.h>
 #include <iostream> 
 
@@ -42,7 +42,7 @@ namespace QCV
     CDrawingListHandler * g_drawHandler_p  = NULL;
     CNode *               g_rootNode_p     = NULL;
     CEventHandler *       g_evHandler_p    = NULL;
-    CMainWindow *         g_mainWindow_p   = NULL;
+    CSimpleWindow *       g_mainWindow_p   = NULL;
     CClockTreeDlg *       g_clockTree_p    = NULL;
     CClockHandler *       g_clockHandler_p = NULL;
 
@@ -51,10 +51,11 @@ namespace QCV
     {
         if ( !g_disp_p )
         {
-            g_mainWindow_p = new CMainWindow();
+            g_mainWindow_p = new CSimpleWindow();
             assert(g_mainWindow_p);
 
-            g_rootNode_p = new CNode ( new CNode (NULL, "Real Root"), f_title_str );
+            //CNode * root_p = new CNode (NULL, "Real Root");
+            g_rootNode_p = new CNode ( NULL, f_title_str );
             assert(g_rootNode_p);
 
             g_drawHandler_p = new CDrawingListHandler( g_rootNode_p );
@@ -75,9 +76,6 @@ namespace QCV
             g_mainWindow_p -> insertWindow ( g_disp_p );
             g_mainWindow_p -> insertWindow ( g_disp_p->getDialog() );
             g_mainWindow_p -> insertWindow ( g_clockTree_p );
-
-            /// We want the display to always be shown.
-            g_disp_p -> show();
 
             /// The window list now.
             g_mainWindow_p -> show();

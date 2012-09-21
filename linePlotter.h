@@ -31,7 +31,6 @@
 ******************************************************************************/
 
 /* INCLUDES */
-#include "ioObj.h"
 
 /* CONSTANTS */
 
@@ -41,7 +40,7 @@ namespace QCV
     class CDrawingList;
     
     template < class _Type >
-    class CLinePlotter: public CIOObj
+    class CLinePlotter
     {
 
     /// Constructors/Destructor

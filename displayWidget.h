@@ -85,6 +85,9 @@ namespace QCV
         /// Set how many  screens are displayed
         virtual void setScreenCount( const S2D<unsigned int> f_size );
 
+        /// Set how many  screens are displayed
+        virtual S2D<unsigned int> getScreenCount (  ) const;
+
         /// Show and hide tree dialog
         virtual void showHideTreeDlg();
         

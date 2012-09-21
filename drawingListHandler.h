@@ -83,7 +83,11 @@ namespace QCV
         void              setDisplayUpdateFlag ( bool f_val_b );
 
         /// Set the default screen size.
-        bool setScreenSize ( const S2D<unsigned int> f_size );
+        bool              setScreenSize ( const S2D<unsigned int> f_size );
+
+        /// Set the default screen size.
+        S2D<unsigned int> getScreenSize ( ) { return m_screenSize; }
+        
 
         /// Get drawing-list-changed flag.
         bool              mustUpdateDisplay ( ) const;

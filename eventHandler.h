@@ -32,17 +32,11 @@
 *****             (C) Hernan Badino 2012 - All Rights Reserved            *****
 ******************************************************************************/
 
-#include "events.h"
-
-class QEvent;
-class QKeyEvent;
+#include "eventHandlerBase.h"
 
 namespace QCV
 {
-    
-    class CDisplayWidget;
-
-    class CEventHandler : public QObject
+    class CEventHandler: public CEventHandlerBase
     {
         Q_OBJECT
  
@@ -54,7 +48,6 @@ namespace QCV
         {
         }
 
-                                                    
     public:
         /// Set callback functions pointers.
         bool  setKeyPressedEventCBF(       bool (*f_keyEv_p)           (CKeyEvent *   ));
@@ -66,8 +59,10 @@ namespace QCV
                                            const int f_ms_s = 1 );    
         /// Not implemented et
         bool  setRegionSelectedEventCBF (  bool (*f_regionSelectedEv_p)(CRegionSelectedEvent * ));
-                                                                                         
-    public slots:
+
+    /// Protected slots
+    protected slots:
+    
     
         /// Key Pressed event.
         virtual void keyPressed     ( CKeyEvent *    f_event_p );
@@ -77,21 +72,12 @@ namespace QCV
         virtual void wheelTurned    ( CWheelEvent *  f_event_p );
         virtual void regionSelected ( CRegionSelectedEvent * 
                                       f_event_p );
-    
-    /// Protected methods
-    protected:
-
-        
         virtual void timerEvent     ( QTimerEvent  *  f_event_p );
         
     /// Members
     protected:
         /// Timer Id
         int               m_timerId_i;
-
-        /// Associated display widget
-        CDisplayWidget *  m_dispWidget_p;
-
 
         /// Call back function pointers.
         bool              (*m_keyEv_p)            (CKeyEvent *   );

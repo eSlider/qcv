@@ -398,6 +398,7 @@ namespace QCV
         /// Overlay leve.
         int                        m_overlayLevel_i;
 
+        /// Screen Size
         S2D<unsigned int>          m_screenSize;
     /// Drawing elements
     private:

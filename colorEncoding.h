@@ -31,7 +31,6 @@
 ******************************************************************************/
 
 /* INCLUDES */
-#include "ioObj.h"
 #include "colors.h"
 #include "standardTypes.h"
 
@@ -41,7 +40,7 @@
 namespace QCV
 {
     /// PROTOTYPES
-    class CColorEncoding: public CIOObj
+    class CColorEncoding
     {
         /// Public Data Types
     public:

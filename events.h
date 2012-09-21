@@ -32,7 +32,7 @@
  * \brief Definition of event data structs.
  *
  * The events or signals are generated in the CDisplay class and provided to
- * the operators via the CMainWindow class.
+ * the operators via the CSimpleWindow class.
  *
  *******************************************************************************/
 

@@ -236,7 +236,7 @@ namespace QCV
         /// Get index of this node in the parent.
         int               getIndexInParent ( ) const;
 
-        std::string       getName() const { return ( m_container_p -> getName() ); }
+        std::string       getName() const { return ( m_container_p?m_container_p -> getName():"" ); }
         
         CNode *           getContainer() const { return  m_container_p; }
         

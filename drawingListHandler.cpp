@@ -43,6 +43,7 @@ CDrawingListHandler::CDrawingListHandler (  CNode * f_opRoot_p )
 {
     if ( f_opRoot_p )
     {
+        printf("f_opRoot_p  = %p\n",  f_opRoot_p );
         m_root_p = new CDisplayOpNode( f_opRoot_p );
     }
 }
@@ -54,9 +55,9 @@ CDrawingListHandler::~CDrawingListHandler()
 
 CDrawingList * 
 CDrawingListHandler::getDrawingList ( std::string  f_name_str, 
-                                      CNode *  f_op_p )
+                                      CNode *      f_op_p )
 {
-    if (not f_op_p) return NULL;    
+    if (not f_op_p) return NULL;
 
     CNode *  ops_p[MAX_CONTAINER_LEVELS];
     int level_i;
@@ -75,9 +76,7 @@ CDrawingListHandler::getDrawingList ( std::string  f_name_str,
 
     if ( level_i == MAX_CONTAINER_LEVELS )
     {
-        char str[256];
-        sprintf( str, 
-                 "The maximal amount of container levels of %i has been achieved.",
+        printf( "The maximal amount of container levels of %i has been achieved.",
                  MAX_CONTAINER_LEVELS  );
     }
 
@@ -119,12 +118,12 @@ CDrawingListHandler::getDrawingList ( std::string  f_name_str,
     if (!child_p)
     {
         CDrawingList * drawList_p = (CDrawingList *) new CDrawingList ( f_name_str );
-        drawList_p->setScreenSize(m_screenSize);
         child_p    = new CDisplayNode ( drawList_p );
         node_p -> appendChild ( child_p );
         return drawList_p;
     }
 
+    child_p->getDrawingList()->setScreenSize(m_screenSize);
     return child_p -> getDrawingList();
 }
 

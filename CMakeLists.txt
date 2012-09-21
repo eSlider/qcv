@@ -10,10 +10,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set (CMAKE_VERBOSE_MAKEFILE true)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${QCV_BINARY_DIR}/bin)
+
 #################################################
 #DEPENDENCIES
 #################################################
-
 
 #Qt
 find_package(Qt4 REQUIRED)
@@ -61,9 +62,10 @@ set ( LIBQCV_SRC
      drawingListPreview.cpp
      ellipseList.cpp
      eventHandler.cpp
+     eventHandlerBase.cpp
      helpWidget.cpp
      lineList.cpp
-     mainWindow.cpp
+     simpleWindow.cpp
      node.cpp
      polygonList.cpp
      qrc_symbols.cpp
@@ -92,6 +94,7 @@ set ( LIBQCV_HEADERS
      displayTreeItemModel.h
      displayTreeNode.h
      displayTreeView.h
+     displayState.h
      displayWidget.h
      drawingElementList.h
      drawingList.h
@@ -99,14 +102,14 @@ set ( LIBQCV_HEADERS
      drawingListPreview.h
      ellipseList.h
      eventHandler.h
+     eventHandlerBase.h
      events.h
      helpWidget.h
      glheader.h
-     ioObj.h
      lineList.h
      linePlotter.h
      linePlotter_inline.h
-     mainWindow.h
+     simpleWindow.h
      node.h
      polygonList.h
      rectList.h
@@ -129,8 +132,9 @@ set ( LIBQCV_MOC_HEADERS
      displayWidget.h
      drawingListPreview.h
      eventHandler.h
+     eventHandlerBase.h
      helpWidget.h
-     mainWindow.h
+     simpleWindow.h
      windowListView.h
      windowListItemModel.h
  )
@@ -168,6 +172,7 @@ install (FILES ${LIBQCV_HEADERS} DESTINATION include/qcv )
 
 #####################################
 
+add_subdirectory ( modules )
 add_subdirectory ( examples )
 
 install(FILES DESTINATION bin/ PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

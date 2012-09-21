@@ -66,6 +66,12 @@ namespace QCV
                               const bool         f_update_b = true );
         
         bool   setScreenCount ( S2D<unsigned int> count );
+        S2D<unsigned int>
+               getScreenCount (  ) const
+        {
+            return m_screenCount;
+        }
+        
         
         QImage renderGL ();
 
@@ -82,6 +88,7 @@ namespace QCV
 
     protected slots:
         virtual void   showEvent ( QShowEvent * f_event_p );
+        virtual void   timerEvent ( QTimerEvent * f_event_p ); 
 
     signals:
         void clicked();
@@ -114,6 +121,8 @@ namespace QCV
         virtual void dragEnterEvent    ( QDragEnterEvent *f_event_p );
         virtual void dragMoveEvent     ( QDragMoveEvent *f_event_p );
         virtual void dropEvent         ( QDropEvent *f_event_p );
+
+        virtual void highlightScreen   (  );
 
     /// Own help methods.
     protected:
@@ -176,6 +185,8 @@ namespace QCV
 	/// Flag
 	bool                       m_initialized_b;
 
+        /// Highligh screen
+        S2D<int>                   m_highlightScreen;
     };
 }
 

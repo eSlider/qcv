@@ -14,7 +14,7 @@ required dependencies:
 
 Get the code now from SourceForge.net
 
-> hg clone http://hg.code.sf.net/p/qcv/code qcv-code
+> hg clone http://hg.code.sf.net/p/qcv/code qcv
 
 or download the zip file from here:
 
@@ -22,9 +22,7 @@ http://sourceforge.net/projects/qcv/?source=directory
 
 To compile the code, cd to the source code directory:
 
-> cd qcv-code
-
-(or just "cd qcv" if you downloaded the zip file),
+> cd qcv
 
 make a directory called build
 
@@ -38,23 +36,21 @@ and run cmake
 If anything went wrong, solve the dependency issues. 
 Otherwise just run
 
-> make && make install
+> make
 
-That should install the library under the local directory
-of your home directory, i.e. $HOME/local.
+That should install the library and binarires into your
+local build directory, i.e. $HOME/qcv/build.
 
-Set the LD_LIBRARY_PATH variable so that the qcv library 
-can be found:
+Check the example binaries installed in the bin directory
 
-> export LD_LIBRARY_PATH=$HOME/local/lib:$LD_LIBRARY_PATH
-
-Check the example binaries installed in $HOME/local/bin.
-
-> cd $HOME/local/bin
+> cd $HOME/qcv/build/bin
+> ./helloWorld
 > ./toyClockExample
-> ./checkStereoPair left.pgm right.pgm
-> ./sobelExample pathtoimages/*.png
-> ./imgViewer --cam path1toimages/*.png --cam path2toimages/*.jpg
+> ./checkStereoPair imgs/left.pgm imgs/right.pgm
+> ./sobelExample imgs/seq/*c0*.jpg
+> ./imgViewer --cam imgs/seq/*c0*.jpg --cam imgs/seq/*c1*.jpg
+> ./anaglyphStereo --left imgs/seq/*c0*.jpg --right imgs/seq/*c1*.jpg
+> ./stereoExample
 
 You will need to provide valid images as parameters.
 

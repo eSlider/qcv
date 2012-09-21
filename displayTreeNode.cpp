@@ -37,7 +37,7 @@ using namespace QCV;
 CDisplayOpNode::CDisplayOpNode ( CNode *                     f_op_p,
                                  CDisplayTreeNodeAbstract *  f_parent_p )
         : CDisplayTreeNodeAbstract (      f_parent_p  ),
-          m_container_p (                       f_op_p )
+          m_container_p (                      f_op_p )
 {
 }
 

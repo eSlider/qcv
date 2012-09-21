@@ -31,6 +31,9 @@
 #include "node.h"
 #include "clockHandler.h"
 #include "clockTreeNode.h"
+#include <stdio.h>
+
+#define MAX_CONTAINER_LEVELS 256
 
 using namespace QCV;
 
@@ -38,11 +41,12 @@ CClockHandler::CClockHandler( CNode * f_root_p )
         : m_root_p (                NULL ),
           m_clockChanged_b (       false )
 {
-    //if ( f_root_p )
+    if ( f_root_p )
     {
+        printf("f_root_p = %p\n", f_root_p);
+        
         m_root_p = new CClockOpNode ( f_root_p );
     }
-
 }
 
 CClockHandler::~CClockHandler()
@@ -50,26 +54,70 @@ CClockHandler::~CClockHandler()
     delete m_root_p;    
 }
 
+
 CClock * 
 CClockHandler::getClock ( std::string  f_name_str, 
                           CNode *      f_op_p )
 {
     if (not f_op_p) return NULL;
 
-    //printf("m_root_p = %p\n", m_root_p);
+    CNode *  ops_p[MAX_CONTAINER_LEVELS];
+    int level_i;
+
+    /// Build list of parent containers.
+    ops_p[0] = f_op_p;
+
+    for (level_i = 1;
+         level_i < MAX_CONTAINER_LEVELS; 
+         ++level_i)
+    {
+        ops_p[level_i] = ops_p[level_i-1] -> getParent();
+        if ( not ops_p[level_i] )
+            break;
+    }
+
+    if ( level_i == MAX_CONTAINER_LEVELS )
+    {
+        char str[256];
+        printf( "The maximal amount of container levels of %i has been achieved.",
+                MAX_CONTAINER_LEVELS  );
+    }
+
+    --level_i;
+
+    //printf("ops_p->name = %s level_i = %i\n", ops_p[level_i]->getName().c_str(), level_i);
     
-    CClockOpNode * node_p = m_root_p -> getOpChild ( f_op_p );
+    if ( not m_root_p )
+        m_root_p = new CClockOpNode( ops_p[level_i] );
+    //else
+    //consistency check can be made here.
+
+    CClockOpNode * node_p   = m_root_p;
+    CClockOpNode * parent_p = node_p;
+
+    while ( level_i > 0 )
+    {
+        /// Consistency check can be made here between node_p->m_data.container_p and ops_p[level_i]
+        --level_i;
+        parent_p = node_p;
+        node_p   = node_p -> getOpChild ( ops_p[level_i] );
+        if ( !node_p ) break;
+    }
 
     if ( !node_p )
     {
-        node_p = new CClockOpNode ( f_op_p );
-        m_root_p -> appendChild ( node_p );
+        node_p = parent_p;
+        while ( level_i >= 0 )
+        {
+            CClockOpNode *  newChild_p = new CClockOpNode ( ops_p[level_i--] );
+            node_p -> appendChild ( newChild_p );
+            node_p = newChild_p;    
+        }
     }
-
+    
     /// Search now for clock.
     CClockNode * child_p = node_p -> getClockChild ( f_name_str );
 
-    // If not found, then create.
     if (!child_p)
     {
         CClock * clock_p = (CClock *) new CClock ( f_name_str );
@@ -79,5 +127,5 @@ CClockHandler::getClock ( std::string  f_name_str,
         return clock_p;
     }
 
-    return child_p -> getClock();
+     return child_p -> getClock();
 }

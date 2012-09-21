@@ -50,7 +50,8 @@ CDisplay::CDisplay( CDisplayOpNode * const f_rootNode_p,
           m_rootNode_p (                 f_rootNode_p ),
           m_zoomTL (                              0,0 ),
           m_zoomFactor_f (                        1.f ),
-	  m_initialized_b (                     false )
+	  m_initialized_b (                     false ),
+          m_highlightScreen (                  -1, -1 )
 {
     /// Just now temporal.
     m_screenSize.width  = 640;
@@ -145,6 +146,9 @@ void CDisplay::paintGL()
     for (int l = 0; l < MAX_OVERLAY_LEVELS; ++l)
         displayScreens ( m_rootNode_p, l );
 
+    /// Highlight screen if in dropping a drawing list.
+    highlightScreen();
+    
     // Disable transparency again
     //glDisable(GL_BLEND);
 
@@ -314,6 +318,8 @@ CMouseEvent *CDisplay::getMouseEventData( QMouseEvent * f_event_p )
 
 void CDisplay::mouseMoveEvent( QMouseEvent * f_event_p )
 {
+    m_highlightScreen.x = m_highlightScreen.y = -1;
+
     // Check if mouse clicked.
     if ( m_prevMousePos.isValid() && 
          (f_event_p -> buttons() & Qt::LeftButton) &&
@@ -446,6 +452,8 @@ void CDisplay::keyPressEvent ( QKeyEvent *   f_event_p )
     static Qt::Key prevKey_e;
     static int numKeyCount_i;
     
+    bool emitEvent_b = true;
+    
     if (f_event_p -> key() == Qt::Key_F )
     {
         emit fullScreenSwitched();
@@ -488,7 +496,7 @@ void CDisplay::keyPressEvent ( QKeyEvent *   f_event_p )
                 f_event_p -> key() == Qt::Key_Down )  )
     {
         if ( f_event_p -> modifiers() & Qt::ControlModifier )
-        {
+        {            
             int xScreen_i = 0;
             int yScreen_i = 0;
             
@@ -505,12 +513,16 @@ void CDisplay::keyPressEvent ( QKeyEvent *   f_event_p )
             
             float offsety_f = ((-yScreen_i) * (int)m_screenSize.height);
         
+            printf("Offsets are %f %f\n", offsetx_f, offsety_f);
+            
             m_zoomTL.x += offsetx_f;
             m_zoomTL.y += offsety_f;
             
             exitOneScreenMode();
             
             updateGL();
+
+            emitEvent_b = false;
         }
     }
     else if ( f_event_p -> key() == Qt::Key_Less )
@@ -574,7 +586,8 @@ void CDisplay::keyPressEvent ( QKeyEvent *   f_event_p )
     static CKeyEvent ke;
     ke.qtKeyEvent_p = f_event_p;
 
-    emit keyPressed ( &ke );
+    if ( emitEvent_b )
+        emit keyPressed ( &ke );
 
 }
 
@@ -626,24 +639,10 @@ void CDisplay::displayScreens ( CDisplayOpNode * const f_parent_p,
                         glTranslatef( -m_screenSize.width/2.f,
                                       -m_screenSize.height/2.f,
                                       0.0f );
-
-                        // float scale_f = m_screenSize.width/(float)m_screenSize.height;
-                        // if (scale_f > 1.f) scale_f = 1./scale_f;
-
-                        // glScalef(  scale_f,
-                        //            scale_f,
-                        //            0.0 );
-
-                        // glTranslatef(  m_screenSize.width/4*scale_f,
-                        //                m_screenSize.height/4*scale_f,
-                        //                0.0 );
                     }
 
                     list_p -> show();
-                    
-                    //glTranslatef( -pos.x * m_screenSize.width, 
-                    //               -pos.y * m_screenSize.height, 
-                    //               0.0 );
+
                     glPopMatrix();
                 }
             }
@@ -655,6 +654,33 @@ void CDisplay::displayScreens ( CDisplayOpNode * const f_parent_p,
         displayScreens ( f_parent_p-> getOpChild (i), f_level_f );
     }
 }
+
+void
+CDisplay::highlightScreen()
+{
+    if ( m_highlightScreen.x > 0 && 
+         m_highlightScreen.y > 0 )
+        
+    glPushMatrix();
+    
+    glTranslatef( m_highlightScreen.x * m_screenSize.width, 
+                  m_highlightScreen.y * m_screenSize.height, 
+                  0.0 );
+
+    //glLineWidth( 4 );
+    glColor4ub( 200, 255, 200, 20);
+    
+    glBegin(GL_LINE_LOOP);
+    glVertex2f ( 0, 0 );
+    glVertex2f ( m_screenSize.width, 0 );
+    glVertex2f ( m_screenSize.width, m_screenSize.height );
+    glVertex2f ( 0, m_screenSize.height );
+
+    glEnd();
+   
+    glPopMatrix();   
+}
+
 
 void
 CDisplay::show ( )
@@ -763,6 +789,7 @@ void CDisplay::zoomOut ( )
 /// DRAG/DROP OPERATIONS
 void CDisplay::dragEnterEvent(QDragEnterEvent *event)
 {
+    m_highlightScreen.x = m_highlightScreen.y = -1;
     //printf("Drag Enter\n");
     
     if (event->mimeData()->hasFormat("display/gl-display-list"))
@@ -771,22 +798,68 @@ void CDisplay::dragEnterEvent(QDragEnterEvent *event)
         event->ignore();
 }
 
-void CDisplay::dragMoveEvent(QDragMoveEvent *event)
+void CDisplay::dragMoveEvent(QDragMoveEvent *f_event_p)
 {
     // Some cool display should be made here.
     //printf("Drag Move\n");
- 
-   if (event->mimeData()->hasFormat("display/gl-display-list")) 
-   {
-       event->setDropAction(Qt::MoveAction);
-       event->accept();
-   } 
-   else
-       event->ignore();
+    m_highlightScreen.x = m_highlightScreen.y = -1;
+    
+    if (f_event_p->mimeData()->hasFormat("display/gl-display-list")) 
+    {
+        f_event_p->setDropAction(Qt::MoveAction);
+        f_event_p->accept();
+       
+        //printf("Drop F_Event_P\n");
+        if (f_event_p->mimeData()->hasFormat("display/gl-display-list")) 
+        {
+            QByteArray pieceData = f_event_p->mimeData()->data("display/gl-display-list");
+            QDataStream dataStream(&pieceData, QIODevice::ReadOnly);
+            //QPixmap pixmap;
+            //QPoint location;
+            QModelIndexList items;
+           
+            qint32 size_i;
+            quint64 ptr_ui;
+           
+            dataStream >> size_i;
+            //printf("Size is %i\n", size_i);
+           
+            for (int i = 0; i < size_i; ++i)
+            {
+                dataStream >> ptr_ui;
+               
+                CDisplayNode *  node_p = static_cast<CDisplayNode *>((void*)ptr_ui);
+               
+                /// normalize position.
+                QPoint pos = f_event_p -> pos ();
+                S2D<float> mousePos;
+                mousePos.x = pos.x() / (float)width()  * m_roiSize.width  - m_roiPos.x;
+                mousePos.y = pos.y() / (float)height() * m_roiSize.height - m_roiPos.y;
+               
+                S2D<int> newPos;
+                newPos.x =  std::min( std::max( 0,
+                                                (int)(mousePos.x / m_screenSize.width) ),
+                                      (int)(m_screenCount.width  - 1 ) );
+                newPos.y =  std::min( std::max( 0, 
+                                                (int)(mousePos.y / m_screenSize.height) ), 
+                                      (int)(m_screenCount.height - 1 ) );
+               
+                m_highlightScreen = newPos;
+            }
+           
+            f_event_p->setDropAction(Qt::MoveAction);
+            f_event_p->accept();
+           
+            updateGL();
+        } 
+    }
+    else
+        f_event_p->ignore();
 }
 
 void CDisplay::dropEvent(QDropEvent *f_event_p)
 {
+    m_highlightScreen.x = m_highlightScreen.y = -1;
     //printf("Drop F_Event_P\n");
     if (f_event_p->mimeData()->hasFormat("display/gl-display-list")) 
     {
@@ -861,4 +934,11 @@ S2D<unsigned int>
 CDisplay::getScreenSize ( ) const
 {
     return S2D<unsigned int>(m_screenSize.width, m_screenSize.height);
+}
+
+void
+CDisplay::timerEvent ( QTimerEvent * f_event_p )
+{
+    /// activate it and implement here the deactivation of the drag 
+    
 }

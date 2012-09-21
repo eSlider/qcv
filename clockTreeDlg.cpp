@@ -152,3 +152,25 @@ CClockTreeDlg::printTimes ()
     m_treeItemModel_p -> printTimes ();
 }
 
+void 
+CClockTreeDlg::closeEvent(QCloseEvent *f_event_p)
+{
+    QSettings settings;
+    QString name = QString("CClockTreeDlg/geometry/") + (parent()?parent()->objectName():QString("default"));
+    settings.setValue(name, saveGeometry());
+
+    QWidget::closeEvent(f_event_p);
+}
+
+void 
+CClockTreeDlg::focusInEvent(QFocusEvent * /* f_event_p */)
+{
+    m_qtvClocks_p -> expandAll();
+}
+
+void
+CClockTreeDlg::mouseMoveEvent ( QMouseEvent *  /*f_event_p*/ )
+{
+    activateWindow();
+}
+

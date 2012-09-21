@@ -23,10 +23,47 @@
 #ifndef __MATVECTOR_H
 #define __MATVECTOR_H
 
+/**
+*******************************************************************************
+*
+* @file matVector.cpp
+*
+* \class CMatVector
+* \author Hernan Badino (hernan.badino@gmail.com)
+*
+* \brief Subclass of CVector with instantiation of cv::Mat as data
+* type. It adds the constructor for obtaining data from a
+* TInpImgFromFileVector object.
+*
+*******************************************************************************/
+
 #include "qcvVector.h"
+#include "imageFromFile.h"
 #include <cv.h>
 
-typedef CVector<cv::Mat> TMatVector;
+namespace QCV
+{
+    //typedef CVector<cv::Mat> CMatVector;
+    
+    class CMatVector: public CVector<cv::Mat>
+    {
+    public:
+        CMatVector(): CVector<cv::Mat> ( ) { }
+        CMatVector(int f_n_i): CVector<cv::Mat> ( f_n_i ) { }
+        CMatVector(int f_n_i, cv::Mat f_defval): CVector<cv::Mat> ( f_n_i, f_defval ) { }
+        CMatVector(cv::Mat f_elem): CVector<cv::Mat> ( f_elem ) { }
+        CMatVector(const CMatVector &f_vec): CVector<cv::Mat> ( f_vec ) { }
 
+        CMatVector ( const TInpImgFromFileVector & f_inp_v )
+        {
+            for (int i = 0; i < f_inp_v.size(); ++i)
+            {
+                std::vector<cv::Mat>::push_back ( f_inp_v[i].image );
+            }
+        }
+    };
+};
+
+    
 
 #endif

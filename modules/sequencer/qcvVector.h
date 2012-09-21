@@ -81,13 +81,11 @@ namespace QCV
             return defval;
         }
 
-    private:
+    protected:
 
         /// It must have a constructor without params
         static _Type m_default;        
     };
-
-    typedef CVector<cv::Mat> TMatVector;
 }
 
 #endif  //__QCVVECTOR_H

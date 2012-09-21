@@ -25,17 +25,12 @@
 /**
  *******************************************************************************
  *
- * @file seqDevHDImg.h
+ * @file imageFromFile.h
  *
- * \class seqDevHDImgSeq
+ * \class SInpImgFromFile
  * \author Hernan Badino (hernan.badino@gmail.com)
  *
- * \brief Device control class for reading sequence of image from the hard disk.
- *
- * This class is derived from CSeqDeviceControl and implements the virtual
- * functions in the parent class. It registers as output the images read from a 
- * directory specified throught parameters obtained from a xml file (with a call to
- * loadNewSequence ( const std::string )).
+ * \brief Simple struct to load images from file and pass them to the operators
  *
  *******************************************************************************/
 

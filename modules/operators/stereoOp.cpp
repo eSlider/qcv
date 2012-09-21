@@ -22,33 +22,35 @@
 /**
 *******************************************************************************
 *
-* @file featureStereoOp.cpp
+* @file stereoOp.cpp
 *
 * \class CStereoOp
 * \author Hernan Badino (hernan.badino@gmail.com)
-*
+* \brief Compute stereo using OpenCV stereo algorithms
 *
 *******************************************************************************/
 
 /* INCLUDES */
 #include <limits>
 
-#include "stereo.h"
+#include "stereoOp.h"
 #include "paramMacros.h"
 #include "drawingList.h"
 #include "paramIOFile.h"
 #include "ceParameter.h"
 
-#include "imgScaler.h"
+#include "imgScalerOp.h"
 #include "matVector.h"
 
 using namespace QCV;
 
+static const char g_scalerName_str[] = "Stereo Image Scaler";
+
 /// Constructors.
 CStereoOp::CStereoOp ( COperatorBase * const f_parent_p,
                        const std::string     f_name_str )
-    : COperator<TInpImgFromFileVector, TOutputType>
-      (                       f_parent_p, f_name_str ),
+    : COperator<CMatVector, TOutputType> (
+                              f_parent_p, f_name_str ),
       m_alg_e (                                SA_BM ),
       m_sgbm (                                       ),
       m_sbm (                                        ),
@@ -61,8 +63,9 @@ CStereoOp::CStereoOp ( COperatorBase * const f_parent_p,
 {
     registerDrawingLists();
     registerParameters();
+    
 
-    addChild ( new CImageScalerOp ( this, "Left image scaler", 2) );
+    addChild ( new CImageScalerOp ( this, g_scalerName_str, 2) );
     
 }
 
@@ -100,7 +103,8 @@ CStereoOp::registerParameters()
     
 
     ADD_INT_PARAMETER ( "Downscale factor",
-                        "Downscale factor for left and right images",
+                        "Downscale factor for left and right images. Disparity image will have\n"
+                        "the original image size.",
                         m_scale_i,
                         this,
                         Downscale,
@@ -318,14 +322,11 @@ CStereoOp::cycle()
          m_leftImg.size() == m_rightImg.size() &&
          m_leftImg.type() == m_rightImg.type() )
     {
-        TMatVector vec = m_leftImg;
+        CMatVector vec = m_leftImg;
         vec.push_back(m_rightImg);
         
-        if ( getChild<CImageScalerOp *>("Left image scaler") -> compute ( vec, vec ) )
-        {
-            m_leftImg  = vec[0];
-            m_rightImg = vec[1];
-        }        
+        /// Scale images
+        getChild<CImageScalerOp *>( g_scalerName_str ) -> compute ( vec, vec );     
 
         cv::Mat auxImg;
 
@@ -335,7 +336,7 @@ CStereoOp::cycle()
         numberOfDisparities = ceil(m_sbm.state->numberOfDisparities / (16.0*m_scale_i)) * 16;
         m_sbm.state->numberOfDisparities = numberOfDisparities;
 
-        cv::Size size = m_leftImg.size();
+        cv::Size size = vec[0].size();
     
         cv::Mat tmpLeft, tmpRight;
 
@@ -344,14 +345,14 @@ CStereoOp::cycle()
             size.width  /= m_scale_i;
             size.height /= m_scale_i;
             
-            cv::resize(m_leftImg,  tmpLeft, size);
-            cv::resize(m_rightImg, tmpRight, size);
+            cv::resize(vec[0], tmpLeft, size);
+            cv::resize(vec[1], tmpRight, size);
             auxImg = cv::Mat(size, CV_16S );
         }
         else
         {
-            tmpLeft  = m_leftImg;
-            tmpRight = m_rightImg;
+            tmpLeft  = vec[0];
+            tmpRight = vec[1];
         }
         
         if ( m_alg_e == SA_SGBM ) 
@@ -415,29 +416,30 @@ CStereoOp::cycle()
         
         if (m_scale_i != 1)
         {
-            cv::resize(auxImg, m_dispImg, m_leftImg.size(), cv::INTER_NEAREST );
+            cv::resize(auxImg, m_dispImg, vec[0].size(), 0, 0, cv::INTER_NEAREST );
             m_dispImg *= m_scale_i;
         }
     }
 
-    return COperatorBase::cycle();
+    return true; //COperatorBase::cycle();
 }
 
 /// Show event.
 bool CStereoOp::show()
 {
-    CDrawingList *list_p  = getDrawingList ( "Left Image");
-    
-    /// Set the screen size if thei is the parent operator.
+    /// Set the screen size if this is the parent operator.
     if ( getParentOp() == NULL )
-        setScreenSize ( m_leftImg.size() );    
-
+        setScreenSize ( m_leftImg.size() );
+    
+    CDrawingList *list_p  = getDrawingList ( "Left Image");    
     list_p -> clear();    
-    list_p->addImage ( m_leftImg );
+    if (list_p -> isVisible() )
+        list_p->addImage ( m_leftImg );
 
     list_p = getDrawingList ( "Right Image");
     list_p -> clear();    
-    list_p->addImage ( m_rightImg );
+    if (list_p -> isVisible() )
+        list_p->addImage ( m_rightImg );
 
     list_p = getDrawingList ( "Colored Disparity Image");
     list_p -> clear();    
@@ -445,7 +447,8 @@ bool CStereoOp::show()
 
     list_p = getDrawingList ( "B/W Disparity Image");
     list_p -> clear();    
-    list_p->addImage ( m_dispImg, 0, 0, m_dispImg.size().width, m_dispImg.size().height, 100);
+    if (list_p -> isVisible() )
+        list_p->addImage ( m_dispImg, 0, 0, m_dispImg.size().width, m_dispImg.size().height, 100);
 
     return COperatorBase::show();
 }
@@ -476,7 +479,7 @@ CStereoOp::keyPressed ( CKeyEvent * f_event_p )
 
 /// Set the input of this operator
 bool
-CStereoOp::setInput  ( const TInpImgFromFileVector & f_input_v )
+CStereoOp::setInput  ( const CMatVector & f_input_v )
 {
     if ( f_input_v.size () < 2 )
     {
@@ -484,8 +487,8 @@ CStereoOp::setInput  ( const TInpImgFromFileVector & f_input_v )
         return false;
     }
 
-    m_leftImg  = f_input_v[0].image;
-    m_rightImg = f_input_v[1].image;
+    m_leftImg  = f_input_v[0];
+    m_rightImg = f_input_v[1];
     return true;
 }
 
@@ -497,3 +500,4 @@ CStereoOp::getOutput ( TOutputType & f_output ) const
     return true;
 }
 
+    

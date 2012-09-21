@@ -25,12 +25,11 @@
 /**
 *******************************************************************************
 *
-* @file opencvstereoOp.cpp
+* @file imgScalerOp.h
 *
-* \class COpencvstereoOp
+* \class CImageScalerOp
 * \author Hernan Badino (hernan.badino@gmail.com)
-*
-* \brief Class for computing stereo.
+* \brief Class for resizing images.
 *
 *******************************************************************************/
 
@@ -52,7 +51,7 @@
 
 namespace QCV
 {
-    class CImageScalerOp: public COperator<TMatVector, TMatVector>
+    class CImageScalerOp: public COperator<CMatVector, CMatVector>
     {
     public:
 
@@ -67,6 +66,7 @@ namespace QCV
     public:    
         ADD_PARAM_ACCESS         (bool,        m_compute_b,          Compute );
         ADD_PARAM_ACCESS         (EScaleMode,  m_scaleMode_e,        ScaleMode );
+        ADD_PARAM_ACCESS         (int,         m_interpolMode_i,     InterpolationMode );
 
         bool              setScaleFactor ( S2D<float> f_factors );
         S2D<float>        getScaleFactor ( ) const;
@@ -105,10 +105,10 @@ namespace QCV
     /// I/O registration.
     public:
         /// Set the input of this operator
-        bool setInput  ( const TMatVector & f_input );
+        bool setInput  ( const CMatVector & f_input );
 
         /// Gets the output of this operator
-        bool getOutput ( TMatVector & f_output ) const;
+        bool getOutput ( CMatVector & f_output ) const;
 
     protected:
 
@@ -133,11 +133,13 @@ namespace QCV
         S2D<unsigned int>           m_scaleSize;
 
         /// Input image
-        TMatVector                  m_img_v;
+        CMatVector                  m_img_v;
 
         /// Scaled image
-        TMatVector                  m_scaledImgs_v;
+        CMatVector                  m_scaledImgs_v;
 
+        /// Interpolation mode
+        int                         m_interpolMode_i;
     };
 }
 #endif // __IMGSCALEROP_H

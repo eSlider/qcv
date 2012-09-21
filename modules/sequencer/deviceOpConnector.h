@@ -65,7 +65,7 @@ namespace QCV
     };
 
         
-    template <class _InType, class _OutType>
+    template <class _InType, class _OutType, class _DevType=_InType>
     class CDeviceOpConnector: public CDeviceOpConnectorBase
     {
     public:
@@ -73,7 +73,7 @@ namespace QCV
     public:
         
         CDeviceOpConnector ( COperator<_InType, _OutType> * f_rootOp_p,
-                          CSeqDeviceControl<_InType> *   f_deviceOp_p );
+                             CSeqDeviceControl<_DevType> *   f_deviceOp_p );
 
         virtual ~CDeviceOpConnector() {};
         
@@ -97,25 +97,25 @@ namespace QCV
     private:
 
         /// Input device.
-        CSeqDeviceControl<_InType> *      m_device_p;
+        CSeqDeviceControl<_DevType> *     m_device_p;
 
         /// Root operator
         COperator<_InType, _OutType> *    m_rootOp_p;
 
         /// Input Object
-        _InType                           m_input;
+        _DevType                          m_input;
     };
 
-    template <class _InType, class _OutType>
-    CDeviceOpConnector<_InType, _OutType>::CDeviceOpConnector ( COperator<_InType, _OutType> * f_rootOp_p,
-                                                          CSeqDeviceControl<_InType> *   f_device_p ) :
+    template <class _InType, class _OutType, class _DevType>
+    CDeviceOpConnector<_InType, _OutType,  _DevType>::CDeviceOpConnector ( COperator<_InType, _OutType> *  f_rootOp_p,
+                                                                           CSeqDeviceControl<_DevType> *   f_device_p ) :
         m_device_p  (          f_device_p ),
         m_rootOp_p  (          f_rootOp_p )
     {        
     }
 
-    template <class _InType, class _OutType>
-    bool CDeviceOpConnector<_InType, _OutType>::setOperatorInput ( )
+    template <class _InType, class _OutType, class _DevType>
+    bool CDeviceOpConnector<_InType, _OutType, _DevType>::setOperatorInput ( )
     {
         bool success_b = m_device_p -> registerOutputs ( m_input );
         

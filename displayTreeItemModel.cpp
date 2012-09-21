@@ -43,8 +43,6 @@ CDisplayTreeItemModel::CDisplayTreeItemModel (  CDisplayOpNode *  f_rootNode_p,
 {
     m_rootNode_p = new CDisplayOpNode ( NULL, NULL );
     m_rootNode_p -> appendChild( f_rootNode_p );
-
-    //m_rootNode_p = f_rootNode_p;
 }
 
 CDisplayTreeItemModel::~CDisplayTreeItemModel ()
@@ -239,7 +237,7 @@ CDisplayTreeItemModel::setData ( const QModelIndex & f_index,
             CDisplayNode *  node_p =
                 static_cast<CDisplayNode *>( f_index.internalPointer() );
 
-            node_p ->  setVisibility( f_value.toBool() );            
+            node_p ->  setVisibility( f_value.toBool() );
 
             emit dataChanged(f_index, f_index);
             return true;

@@ -46,6 +46,10 @@ COperatorBase::COperatorBase (  COperatorBase * const f_parent_p /* = NULL */,
     m_paramSet_p = new CParameterSet(NULL);
     m_paramSet_p -> setName ( f_name_str );
 
+    /// Register the ensure existance of root when the first CClockHandler::getClock
+    /// is called.
+    registerClock ( "Cycle");
+
     if ( m_parent_p )
         getParentOp() -> getParameterSet ()->addSubset ( m_paramSet_p );
 }

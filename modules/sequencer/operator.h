@@ -103,12 +103,18 @@ namespace QCV
         virtual bool compute  ( const _InType & f_input,
                                 _OutType      & f_output )
         {
+            startClock ("Cycle");
+
             if (!setInput (f_input))
                 return false;
-
+            
             if ( !cycle() ) return false;
             
-            return getOutput (f_output);            
+            bool res_b =  getOutput (f_output);
+            
+            stopClock ("Cycle");
+
+            return res_b;
         }
         
 

@@ -35,10 +35,10 @@
 using namespace QCV;
 
 
-CClockOpNode::CClockOpNode ( CNode *               f_op_p,
+CClockOpNode::CClockOpNode ( CNode *                   f_op_p,
                              CClockTreeNodeAbstract *  f_parent_p )
         : CClockTreeNodeAbstract (      f_parent_p  ),
-          m_container_p (                     f_op_p )
+          m_container_p (                    f_op_p )
 {
 }
 
@@ -120,9 +120,27 @@ CClockOpNode::getOpChild ( const unsigned int f_number_ui ) const
  void 
  CClockOpNode::printClock( std::string f_prefix_str )
  {
-     for (unsigned int i = 0;  i < getChildCount(); ++i)
-         getChild ( i ) -> printClock( f_prefix_str + " " );
+     if (getChildCount())
+     {
+         if (f_prefix_str != "")
+             printf("%s * %s\n", f_prefix_str.c_str(), getName().c_str() );
+         else
+             printf("* %s\n", getName().c_str() );
+         
+         if ( getClockCount() )
+         {
+             for (unsigned int i = 0;  i < getClockCount(); ++i)
+                 getClockChild ( i ) -> printClock ( f_prefix_str + "  " );
+         }
+         
+         if ( getOpCount() )
+         {
+             for (unsigned int i = 0;  i < getOpCount(); ++i)
+                 getOpChild ( i ) -> printClock( f_prefix_str + "  " );
+         }
+     }
  }
+
 
 
 CClockNode *
@@ -149,7 +167,7 @@ CClockOpNode::getClockChild (const unsigned int f_number_ui ) const
 void
 CClockNode::printClock(std::string f_prefix_str )
 {
-    printf("%s", f_prefix_str.c_str());
+    printf("%s  ", f_prefix_str.c_str());
     m_clock_p -> print();
     
     for (unsigned int i = 0;  i < getChildCount(); ++i)

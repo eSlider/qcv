@@ -22,7 +22,7 @@
 #include <QApplication>
 #include <QTimer>
 
-#include "stereo.h"
+#include "stereoOp.h"
 #include "mainWindow.h"
 #include "deviceOpConnector.h"
 #include "seqDevHDImg.h"
@@ -47,7 +47,7 @@ int main(int f_argc_i, char *f_argv_p[])
     device.loadNewSequence ( "sequence.xml" );
 
     /// Let's connect the device to the root operator
-    CDeviceOpConnector<TInpImgFromFileVector, cv::Mat> connector ( rootOp_p, &device );
+    CDeviceOpConnector<CMatVector, cv::Mat, TInpImgFromFileVector> connector ( rootOp_p, &device );
 
     /// Create the main window passing the connector. 2x2 default screen count.
     CMainWindow *mwind = new CMainWindow ( &connector, 2, 2 );

@@ -66,8 +66,10 @@ namespace QCV
 
     protected:
         
-        //void startDrag( Qt::DropActions supportedActions );
-
+        void closeEvent(QCloseEvent *f_event_p);
+        virtual void focusInEvent ( QFocusEvent * f_event_p );
+        virtual void mouseMoveEvent ( QMouseEvent * f_event_p );
+        
     private:
         
         /// Tree View

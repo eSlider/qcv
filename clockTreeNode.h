@@ -125,7 +125,7 @@ namespace QCV
         CClockNode ( CClock *                  f_clock_p,
                      CClockTreeNodeAbstract *  f_parent_p = NULL )
                 : CClockTreeNodeAbstract (      f_parent_p  ),
-                  m_clock_p (           f_clock_p ) {};
+                  m_clock_p (                     f_clock_p ) {};
         
         /// Destructor. 
         virtual ~CClockNode() 

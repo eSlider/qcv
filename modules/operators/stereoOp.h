@@ -25,12 +25,11 @@
 /**
 *******************************************************************************
 *
-* @file opencvstereoOp.cpp
+* @file stereoOp.h
 *
-* \class COpencvstereoOp
+* \class CStereoOp
 * \author Hernan Badino (hernan.badino@gmail.com)
-*
-* \brief Class for computing stereo.
+* \brief Compute stereo using OpenCV stereo algorithms
 *
 *******************************************************************************/
 
@@ -41,7 +40,7 @@
 #include <cv.h>
 #include <highgui.h>
 
-#include "imageFromFile.h"
+#include "matVector.h"
 #include "operator.h"
 #include "colorEncoding.h"
 
@@ -95,7 +94,7 @@ namespace QCV
 
     typedef cv::Mat TOutputType;
 
-    class CStereoOp: public COperator<TInpImgFromFileVector, TOutputType>
+    class CStereoOp: public COperator<CMatVector, TOutputType>
     {
     /// Constructor, Desctructors
     public:    
@@ -144,7 +143,7 @@ namespace QCV
     /// I/O registration.
     public:
         /// Set the input of this operator
-        bool setInput  ( const TInpImgFromFileVector & f_input );
+        bool setInput  ( const CMatVector & f_input );
 
         /// Gets the output of this operator
         bool getOutput ( TOutputType & f_output ) const;

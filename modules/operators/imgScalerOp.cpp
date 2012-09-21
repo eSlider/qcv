@@ -22,7 +22,7 @@
 /**
 *******************************************************************************
 *
-* @file imgScaler.cpp
+* @file imgScalerOp.cpp
 *
 * \class CImageScalerOp
 * \author Hernan Badino (hernan.badino@gmail.com)
@@ -33,7 +33,7 @@
 /* INCLUDES */
 #include <limits>
 
-#include "imgScaler.h"
+#include "imgScalerOp.h"
 
 #include "paramMacros.h"
 #include "drawingList.h"
@@ -46,12 +46,15 @@ using namespace QCV;
 CImageScalerOp::CImageScalerOp ( COperatorBase * const f_parent_p,
                                  const std::string f_name_str,
                                  const int f_preferedNumImgs_i )
-    : COperator<TMatVector, TMatVector>
+    : COperator<CMatVector, CMatVector>
       (                       f_parent_p, f_name_str ),
       m_compute_b (                            false ),
       m_scaleMode_e (                      SM_FACTOR ),
       m_scaleFactor (                     0.5f, 0.5f ),
-      m_scaleSize (                         320, 240 )
+      m_scaleSize (                         320, 240 ),
+      m_img_v (                                      ),
+      m_scaledImgs_v (                               ),
+      m_interpolMode_i (            cv::INTER_LINEAR )
 {
     registerDrawingLists( f_preferedNumImgs_i );
     registerParameters ( f_preferedNumImgs_i );
@@ -117,6 +120,22 @@ CImageScalerOp::registerParameters( int f_numReg_i )
                              ScaleSize,
                              CImageScalerOp );
 
+    CEnumParameter<int> * scaleMode_p = static_cast<CEnumParameter<int> * > (
+        ADD_ENUM_PARAMETER( "Interpolation",
+                            "Interpolation type to use.",
+                            int,
+                            m_interpolMode_i,
+                            this,
+                            InterpolationMode,
+                            CImageScalerOp ) );
+    
+    scaleMode_p -> addDescription ( cv::INTER_NEAREST,  "Nearest Neighbor" );
+    scaleMode_p -> addDescription ( cv::INTER_LINEAR,   "Bilinear interpolation" );
+    scaleMode_p -> addDescription ( cv::INTER_AREA,     "Resampling using pixel area relation" );
+    scaleMode_p -> addDescription ( cv::INTER_CUBIC,    "Bicubic interpolation" );
+    scaleMode_p -> addDescription ( cv::INTER_LANCZOS4, "Lanczos" );
+    
+
     END_PARAMETER_GROUP;
 
     BEGIN_PARAMETER_GROUP("Display", false, SRgb(220,0,0));
@@ -172,12 +191,16 @@ CImageScalerOp::cycle()
                 if (size == m_img_v[i].size())
                     m_scaledImgs_v[i] = m_img_v[i];
                 else
-                    cv::resize(m_img_v[i], m_scaledImgs_v[i], size);
+                {
+                    cv::resize(m_img_v[i], m_scaledImgs_v[i], size, 0, 0, m_interpolMode_i);
+                }
             }
             else
                 m_scaledImgs_v[i] = cv::Mat(0, 0, CV_8UC1);
         }
     }
+    else
+        m_scaledImgs_v = m_img_v;
     
     return COperatorBase::cycle();
 }
@@ -231,7 +254,7 @@ bool CImageScalerOp::exit()
 
 /// Set the input of this operator
 bool
-CImageScalerOp::setInput  ( const TMatVector & f_input )
+CImageScalerOp::setInput  ( const CMatVector & f_input )
 {
     m_img_v = f_input;
     return true;
@@ -239,7 +262,7 @@ CImageScalerOp::setInput  ( const TMatVector & f_input )
 
 /// Gets the output of this operator
 bool
-CImageScalerOp::getOutput ( TMatVector & f_output ) const
+CImageScalerOp::getOutput ( CMatVector & f_output ) const
 {
     if ( m_scaledImgs_v.size() == 0 )
         return false;

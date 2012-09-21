@@ -26,6 +26,7 @@ find_package ( OpenCV REQUIRED )
 set (QCV_LIB qcv )
 set (QCVParamEditor_LIB qcvpeditor )
 set (QCVSequencer_LIB qcvsequencer )
+set (QCVOperators_LIB qcvoperators )
 
 # Include directories before QGLViewer otherwise headers will be found first in 
 include_directories( "$ENV{QCV_DIR}/" )
@@ -33,6 +34,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( "$ENV{QCV_DIR}/include" )
 include_directories( "$ENV{QCV_DIR}/modules/paramEditor" )
 include_directories( "$ENV{QCV_DIR}/modules/sequencer" )
+include_directories( "$ENV{QCV_DIR}/modules/operators" )
 
 
 #################################################
@@ -42,8 +44,7 @@ include(${QT_USE_FILE})
 ##### SOURCE FILES
 
 set ( LIBCHECKSTEREOPAIR_SRC
-                main.cpp
-                stereo.cpp imgScaler.cpp)
+                main.cpp )
 
 ##########################
 
@@ -53,9 +54,10 @@ add_executable ( stereo ${LIBCHECKSTEREOPAIR_SRC} )
 
 target_link_libraries(stereo ${QT_LIBRARIES} 
                              -lglut -lGL -lGLU
-                             ${QCV_LIB} 
+                             ${QCVOperators_LIB} 
                              ${QCVParamEditor_LIB} 
                              ${QCVSequencer_LIB} 
+                             ${QCV_LIB}
                              ${CMAKE_THREAD_LIBS_INIT} 
                              ${OpenCV_LIBS})
 

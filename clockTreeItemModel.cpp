@@ -40,11 +40,8 @@ CClockTreeItemModel::CClockTreeItemModel (  CClockOpNode *  f_rootNode_p,
         : QAbstractItemModel (      f_parent_p ),
           m_rootNode_p (          f_rootNode_p )
 {
-    //m_rootNode_p = new CClockOpNode ( NULL, NULL );
-    
-    //m_rootNode_p -> appendChild( f_rootNode_p );
-    //printf("Created RootNode is %p child %i, added child is %p (%s)\n", m_rootNode_p, m_rootNode_p->getChildCount(),
-    //       f_rootNode_p, f_rootNode_p?f_rootNode_p->getName().c_str():"rootNode is null");
+    m_rootNode_p = new CClockOpNode ( NULL, NULL );
+    m_rootNode_p -> appendChild( f_rootNode_p );
 }
 
 CClockTreeItemModel::~CClockTreeItemModel ()
@@ -107,15 +104,12 @@ CClockTreeItemModel::flags ( const QModelIndex &f_index) const
     if (!f_index.isValid())
         return 0;
 
-    Qt::ItemFlags flags_e = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-
-    //CClockTreeNodeAbstract *node_p = static_cast<CClockTreeNodeAbstract*>(f_index.internalPointer());
-
-    //if (node_p  -> getNodeType() != CClockTreeNodeAbstract::NT_CONTAINER )
-    //    flags_e |= Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
+    Qt::ItemFlags flags_e = Qt::ItemIsEnabled;
     
-    //if (f_index.column() == 2)
-    //    flags_e |= Qt::ItemIsUserCheckable;
+    CClockTreeNodeAbstract *node_p = static_cast<CClockTreeNodeAbstract*>(f_index.internalPointer());
+    
+    if (node_p  -> getNodeType() != CClockTreeNodeAbstract::NT_CONTAINER )
+        flags_e |= Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
     
     return flags_e;
 }
@@ -245,5 +239,5 @@ CClockTreeItemModel::resetTimes()
 void
 CClockTreeItemModel::printTimes()
 {
-    m_rootNode_p -> printClock();    
+    m_rootNode_p -> getOpChild((unsigned int)0) -> printClock();    
 }

@@ -53,6 +53,8 @@
  *******************************************************************************/
 
 /* INCLUDES */
+#include <typeinfo>
+
 #include "events.h"
 
 #include "standardTypes.h"

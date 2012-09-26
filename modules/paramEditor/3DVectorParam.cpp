@@ -30,6 +30,7 @@
 
 /* INCLUDES */
 #include <limits>
+#include <stdio.h>
 #include "3DVectorParam.h"
 #include "3DVectorParamEditor.h"
 #include "stringOp.h"

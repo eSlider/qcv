@@ -30,13 +30,11 @@ set (QCVParamEditor_LIB qcvpeditor )
 set (QCVSequencer_LIB qcvsequencer )
 set (QCVOperators_LIB qcvoperators )
 
-# Include directories before QGLViewer otherwise headers will be found first in 
-include_directories( "$ENV{QCV_DIR}/" )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
-include_directories( "$ENV{QCV_DIR}/include" )
-include_directories( "$ENV{QCV_DIR}/modules/paramEditor" )
-include_directories( "$ENV{QCV_DIR}/modules/sequencer" )
-include_directories( "$ENV{QCV_DIR}/modules/operators" )
+# Include directories
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/paramEditor" )
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/sequencer" )
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/operators" )
 
 
 #################################################

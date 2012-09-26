@@ -28,9 +28,7 @@ find_package ( OpenCV REQUIRED )
 set (QCV_LIB qcv )
 
 # Include directories before QGLViewer otherwise headers will be found first in 
-include_directories( "$ENV{QCV_DIR}/" )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
-include_directories( "$ENV{QCV_DIR}/include" )
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
 
 #################################################

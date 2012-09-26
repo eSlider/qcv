@@ -57,7 +57,9 @@ namespace QCV
         {
         public:
             ADD_PARAM_ACCESS (bool,        extended,            Extended );
+#if CV_MAJOR_VERSION > 2 || ( CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION >= 2 )
             ADD_PARAM_ACCESS (bool,        upright,             Upright );
+#endif
             ADD_PARAM_ACCESS (double,      hessianThreshold,    HessianThreshold );
             ADD_PARAM_ACCESS (int,         nOctaves,            Octaves );
             ADD_PARAM_ACCESS (int,         nOctaveLayers,       OctaveLayers );

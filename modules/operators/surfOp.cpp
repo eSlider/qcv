@@ -108,13 +108,14 @@ CSurfOp::registerParameters( )
                            Extended,
                            CCvSurf );
 
+#if CV_MAJOR_VERSION > 2 || ( CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION >= 2 )
       ADD_BOOL_PARAMETER ( "Upright",
                            "Upright version of SURF (no orientation).",
                            false,
                            &m_surfOp,
                            Upright,
                            CCvSurf );
-
+#endif
       ADD_DOUBLE_PARAMETER ( "Hessian Threshold",
                              "Hessian Threshold for detection of keypoints.",
                              3000,

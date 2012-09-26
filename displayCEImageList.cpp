@@ -30,7 +30,7 @@
 /* INCLUDES */
 #include "displayCEImageList.h"
 
-#include <opencv2/core/types_c.h>
+#include <highgui.h>
 
 #include "glheader.h"
 

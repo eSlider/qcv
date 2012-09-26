@@ -32,7 +32,6 @@
 
 #include "displayImageList.h"
 
-#include <opencv2/core/types_c.h>
 #include <highgui.h>
 
 #include <stdio.h>

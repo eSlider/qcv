@@ -68,7 +68,6 @@ set ( LIBQCV_SRC
      simpleWindow.cpp
      node.cpp
      polygonList.cpp
-     qrc_symbols.cpp
      rectList.cpp
      textList.cpp
      triangleList.cpp

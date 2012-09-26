@@ -47,7 +47,7 @@ CImageScalerOp::CImageScalerOp ( COperatorBase * const f_parent_p,
                                  const int f_preferedNumImgs_i )
     : COperator<CMatVector, CMatVector>
       (                       f_parent_p, f_name_str ),
-      m_compute_b (                            false ),
+      m_compute_b (                             true ),
       m_scaleMode_e (                      SM_FACTOR ),
       m_scaleFactor (                     0.5f, 0.5f ),
       m_scaleSize (                         320, 240 ),
@@ -69,12 +69,12 @@ CImageScalerOp::registerDrawingLists( int f_numReg_i )
         sprintf(str, "Input Image %i", i);        
         registerDrawingList ( str,
                               S2D<int> (0, 0),
-                              false);
+                              i==0);
 
         sprintf(str, "Output Image %i", i);        
         registerDrawingList ( str,
                               S2D<int> (1, 0),
-                              false);
+                              i==0);
     }    
 }
 

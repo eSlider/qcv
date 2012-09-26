@@ -41,6 +41,7 @@
 #include <highgui.h>
 
 #include "operator.h"
+#include "colorEncoding.h"
 
 /* PROTOTYPES */
 
@@ -88,12 +89,16 @@ namespace QCV
         /// Exit event.
         virtual bool exit();
 
+        /// Mouse moved.
+        virtual void mouseMoved (     CMouseEvent * f_event_p );
+
     /// Parameters
     public:
 
         ADD_PARAM_ACCESS (bool, m_compute_b,               Compute );
         ADD_PARAM_ACCESS (bool, m_useProvidedKeypoints_b,  UseProvidedKeypoints );
-       
+        ADD_PARAM_ACCESS (bool, m_computeDescriptors_b,    ComputeDescriptors );
+
     /// I/O registration (implementation required by COperator)
     public:
         /// Set the input of this operator
@@ -141,7 +146,13 @@ namespace QCV
 
         /// Detected/Input Keypoints 
         std::vector<float>          m_descriptors;
-        
+
+        /// Response color encoding
+        CColorEncoding              m_respCE;
+
+        /// Copute descriptors?
+        bool                        m_computeDescriptors_b;
+
     };
 }
 #endif // __SURFOP_H

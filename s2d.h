@@ -41,6 +41,10 @@ namespace QCV
             x ( f_size.width  ),
             y ( f_size.height ) { }
         
+        S2D ( const cv::Point_<int> f_pos ): 
+            x ( f_pos.x  ),
+            y ( f_pos.y ) { }
+        
         int operator < ( const S2D<Type> &f_other ) const
         { 
             return ( y < f_other.y || 
@@ -62,6 +66,11 @@ namespace QCV
         {
             return cv::Size ( width, height );
         }
+
+        operator cv::Point_<int> ( )
+        {
+            return cv::Point_<int>(x,y);
+        }        
 
         bool isValid () const
         { 

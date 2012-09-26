@@ -39,7 +39,7 @@ int main(int f_argc_i, char *f_argv_p[])
         strncpy(deviceFile_p, f_argv_p[1], 256);
     }
     else
-        printf("Usage: %s [file], where file can be a video or camera device\n", f_argv_p[0]);
+        printf("\n\nUsage: %s [file], where file can be a video or camera device\n", f_argv_p[0]);
 
     /// Create app
     QApplication app (f_argc_i, f_argv_p);

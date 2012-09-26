@@ -37,6 +37,7 @@
 
 #include "paramMacros.h"
 #include "drawingList.h"
+#include "ceParameter.h"
 
 using namespace QCV;
 
@@ -50,7 +51,10 @@ CSurfOp::CSurfOp ( COperatorBase * const f_parent_p,
       m_img (                                        ),
       m_imgAux (                                     ),
       m_keyPoints (                                  ),
-      m_descriptors (                                )
+      m_descriptors (                                ),
+      m_respCE (   CColorEncoding::CET_BLUE2GREEN2RED,
+                           S2D<float> ( 3000, 5000 ) ),
+      m_computeDescriptors_b (                  true )
 {
     registerDrawingLists(  );
     registerParameters (  );
@@ -88,8 +92,17 @@ CSurfOp::registerParameters( )
                            UseProvidedKeypoints,
                            CSurfOp );
 
+      ADD_BOOL_PARAMETER ( "Compute Descriptors",
+                           "Compute descriptors for the detected keypoints.\n"
+                           "Keypoints provided by the user will be ignored\n"
+                           "if this parameters is false.",
+                           m_computeDescriptors_b,
+                           this,
+                           ComputeDescriptors,
+                           CSurfOp );
+
       ADD_BOOL_PARAMETER ( "Extended",
-                           "",
+                           "Compute a descriptor of 128 elements instead of 64.",
                            false,
                            &m_surfOp,
                            Extended,
@@ -132,6 +145,11 @@ CSurfOp::registerParameters( )
 
       addDrawingListParameter ( "Keypoints" );
 
+      addColorEncodingParameter (  m_respCE,
+                                   getParameterSet(),
+                                   "Response",
+                                   "Color encoding for the response of the filter." );
+
     END_PARAMETER_GROUP;
 }
 
@@ -147,7 +165,9 @@ CSurfOp::cycle()
     if ( m_compute_b )
     {
         if ( m_img.type() == CV_8UC3 )
-        {
+        {            
+            m_descriptors.clear();
+
             IplImage src = (IplImage)m_img;
 
             if (m_imgAux.size() != m_img.size())
@@ -156,12 +176,18 @@ CSurfOp::cycle()
             IplImage dst = (IplImage)m_imgAux;
 
             cvCvtColor ( &src, &dst, CV_RGB2GRAY);
- 
-            m_surfOp(m_imgAux, cv::Mat(), m_keyPoints, m_descriptors, m_useProvidedKeypoints_b );
+            
+            if (m_computeDescriptors_b)
+                m_surfOp(m_imgAux, cv::Mat(), m_keyPoints, m_descriptors, m_useProvidedKeypoints_b );
+            else
+                m_surfOp(m_imgAux, cv::Mat(), m_keyPoints );   
         }
         else
         {
-            m_surfOp(m_img, cv::Mat(), m_keyPoints, m_descriptors, m_useProvidedKeypoints_b );
+            if (m_computeDescriptors_b)
+                m_surfOp(m_img, cv::Mat(), m_keyPoints, m_descriptors, m_useProvidedKeypoints_b );
+            else
+                m_surfOp(m_img, cv::Mat(), m_keyPoints );
         }
     }
     
@@ -171,6 +197,8 @@ CSurfOp::cycle()
 /// Show event.
 bool CSurfOp::show()
 {
+    getDrawingList("Descriptor Overlay" )->clear();
+    
     CDrawingList * list_p = getDrawingList("Input Image" );
 
     list_p -> clear();
@@ -187,17 +215,26 @@ bool CSurfOp::show()
     {
         for (int i = 0; i < m_keyPoints.size(); ++i)
         {
-            list_p->setLineColor ( 255, 0, 0);
+            SRgb color;
             
-            list_p->addCircle ( m_keyPoints[i].pt.x, 
-                                m_keyPoints[i].pt.y, 
-                                m_keyPoints[i].size/2 );
+            m_respCE.colorFromValue ( m_keyPoints[i].response,
+                                      color );
+
+            list_p->setLineWidth ( 1. );
+            list_p->setLineColor ( color );
+            list_p->setFillColor ( SRgba(color, 30 ) );
+            
+            list_p->addFilledCircle ( m_keyPoints[i].pt.x, 
+                                      m_keyPoints[i].pt.y, 
+                                      m_keyPoints[i].size/2 );
 
             cv::Vec2d p( m_keyPoints[i].size/2,
                          0 );
             
             if (m_keyPoints[i].angle != -1) /// -1 means not applicable
             {
+                list_p->setLineWidth ( 2. );
+                // Show orientation:
                 double sin_d = sin(m_keyPoints[i].angle);
                 double cos_d = cos(m_keyPoints[i].angle);
                 
@@ -276,5 +313,78 @@ CSurfOp::getOutput ( std::vector<float> & fr_descriptor ) const
                           m_descriptors.end());
     
     return true;
+}
+
+void 
+CSurfOp::mouseMoved (     CMouseEvent * f_event_p )
+{
+    CDrawingList *list1_p = getDrawingList("Keypoints" );
+    CDrawingList *list2_p = getDrawingList("Descriptor Overlay" );
+
+    list2_p -> setPosition ( f_event_p -> displayScreen );
+    list2_p -> clear();    
+    
+    if ( m_descriptors.size() == 0 ||
+         f_event_p -> displayScreen != list1_p->getPosition() ||
+         !list1_p->isVisible() )
+        return;
+
+
+    float minSqDist_f = 10000.f*10000.f;
+    int   idx_i = -1;
+    
+    for (int i = 0; i < m_keyPoints.size(); ++i)
+    {
+        float dx_f = (m_keyPoints[i].pt.x - f_event_p->posInScreen.x);
+        float dy_f = (m_keyPoints[i].pt.y - f_event_p->posInScreen.y);
+        float sqDist_f = dx_f * dx_f + dy_f * dy_f;        
+
+        if ( sqDist_f < minSqDist_f )
+        {
+            idx_i = i;
+            minSqDist_f = sqDist_f;
+        }        
+    }
+
+    /// If distance to keypoint is smaller than 6 pixels.
+    if ( minSqDist_f < 36 )
+    {
+        SRgb color;
+        
+        /// Enhance keypoint circle
+        list2_p -> setVisibility ( true );
+        m_respCE.colorFromValue ( m_keyPoints[idx_i].response,
+                                  color );
+        
+        list2_p->setLineWidth ( 3. );
+        list2_p->setLineColor ( color );
+        list2_p->setFillColor ( SRgba(color, 30 ) );
+            
+        list2_p->addFilledCircle ( m_keyPoints[idx_i].pt.x, 
+                                  m_keyPoints[idx_i].pt.y, 
+                                  m_keyPoints[idx_i].size/2 );
+        
+        /// Build image with descriptor and show it.
+        int descSize_i = m_surfOp.descriptorSize();
+        int width_i = descSize_i/8;
+        
+        cv::Mat descrImg ( 8, width_i, CV_32FC1, &m_descriptors[idx_i*descSize_i] );
+        
+        int dispSize_i = m_img.size().width / 10;
+
+        cv::Rect rect( m_keyPoints[idx_i].pt.x + m_keyPoints[idx_i].size/2 + 5,
+                       m_keyPoints[idx_i].pt.y - dispSize_i / 2.f,
+                       dispSize_i,   // width
+                       dispSize_i ); // height
+
+        list2_p->addImage ( descrImg,
+                            rect.x, rect.y, rect.width, rect.height,
+                            descSize_i ); // scale
+        
+        list2_p->addRectangle ( rect.tl(), rect.br() );
+    }
+
+    /// Let's tell QCV to update the screen
+    updateDisplay();
 }
 

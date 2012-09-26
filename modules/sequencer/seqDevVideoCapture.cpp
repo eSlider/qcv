@@ -184,7 +184,12 @@ std::vector<QDialog *> CSeqDevVideoCapture::getDialogs ( ) const
 
 bool CSeqDevVideoCapture::registerOutputs ( CInpImgFromFileVector & f_input_v )
 {
+    if ( m_imageData_v.size() == 0 ||
+         m_imageData_v[0].image.size().width == 0 )
+        return false;
+    
     f_input_v.clear();
+
     f_input_v.insert ( f_input_v.begin(), 
                        m_imageData_v.begin(), 
                        m_imageData_v.end() );

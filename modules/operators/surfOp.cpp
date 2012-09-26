@@ -46,7 +46,7 @@ CSurfOp::CSurfOp ( COperatorBase * const f_parent_p,
                                  const std::string f_name_str )
     : COperator<cv::Mat, std::vector<cv::KeyPoint> >
       (                       f_parent_p, f_name_str ),
-      m_compute_b (                            false ),
+      m_compute_b (                             true ),
       m_useProvidedKeypoints_b (               false ),
       m_img (                                        ),
       m_imgAux (                                     ),
@@ -63,13 +63,17 @@ CSurfOp::CSurfOp ( COperatorBase * const f_parent_p,
 void
 CSurfOp::registerDrawingLists(  )
 {
+    bool showImages_b = (getParentOp() == NULL);
+    
+    printf("showImages =%i\n", showImages_b);
+    
     registerDrawingList ( "Input Image",
                           S2D<int> (0, 0),
-                          false);
+                          showImages_b);
     
     registerDrawingList ( "Keypoints",
                           S2D<int> (0, 0),
-                          false);    
+                          showImages_b);    
 }
 
 void

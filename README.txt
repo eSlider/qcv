@@ -1,3 +1,5 @@
+QCV v00.30
+
 To install the source code you will need to install first 
 OpenCV 2.X and Qt 4.X. You will also need OpenGL and glut.
 To obtain the code from SourceForge.net you need mercurial

@@ -44,6 +44,7 @@ set ( LIBQCVSequencer_SRC
      seqControlDlg.cpp
      seqControler.cpp
      seqDevHDImg.cpp
+     seqDevVideoCapture.cpp
 )
 
 set ( LIBQCVSequencer_HEADERS 
@@ -58,6 +59,7 @@ set ( LIBQCVSequencer_HEADERS
      seqControler.h
      seqDevHDImg.h
      seqDeviceControl.h
+     seqDevVideoCapture.h
 )  
 
 set ( LIBQCVSequencer_MOC_HEADERS 
@@ -66,6 +68,7 @@ set ( LIBQCVSequencer_MOC_HEADERS
      seqControler.h
      seqDeviceControl.h
      seqDevHDImg.h
+     seqDevVideoCapture.h
  )
 
 set ( LIBQCVSequencer_FORMS

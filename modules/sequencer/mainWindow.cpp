@@ -217,6 +217,8 @@ void CMainWindow::initialize()
         m_rootOp_p -> stopClock ( "Show" );
     }
 
+    m_display_p -> setScreenSize ( m_rootOp_p -> getScreenSize() );
+
     m_rootOp_p -> startClock ( "OpenGL Display" );
     m_display_p -> update(true);
     m_rootOp_p -> stopClock ( "OpenGL Display" );
@@ -247,20 +249,18 @@ void CMainWindow::cycle()
     
     success_b = m_connector_p -> setOperatorInput (  );
 
-    m_display_p -> setScreenSize ( m_rootOp_p -> getScreenSize() );
-
     if ( success_b )
     {
-        //printf("In CMainWindow::cycle calling cycle for root operator\n");
         m_rootOp_p -> startClock ( "Cycle" );
         success_b = m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
 
-        //printf("In CMainWindow::cycle calling show for root operator\n");
         m_rootOp_p -> startClock ( "Show" );
         success_b = m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
     }
+
+    m_display_p -> setScreenSize ( m_rootOp_p -> getScreenSize() );
 
     //printf("In CMainWindow::cycle updating display\n");
     m_rootOp_p -> startClock ( "OpenGL Display" );
@@ -279,7 +279,6 @@ void CMainWindow::stop()
         printf("Device %s not initialized\n", m_device_p ->getName().c_str());
         return;
     }
-
 
     bool success_b;
     
@@ -304,7 +303,9 @@ void CMainWindow::stop()
         m_rootOp_p -> stopClock ( "Show" );
 #if defined HAVE_QGLVIEWER
 #endif
-    }
+    } 
+
+    m_display_p -> setScreenSize ( m_rootOp_p -> getScreenSize() );
 
     m_rootOp_p -> startClock ( "OpenGL Display" );
     m_display_p -> update();

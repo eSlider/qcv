@@ -36,7 +36,6 @@
 #include "stereoOp.h"
 #include "paramMacros.h"
 #include "drawingList.h"
-#include "paramIOFile.h"
 #include "ceParameter.h"
 
 #include "imgScalerOp.h"

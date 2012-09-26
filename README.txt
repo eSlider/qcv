@@ -51,6 +51,9 @@ Check the example binaries installed in the bin directory
 > ./imgViewer --cam imgs/seq/*c0*.jpg --cam imgs/seq/*c1*.jpg
 > ./anaglyphStereo --left imgs/seq/*c0*.jpg --right imgs/seq/*c1*.jpg
 > ./stereoExample
+> ./imgScalerExample somevideo.mpg
+> ./sobelExample2 somevideo.mpg
+> ./surfExample somevideo.mpg
 
-You will need to provide valid images as parameters.
+You will need to provide valid videos as parameters.
 

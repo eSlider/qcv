@@ -19,23 +19,22 @@
  * software, if you do not agree to this license.
  */
 
-#ifndef __SEQDEVHDIMGSEQ_H
-#define __SEQDEVHDIMGSEQ_H
+#ifndef __SEQDEVVIDEOCAPTURE_H
+#define __SEQDEVVIDEOCAPTURE_H
 
 /**
  *******************************************************************************
  *
- * @file seqDevHDImg.h
+ * @file seqDevVideoCapture.h
  *
- * \class CSeqDevHDImg
+ * \class CSeqDevVideoCapture
  * \author Hernan Badino (hernan.badino@gmail.com)
  *
- * \brief Device control class for reading sequence of image from the hard disk.
+ * \brief Device control class for grabbing images from a video or camera.
  *
  * This class is derived from CSeqDeviceControl and implements the virtual
  * functions in the parent class. It registers as output the images read from a 
- * directory specified throught parameters obtained from a xml file (with a call to
- * loadNewSequence ( const std::string )).
+ * camera.
  *
  *******************************************************************************/
 
@@ -46,6 +45,7 @@
 /* INCLUDES */
 #include "seqDeviceControl.h"
 #include "imageFromFile.h"
+#include <highgui.h>
 
 #include <vector>
 #include <map>
@@ -57,23 +57,18 @@ class QDialog;
 
 namespace QCV
 {   
-    /// Max number of images per frame.
-    const unsigned char   m_maxImgsPerFrame_uc = 255;
-
     /* PROTOTYPES */
-    class CSeqDevHDImgDlg;
-    
-    class CSeqDevHDImg: public CSeqDeviceControl<CInpImgFromFileVector>
+    class CSeqDevVideoCapture: public CSeqDeviceControl<CInpImgFromFileVector>
     {
         Q_OBJECT
 
     /// Constructors, Destructors
     public:
         /// Constructor
-        CSeqDevHDImg();
+        CSeqDevVideoCapture( std::string f_file_str = "" );
 
         /// Destructor
-        virtual ~CSeqDevHDImg();
+        virtual ~CSeqDevVideoCapture();
 
     /// Sequence Handling.
     public:
@@ -111,12 +106,12 @@ namespace QCV
     public:
         
         /// Set the number of frames to skip.
-        virtual bool     setFrameSkip(int f_skip_i ) { m_fskip_i = f_skip_i; return true; };
+        virtual bool     setFrameSkip(int f_skip_i ) { return false; };
 
         /// Set loop mode.
-        virtual bool     setLoopMode( bool f_val_b ) { m_loopMode_b = f_val_b; return true; };
+        virtual bool     setLoopMode( bool f_val_b ) { return false; };
 
-        virtual bool     setExitOnLastFrame( bool f_val_b )  { m_exitOnLastFrame_b = f_val_b; return true; };
+        virtual bool     setExitOnLastFrame( bool f_val_b )  { return false; };
 
         /// Get number of frames in this sequence.
         virtual int getNumberOfFrames() const;
@@ -139,7 +134,6 @@ namespace QCV
 
     /// Register outputs
     public slots:
-        virtual bool loadNewSequence ( const std::string &f_confFilePath_str );
 
         /// Get current frame in the sequence.
         virtual void timeOut();
@@ -152,25 +146,13 @@ namespace QCV
 
     /// Private methods.
     private:
-        void   findFiles ( std::string    f_fullPath_str, 
-                           std::string    filter_str, 
-                           std::vector<std::string>  
-                                         &fr_fileNames ) const;
         
-        bool   loadCurrentFrame();
-
-        bool   loadImageFile( std::string f_filePath_str, cv::Mat * f_image_p );
-
-        double getTimeStampFromFilename( std::string f_fileName_p );
         
     /// Private constants.
     private:
 
     /// Protected members
     private:
-        /// Dialog.
-        CSeqDevHDImgDlg *             m_dialog_p;
-
         /// Timer for handling play actions.
         QTimer *                      m_qtPlay_p;
 
@@ -180,45 +162,19 @@ namespace QCV
         /// Number of frames of the sequence.
         int                           m_framesCount_i;
 
-        /// Backward play.
-        bool                          m_backward_b;
+        /// Fetch flag
+	bool                          m_fetch_b;
 
-        /// Max number of images per frame.
-        unsigned char                 m_imagesPerFrame_uc;
-
+        /// Acknowledge flag
+	bool                          m_acknowledge_b;
+        
         /// Vector containing current image data
         CInpImgFromFileVector         m_imageData_v;
 
-        /// Buffer of directories where files are located.
-        std::string                   m_directoryPath_p[m_maxImgsPerFrame_uc];
+        /// Video capture
+        cv::VideoCapture *            m_capture_p;
 
-        // /// Buffer of output images.
-        std::vector<std::string>      m_fileName_p[m_maxImgsPerFrame_uc];
-
-        /// Name of the sequence.
-        std::string                   m_filePaths_p[m_maxImgsPerFrame_uc];
-
-        /// Output object for frame number.
-        unsigned int                  m_imgNr_ui;
-
-        /// Time stamps of the images.
-        double                        m_timeStamps_p[m_maxImgsPerFrame_uc];
-
-        /// Name of the sequence.
-        std::string                   m_seqName_str;
-        
-        /// Print Debug information
-        bool                          m_printDebug_b;
-
-        /// Frame skip.
-        int                           m_fskip_i;
-        
-        /// Loop mode.
-        bool                          m_loopMode_b;
-
-        /// Exit on last frame.
-        bool                          m_exitOnLastFrame_b;
     };
 }
 
-#endif // __SEQDEVHDIMGSEQ_H
+#endif // __SEQDEVVIDEOCAPTURE_H

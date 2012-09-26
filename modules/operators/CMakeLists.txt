@@ -41,13 +41,17 @@ include(${QT_USE_FILE})
 ##### SOURCE FILES
 
 set ( LIBQCVOperators_SRC
-     stereoOp.cpp
      imgScalerOp.cpp
+     sobelOp.cpp
+     stereoOp.cpp
+     surfOp.cpp
 )
 
 set ( LIBQCVOperators_HEADERS 
-     stereoOp.h
      imgScalerOp.h
+     sobelOp.h
+     stereoOp.h
+     surfOp.h
 )  
 
 set ( LIBQCVOperators_MOC_HEADERS  "" )

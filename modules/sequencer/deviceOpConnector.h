@@ -120,7 +120,7 @@ namespace QCV
         bool success_b = m_device_p -> registerOutputs ( m_input );
         
         if ( success_b )
-            m_rootOp_p -> setInput ( m_input );
+            return m_rootOp_p -> setInput ( m_input );
 
         return success_b;
     }

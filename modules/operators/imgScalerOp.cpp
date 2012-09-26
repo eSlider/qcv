@@ -37,7 +37,6 @@
 
 #include "paramMacros.h"
 #include "drawingList.h"
-#include "paramIOFile.h"
 #include "ceParameter.h"
 
 using namespace QCV;
@@ -74,7 +73,7 @@ CImageScalerOp::registerDrawingLists( int f_numReg_i )
 
         sprintf(str, "Output Image %i", i);        
         registerDrawingList ( str,
-                              S2D<int> (0, 0),
+                              S2D<int> (1, 0),
                               false);
     }    
 }
@@ -153,8 +152,6 @@ CImageScalerOp::registerParameters( int f_numReg_i )
     }
 
     END_PARAMETER_GROUP;
-
-
 }
 
 /// Virtual destructor.
@@ -238,6 +235,14 @@ bool CImageScalerOp::show()
 /// Init event.
 bool CImageScalerOp::initialize()
 {
+   /// Set the screen size if this is the parent operator.
+    if ( m_img_v.size() > 0 &&
+         !getParentOp() )
+    {
+        setScreenSize ( m_img_v[0].size() );
+        getDrawingList ( "Input Image 0" ) -> setVisibility(true);
+    }
+
     return COperatorBase::initialize();
 }
 

@@ -5,6 +5,9 @@ add_subdirectory ( sobelExample )
 add_subdirectory ( imgPlayer )
 add_subdirectory ( anaglyphStereo )
 add_subdirectory ( stereoExample )
+add_subdirectory ( imgScaler )
+add_subdirectory ( sobelExample2 )
+add_subdirectory ( surfExample )
 
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/imgs ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/imgs COPYONLY)
 

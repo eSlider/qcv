@@ -33,7 +33,7 @@
 *
 * \brief Subclass of CVector with instantiation of cv::Mat as data
 * type. It adds the constructor for obtaining data from a
-* TInpImgFromFileVector object.
+* CInpImgFromFileVector object.
 *
 *******************************************************************************/
 
@@ -54,7 +54,7 @@ namespace QCV
         CMatVector(cv::Mat f_elem): CVector<cv::Mat> ( f_elem ) { }
         CMatVector(const CMatVector &f_vec): CVector<cv::Mat> ( f_vec ) { }
 
-        CMatVector ( const TInpImgFromFileVector & f_inp_v )
+        CMatVector ( const CInpImgFromFileVector & f_inp_v )
         {
             for (int i = 0; i < f_inp_v.size(); ++i)
             {

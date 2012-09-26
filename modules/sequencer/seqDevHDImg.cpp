@@ -304,7 +304,7 @@ std::vector<QDialog *> CSeqDevHDImg::getDialogs ( ) const
     return std::vector<QDialog *>();
 }
 
-bool CSeqDevHDImg::registerOutputs ( TInpImgFromFileVector & f_input_v )
+bool CSeqDevHDImg::registerOutputs ( CInpImgFromFileVector & f_input_v )
 {
     f_input_v.clear();
     f_input_v.insert ( f_input_v.begin(), 

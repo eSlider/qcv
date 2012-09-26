@@ -60,7 +60,30 @@ namespace QCV
         std::string path_str;
     };
       
-    typedef std::vector<SInpImgFromFile> TInpImgFromFileVector;
+    class CInpImgFromFileVector: public std::vector<SInpImgFromFile>
+    {
+    public:
+        CInpImgFromFileVector(): std::vector<SInpImgFromFile> ( ) { }
+        CInpImgFromFileVector(int f_n_i): std::vector<SInpImgFromFile> ( f_n_i ) { }
+        CInpImgFromFileVector(int f_n_i, SInpImgFromFile f_defval): std::vector<SInpImgFromFile> ( f_n_i, f_defval ) { }
+        CInpImgFromFileVector(cv::Mat f_elem): std::vector<SInpImgFromFile> ( ) 
+        {
+            SInpImgFromFile f;
+            
+            f.image = f_elem;
+            std::vector<SInpImgFromFile>::push_back ( f );
+        }
+
+        /// Cast operator
+        operator cv::Mat ()
+        {
+            static cv::Mat def;
+            if (std::vector<SInpImgFromFile>::size() > 0)
+                return operator [](0).image;
+            else
+                return def;
+        }        
+    };
 }
 
 #endif //__INPUTIMGFROMFILE_H

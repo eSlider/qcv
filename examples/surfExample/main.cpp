@@ -22,35 +22,44 @@
 #include <QApplication>
 #include <QTimer>
 
-#include "stereoOp.h"
+#include "surfOp.h"
 #include "mainWindow.h"
 #include "deviceOpConnector.h"
-#include "seqDevHDImg.h"
+#include "seqDevVideoCapture.h"
 #include "paramIOFile.h"
 
 using namespace QCV;
 
 int main(int f_argc_i, char *f_argv_p[])
 {
+    char deviceFile_p[256] = "";
+
+    if (f_argc_i != 1 )
+    {
+        strncpy(deviceFile_p, f_argv_p[1], 256);
+    }
+    else
+        printf("\n\nUsage: %s [file], where file can be a video or camera device\n", f_argv_p[0]);
+
     /// Create app
     QApplication app (f_argc_i, f_argv_p);
 
     /// Create root operator
-    CStereoOp *rootOp_p = new CStereoOp( );
+    CSurfOp *rootOp_p = new CSurfOp( );
 
     /// Load parameters from parameters.xml file 
-    CParamIOFile pio ( "params_stereo.xml" );
+    CParamIOFile pio ( "params_surf.xml" );
     rootOp_p->getParameterSet() -> load ( pio );
 
     /// Create hard disk device
-    CSeqDevHDImg device;
-    device.loadNewSequence ( "sequence.xml" );
+    CSeqDevVideoCapture device(deviceFile_p);
+    //device.loadNewSequence ( "sequence.xml" );
 
     /// Let's connect the device to the root operator
-    CDeviceOpConnector<CMatVector, cv::Mat, CInpImgFromFileVector> connector ( rootOp_p, &device );
+    CDeviceOpConnector<cv::Mat, std::vector<cv::KeyPoint>, CInpImgFromFileVector> connector ( rootOp_p, &device );
 
     /// Create the main window passing the connector. 2x2 default screen count.
-    CMainWindow *mwind = new CMainWindow ( &connector, 2, 2 );
+    CMainWindow *mwind = new CMainWindow ( &connector, 1, 1 );
     
     /// Show main window
     mwind->show();
@@ -60,7 +69,7 @@ int main(int f_argc_i, char *f_argv_p[])
 
     /// Save parameters
     rootOp_p->getParameterSet() -> save ( pio );
-    pio.save ("params_stereo.xml");
+    pio.save ("params_surf.xml");
 
     delete mwind;
     

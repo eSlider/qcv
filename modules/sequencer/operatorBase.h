@@ -171,7 +171,15 @@ namespace QCV
         
         /// Get a child of a given type and name
         template <class _OpType>
-        const _OpType         getChild ( std::string f_name_str ) const;
+        _OpType               getChild ( std::string f_name_str ) const;
+
+        /// Get a child based on its index.
+        template <class _OpType>
+        _OpType               getChild ( int f_idx_i );
+        
+        /// Get a child based on its index.
+        template <class _OpType>
+        _OpType               getChild ( int f_idx_i ) const;
 
     /// Get/Set static methods
     public:
@@ -245,7 +253,7 @@ namespace QCV
     };
 
 
-/// Get a child of a given type and name
+    /// Get a child of a given type and name
     template <typename _OpType>
     _OpType COperatorBase::getChild ( std::string f_name_str )
     {
@@ -266,9 +274,9 @@ namespace QCV
         return NULL;
     }
 
-/// Get a child of a given type and name
+    /// Get a child of a given type and name
     template <typename _OpType>
-    const _OpType COperatorBase::getChild ( std::string f_name_str ) const
+    _OpType COperatorBase::getChild ( std::string f_name_str ) const
     {
         for (int i = 0; i < m_children_v.size(); ++i)
         {
@@ -284,6 +292,44 @@ namespace QCV
                 return ptr_p;
             }
         }
+        return NULL;
+    }
+
+    /// Get a child based on its index.
+    template <typename _OpType>
+    _OpType COperatorBase::getChild ( int f_idx_i )
+    {
+        if (f_idx_i < m_children_V[i].size())
+        {
+            _OpType ptr_p = static_cast<_OpType> ( m_children_v[f_idx_i].ptr_p );
+            if (!ptr_p)
+            {
+                printf("Operator at index %i is not of type %s.\n",
+                       f_name_str.c_str(), typeid(ptr_p).name() );
+            }
+            
+            return ptr_p;
+        }
+
+        return NULL;
+    }
+
+    /// Get a child based on its index.
+    template <typename _OpType>
+    _OpType COperatorBase::getChild ( int f_idx_i ) const
+    {
+        if (f_idx_i < m_children_V[i].size())
+        {
+            const _OpType ptr_p = static_cast<_OpType> ( m_children_v[f_idx_i].ptr_p );
+            if (!ptr_p)
+            {
+                printf("Operator at index %i is not of type %s.\n",
+                       f_name_str.c_str(), typeid(ptr_p).name() );
+            }
+            
+            return ptr_p;
+        }
+
         return NULL;
     }
 

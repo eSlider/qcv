@@ -38,7 +38,7 @@
 using namespace QCV;
 
 
-CSeqDevHDImg::CSeqDevHDImg()
+CSeqDevHDImg::CSeqDevHDImg(const std::string &f_confFilePath_str)
         : m_dialog_p (                          NULL ),
           m_qtPlay_p (                          NULL ),
           m_currentFrame_i (                      -1 ),
@@ -57,6 +57,9 @@ CSeqDevHDImg::CSeqDevHDImg()
     //connect(m_dialog_p, SIGNAL(reset()), this, SLOT(stopAndEmitReset()));
 
     m_currentState_e = S_PAUSED;
+
+    if ( f_confFilePath_str != "" )
+        loadNewSequence ( f_confFilePath_str );
 }
 
 /// Destructor

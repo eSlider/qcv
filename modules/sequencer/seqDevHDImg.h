@@ -70,7 +70,7 @@ namespace QCV
     /// Constructors, Destructors
     public:
         /// Constructor
-        CSeqDevHDImg();
+        CSeqDevHDImg( const std::string &f_confFilePath_str = "" );
 
         /// Destructor
         virtual ~CSeqDevHDImg();

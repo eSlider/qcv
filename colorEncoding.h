@@ -137,7 +137,7 @@ namespace QCV
         // Set the min and max range.
         bool                 getLogarithmic ( ) const;
 
-    /// Help methods
+    /// Help static methods
     protected:
         
         //CEnumParameter<EColorEncodingType_t> *
@@ -198,7 +198,13 @@ namespace QCV
                                             SRgb        &fr_color,
                                             bool         f_inverse_b = false );
 
-        /// Private members
+    /// Help methods
+    protected:
+
+        void recomputeLut();
+        
+        bool colorFromValueLUT ( const float   f_value_f,
+                                 SRgb         &fr_color ) const;
     private:
         
         /// The color encoding scheme
@@ -209,16 +215,32 @@ namespace QCV
 
         /// Logarithmic?
         bool                  m_logarithmic;
+
+        /// Lookup table
+        std::vector<SRgb>     m_lut;
+
+        /// Normalized range
+        float                 m_dx_f;
+        
+        
     };
     
-    inline bool
-    CColorEncoding::setColorEncodingType( EColorEncodingType_t f_newType_e )
+    inline bool 
+    CColorEncoding::colorFromValueLUT ( const float   f_value_f,
+                                        SRgb         &fr_color ) const
     {
-        m_encodingType_e =  f_newType_e;
+        if (f_value_f <= m_range.min )
+            fr_color = m_lut.front();
+        else if (f_value_f >= m_range.max )
+            fr_color = m_lut.back();
+        else
+        {
+            int idx_i = (f_value_f - m_range.min) / m_dx_f;
+            fr_color = m_lut[idx_i];
+        }
+        
         return true;
     }
-    
-
 }
 
 #endif /* __COLORENCODING_H */

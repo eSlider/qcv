@@ -100,6 +100,7 @@ namespace QCV
         /// Exit event.
         virtual bool exit();
 
+    /// User Operation Events
     public:
        
     /// I/O registration.

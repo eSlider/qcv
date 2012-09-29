@@ -22,7 +22,7 @@
 #include <QApplication>
 #include <QTimer>
 
-#include "surfOp.h"
+#include "houghTransformOp.h"
 #include "mainWindow.h"
 #include "deviceOpConnector.h"
 #include "seqDevVideoCapture.h"
@@ -49,10 +49,10 @@ int main(int f_argc_i, char *f_argv_p[])
     QApplication app (f_argc_i, f_argv_p);
 
     /// Create root operator
-    CSurfOp *rootOp_p = new CSurfOp( );
+    CHoughTransformOp *rootOp_p = new CHoughTransformOp( );
 
     /// Load parameters from parameters.xml file 
-    CParamIOFile pio ( "params_surf.xml" );
+    CParamIOFile pio ( "params_houghTransform.xml" );
     rootOp_p->getParameterSet() -> load ( pio );
 
     CSeqDeviceControl<CInpImgFromFileVector> * device_p;
@@ -63,12 +63,12 @@ int main(int f_argc_i, char *f_argv_p[])
     else
         /// Create video capture device
         device_p = new CSeqDevVideoCapture (deviceFile_str);
-    
+
     /// Let's connect the device to the root operator
-    CDeviceOpConnector<cv::Mat, std::vector<cv::KeyPoint>, CInpImgFromFileVector> connector ( rootOp_p, device_p );
+    CDeviceOpConnector<cv::Mat, THoughLineVector, CInpImgFromFileVector> connector ( rootOp_p, device_p );
 
     /// Create the main window passing the connector. 2x2 default screen count.
-    CMainWindow *mwind_p = new CMainWindow ( &connector, 1, 1 );
+    CMainWindow *mwind_p = new CMainWindow ( &connector, 3, 1 );
     
     /// Show main window
     mwind_p->show();
@@ -78,11 +78,11 @@ int main(int f_argc_i, char *f_argv_p[])
 
     /// Save parameters
     rootOp_p->getParameterSet() -> save ( pio );
-    pio.save ("params_surf.xml");
+    pio.save ("params_houghTransform.xml");
 
     delete mwind_p;
-        delete device_p;
-
+    delete device_p;
+    
     return retval_i;
 }
 

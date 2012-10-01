@@ -42,11 +42,12 @@
 using namespace QCV;
 
 /// Constructors.
-CImageScalerOp::CImageScalerOp ( COperatorBase * const f_parent_p,
+CImageScalerOp::CImageScalerOp ( COperator * const f_parent_p,
                                  const std::string f_name_str,
                                  const int f_preferedNumImgs_i )
-    : COperator<CMatVector, CMatVector>
-      (                       f_parent_p, f_name_str ),
+    : COperator (             f_parent_p, f_name_str ),
+      m_inputId_str (                       "Images" ),
+      m_outputId_str (               "Scaled Images" ),
       m_compute_b (                             true ),
       m_scaleMode_e (                      SM_FACTOR ),
       m_scaleFactor (                     0.5f, 0.5f ),
@@ -69,13 +70,13 @@ CImageScalerOp::registerDrawingLists( int f_numReg_i )
         sprintf(str, "Input Image %i", i);        
         registerDrawingList ( str,
                               S2D<int> (0, 0),
-                              i==0);
+                              i==0 && !getParentOp());
 
         sprintf(str, "Output Image %i", i);        
         registerDrawingList ( str,
                               S2D<int> (1, 0),
-                              i==0);
-    }    
+                              i==0 && !getParentOp());
+    }
 }
 
 void
@@ -159,51 +160,80 @@ CImageScalerOp::~CImageScalerOp ()
 {
 }
 
+/// Compute
+bool
+CImageScalerOp::compute ( const CMatVector & f_input_v, 
+                          CMatVector       & fr_output_v )
+{
+    if (m_compute_b)
+    {
+        m_img_v = f_input_v;
+        resize();
+        fr_output_v = m_scaledImgs_v;
+        return true;
+    }
+    
+    fr_output_v = f_input_v;
+}
+
+
 /// Cycle event.
 bool
 CImageScalerOp::cycle()
 {
     if ( m_compute_b )
     {
-        m_scaledImgs_v.resize(m_img_v.size());
-        
-        for ( int i = 0; i < m_img_v.size(); ++i )
-        {
-            if ( m_img_v[i].size().width  > 0 && 
-                 m_img_v[i].size().height > 0 )
-            {
-                cv::Size size;
-                 
-                if ( m_scaleMode_e == SM_FACTOR )
-                {
-                    size = m_img_v[i].size();
-                    size.width  *= m_scaleFactor.x;
-                    size.height *= m_scaleFactor.y;
-                }
-                else
-                {
-                    size = m_scaleSize;
-                }
-                
-                if (size == m_img_v[i].size())
-                    m_scaledImgs_v[i] = m_img_v[i];
-                else
-                {
-                    cv::resize(m_img_v[i], m_scaledImgs_v[i], size, 0, 0, m_interpolMode_i);
-                }
-            }
-            else
-                m_scaledImgs_v[i] = cv::Mat(0, 0, CV_8UC1);
-        }
+        m_img_v = getInput<CMatVector>(m_inputId_str, CMatVector() );
+
+        resize();
     }
     else
         m_scaledImgs_v = m_img_v;
     
-    return COperatorBase::cycle();
+    return COperator::cycle();
+}
+
+/// Resize.
+void
+CImageScalerOp::resize()
+{
+    m_scaledImgs_v.resize(m_img_v.size());
+        
+    for ( int i = 0; i < m_img_v.size(); ++i )
+    {
+        if ( m_img_v[i].size().width  > 0 && 
+             m_img_v[i].size().height > 0 )
+        {
+            cv::Size size;
+                 
+            if ( m_scaleMode_e == SM_FACTOR )
+            {
+                size = m_img_v[i].size();
+                size.width  *= m_scaleFactor.x;
+                size.height *= m_scaleFactor.y;
+            }
+            else
+            {
+                size = m_scaleSize;
+            }
+                
+            if (size == m_img_v[i].size())
+                m_scaledImgs_v[i] = m_img_v[i];
+            else
+            {
+                cv::resize(m_img_v[i], m_scaledImgs_v[i], size, 0, 0, m_interpolMode_i);
+            }
+        }
+        else
+            m_scaledImgs_v[i] = cv::Mat(0, 0, CV_8UC1);
+    }
+    
+    registerOutput<CMatVector> ( m_outputId_str, &m_scaledImgs_v );
 }
 
 /// Show event.
-bool CImageScalerOp::show()
+bool
+CImageScalerOp::show()
 {
     for ( int i = 0; i < m_scaledImgs_v.size(); ++i )
     {
@@ -229,7 +259,7 @@ bool CImageScalerOp::show()
         }
     }
 
-    return COperatorBase::show();
+    return COperator::show();
 }
 
 /// Init event.
@@ -243,38 +273,18 @@ bool CImageScalerOp::initialize()
         getDrawingList ( "Input Image 0" ) -> setVisibility(true);
     }
 
-    return COperatorBase::initialize();
+    return COperator::initialize();
 }
 
 /// Reset event.
 bool CImageScalerOp::reset()
 {
-    return COperatorBase::reset();
+    return COperator::reset();
 }
 
 bool CImageScalerOp::exit()
 {
-    return COperatorBase::exit();
-}
-
-/// Set the input of this operator
-bool
-CImageScalerOp::setInput  ( const CMatVector & f_input )
-{
-    m_img_v = f_input;
-    return true;
-}
-
-/// Gets the output of this operator
-bool
-CImageScalerOp::getOutput ( CMatVector & f_output ) const
-{
-    if ( m_scaledImgs_v.size() == 0 )
-        return false;
-    
-    f_output = m_scaledImgs_v;
-    
-    return true;
+    return COperator::exit();
 }
 
 bool

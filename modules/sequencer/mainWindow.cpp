@@ -33,7 +33,6 @@
 #include <QSettings>
 
 #include "mainWindow.h"
-#include "deviceOpConnector.h"
 
 #include "events.h"
 #include "seqControlDlg.h"
@@ -41,20 +40,23 @@
 #include "operator.h"
 
 #include "seqControler.h"
+#include "seqDeviceControl.h"
 #include "displayWidget.h"
 #include "paramEditorDlg.h"
 #include "clockTreeDlg.h"
+#include "io.h"
+
 
 //#include "displayTreeNode.h"
 //#include "clockTreeNode.h"
 
-CMainWindow::CMainWindow ( CDeviceOpConnectorBase * f_connector_p,
-                           int                      f_sx_i, 
-                           int                      f_sy_i )
+CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
+                           COperator *         f_rootOp_p,
+                           int                 f_sx_i, 
+                           int                 f_sy_i )
     : CSimpleWindow (               ),
-      m_connector_p (       f_connector_p ),
-      m_device_p (             NULL ),
-      m_rootOp_p (             NULL ),
+      m_device_p (       f_device_p ),
+      m_rootOp_p (       f_rootOp_p ),
       m_controler_p (          NULL ),
       m_display_p (            NULL ),
       m_paramEditorDlg_p (     NULL ),
@@ -62,10 +64,6 @@ CMainWindow::CMainWindow ( CDeviceOpConnectorBase * f_connector_p,
 {
     //QStringList list = QCoreApplication::arguments ();
     
-    assert( f_connector_p );
-    m_device_p = f_connector_p -> getDeviceCtrl();
-    m_rootOp_p = f_connector_p -> getRootOperator();
-
     assert( m_device_p );
     assert( m_rootOp_p );    
 
@@ -198,12 +196,15 @@ void CMainWindow::initialize()
 
     bool success_b;
     
-    success_b = m_connector_p -> setOperatorInput ( );
+    std::map< std::string, CIOBase * > devOutput;
+    success_b = m_device_p -> registerOutputs ( devOutput );
 
     m_display_p -> update(true);
 
     if ( success_b )
     {
+        m_rootOp_p -> registerOutputs ( devOutput );
+        
         m_rootOp_p -> startClock ( "Initialize" );
         success_b = m_rootOp_p -> initialize();
         m_rootOp_p -> stopClock ( "Initialize" );
@@ -247,10 +248,13 @@ void CMainWindow::cycle()
 
     bool success_b;
     
-    success_b = m_connector_p -> setOperatorInput (  );
+    std::map< std::string, CIOBase * > devOutput;
+    success_b = m_device_p -> registerOutputs ( devOutput );
 
     if ( success_b )
     {
+        m_rootOp_p -> registerOutputs ( devOutput );
+
         m_rootOp_p -> startClock ( "Cycle" );
         success_b = m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
@@ -282,10 +286,13 @@ void CMainWindow::stop()
 
     bool success_b;
     
-    success_b = m_connector_p -> setOperatorInput (  );
+    std::map< std::string, CIOBase * > devOutput;
+    success_b = m_device_p -> registerOutputs ( devOutput );
 
     if ( success_b )
     {
+        m_rootOp_p -> registerOutputs ( devOutput );
+
         m_rootOp_p -> startClock ( "Reset" );
         success_b = m_rootOp_p -> reset();
         m_rootOp_p -> stopClock ( "Reset" );
@@ -329,7 +336,7 @@ void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )
     if ( keyEvent_p -> key() == Qt::Key_P || 
          keyEvent_p -> key() == Qt::Key_Space )
     {
-        if ( m_device_p -> getState() == CSeqDeviceControlBase::S_PLAYING )
+        if ( m_device_p -> getState() == CSeqDeviceControl::S_PLAYING )
         {
             m_controler_p -> pauseClicked();
         }
@@ -343,7 +350,7 @@ void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )
         m_controler_p -> stopClicked();
     }
 
-    if ( m_device_p -> getState() != CSeqDeviceControlBase::S_PLAYING )
+    if ( m_device_p -> getState() != CSeqDeviceControl::S_PLAYING )
     {
         if ( keyEvent_p -> key() == Qt::Key_Right ||
              keyEvent_p -> key() == Qt::Key_P )

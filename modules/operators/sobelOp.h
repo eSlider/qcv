@@ -51,7 +51,7 @@
 
 namespace QCV
 {
-    class CSobelOp: public COperator<cv::Mat, CMatVector>
+    class CSobelOp: public COperator
     {
     public:
         typedef enum 
@@ -74,7 +74,7 @@ namespace QCV
     public:    
         
         /// Constructors.
-        CSobelOp ( COperatorBase * const f_parent_p = NULL,
+        CSobelOp ( COperator * const f_parent_p = NULL,
                    const std::string f_name_str = "Image Scaler" );
         
         /// Virtual destructor.

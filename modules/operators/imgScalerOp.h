@@ -51,7 +51,7 @@
 
 namespace QCV
 {
-    class CImageScalerOp: public COperator<CMatVector, CMatVector>
+    class CImageScalerOp: public COperator
     {
     public:
 
@@ -64,9 +64,13 @@ namespace QCV
 
     /// Parameter access
     public:    
-        ADD_PARAM_ACCESS         (bool,        m_compute_b,          Compute );
-        ADD_PARAM_ACCESS         (EScaleMode,  m_scaleMode_e,        ScaleMode );
-        ADD_PARAM_ACCESS         (int,         m_interpolMode_i,     InterpolationMode );
+        ADD_PARAM_ACCESS (std::string, m_inputId_str,        InputId );
+        ADD_PARAM_ACCESS (std::string, m_outputId_str,       OutputId );
+
+        ADD_PARAM_ACCESS (bool,        m_compute_b,          Compute );
+        ADD_PARAM_ACCESS (EScaleMode,  m_scaleMode_e,        ScaleMode );
+
+        ADD_PARAM_ACCESS (int,         m_interpolMode_i,     InterpolationMode );
 
         bool              setScaleFactor ( S2D<float> f_factors );
         S2D<float>        getScaleFactor ( ) const;
@@ -78,7 +82,7 @@ namespace QCV
     public:    
         
         /// Constructors.
-        CImageScalerOp ( COperatorBase * const f_parent_p = NULL,
+        CImageScalerOp ( COperator * const f_parent_p = NULL,
                          const std::string f_name_str = "Image Scaler",
                          const int f_preferedNumImgs_i = 1 );
         
@@ -100,15 +104,11 @@ namespace QCV
         /// Exit event.
         virtual bool exit();
 
+    /// User Operation Events
     public:
-       
-    /// I/O registration.
-    public:
-        /// Set the input of this operator
-        bool setInput  ( const CMatVector & f_input );
-
-        /// Gets the output of this operator
-        bool getOutput ( CMatVector & f_output ) const;
+        /// Compute
+        virtual bool compute ( const CMatVector & f_input, 
+                               CMatVector       & fr_output );
 
     protected:
 
@@ -118,8 +118,16 @@ namespace QCV
 
         void registerParameters( int f_numReg_i );
 
+        void resize();
+        
     private:
 
+        /// Input image id
+        std::string                 m_inputId_str;
+        
+        /// Output image id
+        std::string                 m_outputId_str;
+        
         /// Compute?
         bool                        m_compute_b;
 

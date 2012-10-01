@@ -39,6 +39,7 @@ CColorEncoding::CColorEncoding( const EColorEncodingType_t f_type_e,
           m_range (          f_range ),
           m_logarithmic (      false )
 {
+    recomputeLut();
 }
 
 CColorEncoding::~CColorEncoding()
@@ -49,10 +50,16 @@ bool
 CColorEncoding::colorFromValue ( const float      f_value_f,
                                  SRgb            &fr_color ) const
 {
-    return colorFromValue ( f_value_f, 
-                            m_range.min, 
-                            m_range.max, 
-                            fr_color );
+    const bool useLut_b = false;
+    
+    if ( !useLut_b )
+        return colorFromValue ( f_value_f, 
+                                m_range.min, 
+                                m_range.max, 
+                                fr_color );
+    else
+        return colorFromValueLUT ( f_value_f, 
+                                   fr_color );
 }
 
 bool
@@ -70,7 +77,7 @@ bool
 CColorEncoding::colorFromValue ( float  f_value_f,
                                  float  f_min_f,
                                  float  f_max_f,
-                                 SRgb         &fr_color ) const
+                                 SRgb  &fr_color ) const
 {
     if (m_logarithmic)
     {
@@ -439,71 +446,13 @@ CColorEncoding::encodeBlackToWhite (   const float   f_value_f,
     fr_color.set(grey_i, grey_i, grey_i);
 }
 
-
-// bool
-// CColorEncoding::addParameters ( CParameterSet * fr_paramSet_p,
-//                                 std::string     name_str,
-//                                 std::string     comment_str )
-// {
-//     fr_paramSet_p -> addParameter ( createEnumParameter ( name_str, comment_str ) );
-
-//     std::string str = name_str + std::string(" - Range");
-    
-//     fr_paramSet_p -> addParameter (
-//             new CFlt2DParameter ( str, comment_str, m_range, "Min", "Max",
-//                                   new CParameterConnector< CColorEncoding, S2D<float>, CFlt2DParameter >
-//                                   ( this,
-//                                     &CColorEncoding::getMinMaxRange,
-//                                     &CColorEncoding::setMinMaxRange ) ) );
-
-//     str = name_str + std::string(" - Log Enc?");
-
-//     fr_paramSet_p -> addParameter (
-//             new CBoolParameter ( str, comment_str, m_logarithmic,
-//                                  new CParameterConnector< CColorEncoding, bool, CBoolParameter >
-//                                  ( this,
-//                                    &CColorEncoding::getLogarithmic,
-//                                    &CColorEncoding::setLogarithmic ) ) );
-
-//     return true;
-// }
-
-// CEnumParameter<CColorEncoding::EColorEncodingType_t> *
-// CColorEncoding::createEnumParameter ( std::string name_str,
-//                                   std::string comment_str )
-// {
-//     CEnumParameter<CColorEncoding::EColorEncodingType_t> * param_p = 
-//         new CEnumParameter<EColorEncodingType_t> 
-//         ( name_str, comment_str, m_encodingType_e, "None",
-//           new CParameterConnector< CColorEncoding, EColorEncodingType_t, CEnumParameter<EColorEncodingType_t> >
-//           ( this,
-//             &CColorEncoding::getColorEncodingType,
-//             &CColorEncoding::setColorEncodingType ) );
-
-//     //param_p -> addDescription ( CColorEncoding::CET_INVALID, "Invalid");
-//     param_p -> addDescription ( CColorEncoding::CET_GREEN2RED, "Green to Red" );
-//     param_p -> addDescription ( CColorEncoding::CET_RED2GREEN, "Red to Green" );
-//     param_p -> addDescription ( CColorEncoding::CET_BLUE2RED, "Blue to Red" );
-//     param_p -> addDescription ( CColorEncoding::CET_RED2BLUE, "Red to Blue" );
-//     param_p -> addDescription ( CColorEncoding::CET_BLUE2GREEN2RED, "Blue to Green to Red" );
-//     param_p -> addDescription ( CColorEncoding::CET_RED2GREEN2BLUE, "Red to Green to Blue" );
-//     param_p -> addDescription ( CColorEncoding::CET_RED2DARKGREEN, "Red to Dark Green" );
-//     param_p -> addDescription ( CColorEncoding::CET_GREEN2DARKRED, "Green to Dark Red" );
-//     param_p -> addDescription ( CColorEncoding::CET_BLACK2CYAN, "Black to Cyan" );
-//     param_p -> addDescription ( CColorEncoding::CET_CYAN2BLACK, "Cyan to Black" );
-//     param_p -> addDescription ( CColorEncoding::CET_BLACK2RED2YELLOW, "Black to Red Yellow" );
-//     param_p -> addDescription ( CColorEncoding::CET_YELLOW2RED2BLACK, "Yellow to Red Black" );
-//     param_p -> addDescription ( CColorEncoding::CET_HUE, "Hue" );
-//     param_p -> addDescription ( CColorEncoding::CET_WHITE2BLACK, "White to Black" );
-//     param_p -> addDescription ( CColorEncoding::CET_BLACK2WHITE, "Black to White" );
-
-//     return param_p;
-// }
-
 // Set the min and max range.
 bool
 CColorEncoding::setMinMaxRange ( S2D<float> f_range )
 {
+    if ( m_range != f_range )
+        recomputeLut();
+
     m_range = f_range;
     return true;    
 }
@@ -521,6 +470,9 @@ CColorEncoding::getMinMaxRange ( ) const
 bool
 CColorEncoding::setMinimum ( float f_min_f )
 {
+    if (m_range.min != f_min_f )
+        recomputeLut();
+
     m_range.min = f_min_f;
     return true;    
 }
@@ -534,9 +486,12 @@ CColorEncoding::getMinimum ( ) const
 
 // Set the min and max range.
 bool
-CColorEncoding::setMaximum ( float f_min_f )
+CColorEncoding::setMaximum ( float f_max_f )
 {
-    m_range.max = f_min_f;
+    if (m_range.max != f_max_f )
+        recomputeLut();
+
+    m_range.max = f_max_f;
     return true;    
 }
 
@@ -561,3 +516,37 @@ CColorEncoding::getLogarithmic ( ) const
 {
     return m_logarithmic;
 }
+
+bool
+CColorEncoding::setColorEncodingType( EColorEncodingType_t f_newType_e )
+{
+    if ( m_encodingType_e !=  f_newType_e )
+        recomputeLut();
+
+    m_encodingType_e =  f_newType_e;
+    return true;
+}
+
+void
+CColorEncoding::recomputeLut()
+{
+    m_lut.clear();
+    
+    float val_f = m_range.min;
+    m_dx_f = (m_range.max-m_range.min)/512.f;
+    
+    SRgb color;
+
+    for (int i = 0; i < 512; ++i, val_f += m_dx_f)
+    {
+        colorFromValue ( val_f,
+                         m_range.min,
+                         m_range.max,
+                         color );
+        m_lut.push_back ( color );
+    }    
+
+    m_lut.push_back ( color );
+}
+
+

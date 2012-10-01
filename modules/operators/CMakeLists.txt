@@ -40,6 +40,8 @@ include(${QT_USE_FILE})
 ##### SOURCE FILES
 
 set ( LIBQCVOperators_SRC
+     linearHoughTransform.cpp
+     houghTransformOp.cpp
      imgScalerOp.cpp
      sobelOp.cpp
      stereoOp.cpp
@@ -47,6 +49,8 @@ set ( LIBQCVOperators_SRC
 )
 
 set ( LIBQCVOperators_HEADERS 
+     linearHoughTransform.h
+     houghTransformOp.h
      imgScalerOp.h
      sobelOp.h
      stereoOp.h

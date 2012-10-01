@@ -24,7 +24,6 @@
 
 #include "sobelOp.h"
 #include "mainWindow.h"
-#include "deviceOpConnector.h"
 #include "seqDevVideoCapture.h"
 #include "paramIOFile.h"
 
@@ -55,11 +54,10 @@ int main(int f_argc_i, char *f_argv_p[])
     CSeqDevVideoCapture device(deviceFile_p);
     //device.loadNewSequence ( "sequence.xml" );
 
-    /// Let's connect the device to the root operator
-    CDeviceOpConnector<cv::Mat, CMatVector, CInpImgFromFileVector> connector ( rootOp_p, &device );
-
     /// Create the main window passing the connector. 2x2 default screen count.
-    CMainWindow *mwind = new CMainWindow ( &connector, 2, 1 );
+    CMainWindow *mwind = new CMainWindow ( &device,
+                                           rootOp_p,
+                                           2, 1 );
     
     /// Show main window
     mwind->show();

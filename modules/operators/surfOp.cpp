@@ -42,10 +42,10 @@
 using namespace QCV;
 
 /// Constructors.
-CSurfOp::CSurfOp ( COperatorBase * const f_parent_p,
-                                 const std::string f_name_str )
-    : COperator<cv::Mat, std::vector<cv::KeyPoint> >
-      (                       f_parent_p, f_name_str ),
+CSurfOp::CSurfOp ( COperator * const f_parent_p,
+                   const std::string f_name_str )
+    : COperator (             f_parent_p, f_name_str ),
+      m_inpImageId_str (                   "Image 0" ),
       m_compute_b (                             true ),
       m_useProvidedKeypoints_b (               false ),
       m_img (                                        ),
@@ -169,34 +169,47 @@ CSurfOp::cycle()
 {
     if ( m_compute_b )
     {
-        if ( m_img.type() == CV_8UC3 )
+        m_img = getInput<cv::Mat>(m_inpImageId_str, cv::Mat());
+
+        m_keyPoints.clear();
+        m_descriptors.clear();
+        
+        if ( m_img.size().width > 0)
         {            
-            m_descriptors.clear();
+            if ( m_img.type() == CV_8UC3 )
+            {            
+                m_descriptors.clear();
 
-            IplImage src = (IplImage)m_img;
-
-            if (m_imgAux.size() != m_img.size())
-                m_imgAux = cv::Mat( m_img.size(), CV_8UC1);
-
-            IplImage dst = (IplImage)m_imgAux;
-
-            cvCvtColor ( &src, &dst, CV_RGB2GRAY);
-            
-            if (m_computeDescriptors_b)
-                m_surfOp(m_imgAux, cv::Mat(), m_keyPoints, m_descriptors, m_useProvidedKeypoints_b );
+                IplImage src = (IplImage)m_img;
+                
+                if (m_imgAux.size() != m_img.size())
+                    m_imgAux = cv::Mat( m_img.size(), CV_8UC1);
+                
+                IplImage dst = (IplImage)m_imgAux;
+                
+                cvCvtColor ( &src, &dst, CV_RGB2GRAY);
+                
+                if (m_computeDescriptors_b)
+                    m_surfOp(m_imgAux, cv::Mat(), m_keyPoints, m_descriptors, m_useProvidedKeypoints_b );
+                else
+                    m_surfOp(m_imgAux, cv::Mat(), m_keyPoints );   
+            }
             else
-                m_surfOp(m_imgAux, cv::Mat(), m_keyPoints );   
+            {
+                if (m_computeDescriptors_b)
+                    m_surfOp(m_img, cv::Mat(), m_keyPoints, m_descriptors, m_useProvidedKeypoints_b );
+                else
+                    m_surfOp(m_img, cv::Mat(), m_keyPoints );
+            }
+            
+            registerOutput< std::vector<cv::KeyPoint> >("Keypoints",   &m_keyPoints );
+            registerOutput< std::vector<float> >       ("Descriptors", &m_descriptors );
         }
         else
-        {
-            if (m_computeDescriptors_b)
-                m_surfOp(m_img, cv::Mat(), m_keyPoints, m_descriptors, m_useProvidedKeypoints_b );
-            else
-                m_surfOp(m_img, cv::Mat(), m_keyPoints );
-        }
+            printf("%s:%i Invalid input image %s\n", __FILE__, __LINE__, m_inpImageId_str.c_str() );
     }
     
-    return COperatorBase::cycle();
+    return COperator::cycle();
 }
 
 /// Show event.
@@ -254,12 +267,15 @@ bool CSurfOp::show()
         }        
     }    
 
-    return COperatorBase::show();
+    return COperator::show();
 }
 
 /// Init event.
 bool CSurfOp::initialize()
 {
+    if ( getInput<cv::Mat>("Image 0") )
+        m_img = *getInput<cv::Mat>("Image 0");
+
    /// Set the screen size if this is the parent operator.
     if ( m_img.size().width > 0 &&
          !getParentOp() )
@@ -267,58 +283,30 @@ bool CSurfOp::initialize()
         setScreenSize ( m_img.size() );
     }
 
-    return COperatorBase::initialize();
+    return COperator::initialize();
 }
 
 /// Reset event.
 bool CSurfOp::reset()
 {
-    return COperatorBase::reset();
+    return COperator::reset();
 }
 
 bool CSurfOp::exit()
 {
-    return COperatorBase::exit();
+    return COperator::exit();
 }
 
-/// Set the input of this operator
-bool
-CSurfOp::setInput  ( const cv::Mat & f_input )
-{
-    m_img = f_input;
-    return true;
-}
-
-bool 
-CSurfOp::setInput  ( const std::vector<cv::KeyPoint> & f_keyPoints )
-{
-    m_keyPoints.clear();
-    m_keyPoints.insert( m_keyPoints.begin(), 
-                        f_keyPoints.begin(), 
-                        f_keyPoints.end() );
-}
-
-/// Gets the output of this operator
-bool
-CSurfOp::getOutput (  std::vector<cv::KeyPoint> & fr_output ) const
-{
-    fr_output.insert( fr_output.end(),
-                      m_keyPoints.begin(),
-                      m_keyPoints.end());
+// /// Gets the output of this operator
+// bool
+// CSurfOp::getOutput ( std::vector<float> & fr_descriptor ) const
+// {
+//     fr_descriptor.insert( fr_descriptor.end(),
+//                           m_descriptors.begin(),
+//                           m_descriptors.end());
     
-    return true;
-}
-
-/// Gets the output of this operator
-bool
-CSurfOp::getOutput ( std::vector<float> & fr_descriptor ) const
-{
-    fr_descriptor.insert( fr_descriptor.end(),
-                          m_descriptors.begin(),
-                          m_descriptors.end());
-    
-    return true;
-}
+//     return true;
+// }
 
 void 
 CSurfOp::mouseMoved (     CMouseEvent * f_event_p )

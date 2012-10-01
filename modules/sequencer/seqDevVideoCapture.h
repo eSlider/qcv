@@ -45,6 +45,8 @@
 /* INCLUDES */
 #include "seqDeviceControl.h"
 #include "imageFromFile.h"
+#include "io.h"
+
 #include <highgui.h>
 
 #include <vector>
@@ -58,7 +60,7 @@ class QDialog;
 namespace QCV
 {   
     /* PROTOTYPES */
-    class CSeqDevVideoCapture: public CSeqDeviceControl<CInpImgFromFileVector>
+    class CSeqDevVideoCapture: public CSeqDeviceControl
     {
         Q_OBJECT
 
@@ -130,7 +132,10 @@ namespace QCV
 
     /// Register outputs
     public:
-        virtual bool registerOutputs ( CInpImgFromFileVector & f_input_v );
+        //virtual bool registerOutputs ( CInpImgFromFileVector & f_input_v );
+
+        virtual bool registerOutputs ( 
+                std::map< std::string, CIOBase* > &fr_map );
 
     /// Register outputs
     public slots:

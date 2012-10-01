@@ -24,7 +24,6 @@
 
 #include "stereoOp.h"
 #include "mainWindow.h"
-#include "deviceOpConnector.h"
 #include "seqDevHDImg.h"
 #include "paramIOFile.h"
 
@@ -46,11 +45,10 @@ int main(int f_argc_i, char *f_argv_p[])
     CSeqDevHDImg device;
     device.loadNewSequence ( "sequence.xml" );
 
-    /// Let's connect the device to the root operator
-    CDeviceOpConnector<CMatVector, cv::Mat, CInpImgFromFileVector> connector ( rootOp_p, &device );
-
     /// Create the main window passing the connector. 2x2 default screen count.
-    CMainWindow *mwind = new CMainWindow ( &connector, 2, 2 );
+    CMainWindow *mwind = new CMainWindow ( &device, 
+                                           rootOp_p,
+                                           2, 2 );
     
     /// Show main window
     mwind->show();

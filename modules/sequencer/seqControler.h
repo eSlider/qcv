@@ -48,7 +48,7 @@ namespace QCV
 {
 /* PROTOTYPES */
     class CSeqControlDlg;
-    class CSeqDeviceControlBase;    
+    class CSeqDeviceControl;    
 
     class CSeqControler: public QObject
     {
@@ -58,7 +58,7 @@ namespace QCV
     /// Constructors, Destructors
     public:
         /// Constructor
-        CSeqControler( CSeqDeviceControlBase *f_device_p );
+        CSeqControler( CSeqDeviceControl *f_device_p );
 
         /// Destructor
         virtual ~CSeqControler();
@@ -119,7 +119,7 @@ namespace QCV
         CSeqControlDlg *        m_controlDlg_p;
 
         /// Dialog control.
-        CSeqDeviceControlBase * m_deviceCtrl_p;
+        CSeqDeviceControl * m_deviceCtrl_p;
     };
 }
 

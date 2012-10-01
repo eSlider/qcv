@@ -47,14 +47,14 @@ namespace QCV
 
     typedef std::vector<SHoughLine> THoughLineVector;
 
-    class CHoughTransformOp: public QCV::COperator<cv::Mat, THoughLineVector>
+    class CHoughTransformOp: public QCV::COperator
     {
     /// Constructor, Desctructors
     public:    
         
         /// Constructors.
-        CHoughTransformOp ( COperatorBase * const f_parent_p = NULL,
-                            std::string           f_name_str = "Hough Transform" );
+        CHoughTransformOp ( COperator * const f_parent_p = NULL,
+                            std::string       f_name_str = "Hough Transform" );
         
         /// Virtual destructor.
         virtual ~CHoughTransformOp ();
@@ -74,14 +74,6 @@ namespace QCV
         /// Exit event.
         virtual bool exit();
 
-    /// I/O registration.
-    public:
-        /// Set the input of this operator
-        bool setInput  ( const cv::Mat & f_input );
-
-        /// Gets the output of this operator
-        bool getOutput ( THoughLineVector & f_output ) const;
-
     /// User Operation Events
     public:
         /// Key pressed in display.
@@ -93,18 +85,22 @@ namespace QCV
     /// Gets and sets.
     public:
 
-        ADD_PARAM_ACCESS(float,       m_gradThreshold_f,         GradThreshold  );
-        ADD_PARAM_ACCESS(double,      m_deltaTheta_d,            DeltaTheta     );
-        ADD_PARAM_ACCESS(bool,        m_compute_b,               Compute        );
-        ADD_PARAM_ACCESS(double,      m_magnitudeNorm_d,         MagnitudeNorm  );
+        ADD_PARAM_ACCESS(std::string, m_inputId_str,       InputId  );
+        ADD_PARAM_ACCESS(std::string, m_lineVectorId_str,  OutputLineVectorId );
+        ADD_PARAM_ACCESS(std::string, m_accumImgId_str,    OutputAccumImgId );
+     
+        ADD_PARAM_ACCESS(float,       m_gradThreshold_f,   GradThreshold  );
+        ADD_PARAM_ACCESS(double,      m_deltaTheta_d,      DeltaTheta     );
+        ADD_PARAM_ACCESS(bool,        m_compute_b,         Compute        );
+        ADD_PARAM_ACCESS(double,      m_magnitudeNorm_d,   MagnitudeNorm  );
 
-        ADD_PARAM_ACCESS(float,       m_minHoughVal_f,           MinHoughValue  );
+        ADD_PARAM_ACCESS(float,       m_minHoughVal_f,     MinHoughValue  );
 
-        ADD_PARAM_ACCESS(S2D<int>,    m_roiTopLeft,              RoiTopLeft );
-        ADD_PARAM_ACCESS(S2D<int>,    m_roiBottomRight,          RoiBottomRight );
-        ADD_PARAM_ACCESS(int,         m_showMaxLines_i,          ShowMaxLines );
+        ADD_PARAM_ACCESS(S2D<int>,    m_roiTopLeft,        RoiTopLeft );
+        ADD_PARAM_ACCESS(S2D<int>,    m_roiBottomRight,    RoiBottomRight );
+        ADD_PARAM_ACCESS(int,         m_showMaxLines_i,    ShowMaxLines );
 
-        ADD_PARAM_ACCESS(S2D<float>,  m_minHoughDistance,        MinHoughDistance );
+        ADD_PARAM_ACCESS(S2D<float>,  m_minHoughDistance,  MinHoughDistance );
     public:
 
         CLinearHoughTransform *  getLinearHoughTransformOp();
@@ -112,19 +108,29 @@ namespace QCV
         cv::Mat                  getGradientXImage();
         cv::Mat                  getGradientYImage();
         cv::Mat                  getBinaryImage() const;
-        int                      getInputImageWidth() const;
-        int                      getInputImageHeight() const;
 
     /// Data types
     public:
 
     protected:
+        /// Set the input of this operator
+        bool getInput  ( );
+
         void registerParameters();
         void registerDrawingLists();
         bool computeBinaryImage( const cv::Mat & f_gradX,
                                  const cv::Mat & f_gradY,
                                  cv::Mat       & fr_binImg );
     private:
+        
+        /// Input id
+        std::string                m_inputId_str;
+
+        /// Output id
+        std::string                m_lineVectorId_str;
+
+        /// Output id
+        std::string                m_accumImgId_str;
 
         /// Accumulator image.
         cv::Mat                    m_srcImg;        

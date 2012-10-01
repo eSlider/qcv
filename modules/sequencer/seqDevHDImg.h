@@ -46,6 +46,7 @@
 /* INCLUDES */
 #include "seqDeviceControl.h"
 #include "imageFromFile.h"
+#include "io.h"
 
 #include <vector>
 #include <map>
@@ -63,7 +64,7 @@ namespace QCV
     /* PROTOTYPES */
     class CSeqDevHDImgDlg;
     
-    class CSeqDevHDImg: public CSeqDeviceControl<CInpImgFromFileVector>
+    class CSeqDevHDImg: public CSeqDeviceControl
     {
         Q_OBJECT
 
@@ -135,7 +136,10 @@ namespace QCV
 
     /// Register outputs
     public:
-        virtual bool registerOutputs ( CInpImgFromFileVector & f_input_v );
+        //virtual bool registerOutputs ( CInpImgFromFileVector & f_input_v );
+
+        virtual bool registerOutputs ( 
+                std::map< std::string, CIOBase* > &fr_map );
 
     /// Register outputs
     public slots:

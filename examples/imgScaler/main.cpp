@@ -24,7 +24,6 @@
 
 #include "imgScalerOp.h"
 #include "mainWindow.h"
-#include "deviceOpConnector.h"
 #include "seqDevVideoCapture.h"
 #include "seqDevHDImg.h"
 #include "paramIOFile.h"
@@ -55,7 +54,7 @@ int main(int f_argc_i, char *f_argv_p[])
     CParamIOFile pio ( "params_imgScaler.xml" );
     rootOp_p->getParameterSet() -> load ( pio );
 
-    CSeqDeviceControl<CInpImgFromFileVector> * device_p;
+    CSeqDeviceControl * device_p;
 
     /// Create hard disk device
     if (deviceFile_str.substr(deviceFile_str.length() - 4) == ".xml")
@@ -63,11 +62,10 @@ int main(int f_argc_i, char *f_argv_p[])
     else
         device_p = new CSeqDevVideoCapture (deviceFile_str);
 
-    /// Let's connect the device to the root operator
-    CDeviceOpConnector<CMatVector, CMatVector, CInpImgFromFileVector> connector ( rootOp_p, device_p );
-
     /// Create the main window passing the connector. 2x2 default screen count.
-    CMainWindow *mwind_p = new CMainWindow ( &connector, 2, 1 );
+    CMainWindow *mwind_p = new CMainWindow ( device_p, 
+                                             rootOp_p,
+                                             2, 1 );
     
     /// Show main window
     mwind_p->show();

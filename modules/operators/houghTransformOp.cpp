@@ -19,10 +19,10 @@
 using namespace QCV;
 
 /// Constructors.
-CHoughTransformOp::CHoughTransformOp ( COperatorBase * const f_parent_p,
+CHoughTransformOp::CHoughTransformOp ( COperator * const f_parent_p,
                                        std::string           f_name_str )
-    : COperator<cv::Mat, THoughLineVector> (
-                           f_parent_p, f_name_str  ),
+    : COperator (          f_parent_p, f_name_str  ),
+      m_inputId_str (                    "Image 0" ),
       m_srcImg (                                   ),
       m_houghTransOp (                             ),
       m_gradX (                                    ),
@@ -204,7 +204,7 @@ CHoughTransformOp::~CHoughTransformOp ()
 /// Cycle event.
 bool CHoughTransformOp::cycle()
 {
-    if ( m_compute_b )
+    if ( m_compute_b && getInput() )
     {
         startClock ("Cycle: Reallocation and initialization");
         cv::Size size = m_houghTransOp.getAccumulatorImage().size();
@@ -220,7 +220,7 @@ bool CHoughTransformOp::cycle()
         if ( m_srcImg.size().width == 0 )
         {
             printf("%s:%i Must provide an input image\n", __FILE__, __LINE__ );            
-            return  COperatorBase::cycle();
+            return  COperator::cycle();
         }
 
         if ( m_srcImg.size() != m_gradX.size() )
@@ -289,12 +289,6 @@ bool CHoughTransformOp::cycle()
                                                       weight_d );
                         else
                         {
-                            /// !!!
-                            //double theta = atan2( m_gradY.getScanline(i)[j],
-                            //                      m_gradX.getScanline(i)[j]
-                            //);
-                            //printf("!!!\n");
-
                             double theta = atan( gY_p[j] / gX_p[j] );
                             
                             if (theta < 0 )
@@ -391,9 +385,13 @@ bool CHoughTransformOp::cycle()
             stopClock ("Cycle: Line Extraction: Min distance");
             stopClock ("Cycle: Line Extraction");
         }    
-    }
+ 
+        registerOutput<THoughLineVector> ( m_lineVectorId_str, &m_lines );
+        registerOutput<cv::Mat>          ( m_accumImgId_str,   &m_houghTransOp.getAccumulatorImageReference() );
+        
+   }
     
-    return COperatorBase::cycle();
+    return COperator::cycle();
 }
 
 bool
@@ -529,7 +527,7 @@ bool CHoughTransformOp::show()
         {
             getDrawingList("Accumulator") -> clear();
             getDrawingList("Binary Image") -> clear();
-            return COperatorBase::show();
+            return COperator::show();
         }
     
         float w_f = getScreenSize().width;
@@ -644,10 +642,6 @@ bool CHoughTransformOp::show()
                     list2_p -> addSquare(m_lines[i].x_f * sx_f , m_lines[i].y_f * sy_f, 0.5*sx_f);
                 }
             
-                //             list_p -> addEllipse( dispWidth_d/2., 
-                //                                   dispHeight_d/2., 
-                //                                   range_d*aspOX_f, 
-                //                                   range_d*aspOY_f );
             }
         }
 
@@ -674,7 +668,7 @@ bool CHoughTransformOp::show()
         }
     }
 
-    return COperatorBase::show();
+    return COperator::show();
 }
 
 /// Init event.
@@ -683,7 +677,7 @@ bool CHoughTransformOp::initialize()
     if ( m_srcImg.size().width == 0 )
     {
         printf("%s:%i Must provide an input image\n", __FILE__, __LINE__);
-        return  COperatorBase::initialize();
+        return  COperator::initialize();
     }
 
     m_gradX    = cv::Mat(m_srcImg.size(), CV_32FC1 ); 
@@ -697,24 +691,24 @@ bool CHoughTransformOp::initialize()
         m_gradHY = cv::Mat(m_houghTransOp.getAccumulatorImage().size(), CV_32FC1 );
     }
     
-    return COperatorBase::initialize();
+    return COperator::initialize();
 }
 
 /// Reset event.
 bool CHoughTransformOp::reset()
 {
-    return COperatorBase::reset();
+    return COperator::reset();
 }
 
 bool CHoughTransformOp::exit()
 {
-    return COperatorBase::exit();
+    return COperator::exit();
 }
 
 void 
 CHoughTransformOp::keyPressed ( CKeyEvent * f_event_p )
 {
-   return COperatorBase::keyPressed ( f_event_p );    
+   return COperator::keyPressed ( f_event_p );    
 }
 
 void 
@@ -828,7 +822,7 @@ CHoughTransformOp::mouseMoved ( CMouseEvent * f_event_p )
         updateDisplay();
     }
 
-    return COperatorBase::mouseMoved ( f_event_p );
+    return COperator::mouseMoved ( f_event_p );
 }
 
 
@@ -842,17 +836,6 @@ cv::Mat
 CHoughTransformOp::getAccumulatorImage()
 {
     return  m_houghTransOp.getAccumulatorImage();
-}
-int
-CHoughTransformOp::getInputImageWidth() const
-{
-    return m_gradX.size().width;
-}
-
-int
-CHoughTransformOp::getInputImageHeight() const
-{
-    return m_gradX.size().height;
 }
 
 cv::Mat
@@ -875,44 +858,37 @@ CHoughTransformOp::getGradientYImage()
 
 /// Set the input of this operator
 bool
-CHoughTransformOp::setInput  ( const cv::Mat & f_input )
+CHoughTransformOp::getInput  (  )
 {
-    if ( f_input.size().width == 0 ) return false;
+    cv::Mat inpimg = COperator::getInput<cv::Mat>(m_inputId_str, cv::Mat());
     
-    if (f_input.type()!=CV_32F)
+    if ( inpimg.size().width == 0 ) { m_srcImg = inpimg; return false; }
+    
+    if (inpimg.type()!=CV_32F)
     {
-        if ( f_input.type() == CV_8UC3 )
+        if ( inpimg.type() == CV_8UC3 )
         {
-            m_srcImg      = cv::Mat(f_input.size(), CV_32F);
+            m_srcImg      = cv::Mat(inpimg.size(), CV_32F);
             float *dst_p  = &m_srcImg.at<float>(0,0);
-            const SRgb *s = &f_input.at<SRgb>(0,0);            
-            const SRgb *e = s + f_input.size().width * f_input.size().height;
+            const SRgb *s = &inpimg.at<SRgb>(0,0);            
+            const SRgb *e = s + inpimg.size().width * inpimg.size().height;
 
             for (; s < e; ++s, ++dst_p) *dst_p = (s->r+s->g+s->r)/768.f;
         }
-        else if ( f_input.type() == CV_8U )
+        else if ( inpimg.type() == CV_8U )
         {
-            m_srcImg       = cv::Mat(f_input.size(), CV_32F);
+            m_srcImg       = cv::Mat(inpimg.size(), CV_32F);
             float *dst_p   = &m_srcImg.at<float>(0,0);
-            const uint8_t *s  = &f_input.at<uint8_t>(0,0);            
-            const uint8_t *e  = s + f_input.size().width * f_input.size().height;
+            const uint8_t *s  = &inpimg.at<uint8_t>(0,0);            
+            const uint8_t *e  = s + inpimg.size().width * inpimg.size().height;
             for (; s < e; ++s, ++dst_p) *dst_p = *s/256.f;
         }
         else
             printf("%s:%i Please provide a CV_8UC3, CV_8U or CV_32F (prefered) image.\n", __FILE__, __LINE__);
     }
     else
-        m_srcImg = f_input;
+        m_srcImg = inpimg;
 
     return true;
 }
-
-/// Gets the output of this operator
-bool
-CHoughTransformOp::getOutput ( THoughLineVector & f_output_v ) const
-{
-    f_output_v.clear();
-    f_output_v.insert(f_output_v.begin(), m_lines.begin(), m_lines.end());    
-}
-
 

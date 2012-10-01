@@ -52,9 +52,8 @@
 namespace QCV
 {
 /* NAMESPACE PROTOTYPES */
-    class CDeviceOpConnectorBase;
-    class CSeqDeviceControlBase;
-    class COperatorBase;
+    class CSeqDeviceControl;
+    class COperator;
     class CSeqControler;
     class CDisplayWidget;
     class CWindowListView;
@@ -71,9 +70,10 @@ namespace QCV
                 
     public:
         
-        CMainWindow ( CDeviceOpConnectorBase * f_connector_p,
-                      int                      f_sx_i = 2, 
-                      int                      f_sy_i = 2 );
+        CMainWindow ( CSeqDeviceControl * f_device_p,
+                      COperator *             f_rootOp_p,
+                      int                     f_sx_i = 2, 
+                      int                     f_sy_i = 2 );
         
         virtual ~CMainWindow();
         
@@ -108,14 +108,11 @@ namespace QCV
 
     private:
 
-        /// Vector of windows.
-        CDeviceOpConnectorBase *     m_connector_p;
-
         /// Input device.
-        CSeqDeviceControlBase *   m_device_p;
+        CSeqDeviceControl *   m_device_p;
 
         /// Root operator
-        COperatorBase *           m_rootOp_p;
+        COperator *           m_rootOp_p;
 
         /// Control Window.
         CSeqControler *           m_controler_p;

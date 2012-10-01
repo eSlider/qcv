@@ -35,6 +35,7 @@
 #include <map>
 #include <vector>
 
+
 /* CONSTANTS */
 
 class QDialog;
@@ -43,8 +44,9 @@ namespace QCV
 {
     /* PROTOTYPES */
     class CParameterSet;
+    class CIOBase;
     
-    class CSeqDeviceControlBase: public QObject
+    class CSeqDeviceControl: public QObject
     {
         Q_OBJECT
 
@@ -60,11 +62,11 @@ namespace QCV
     /// Constructors, Destructors
     public:
         /// Constructor
-        CSeqDeviceControlBase()
+        CSeqDeviceControl()
                 : m_currentState_e (     S_PAUSED ) {  }
 
         /// Destructor
-        virtual ~CSeqDeviceControlBase() {};
+        virtual ~CSeqDeviceControl() {};
 
     /// Sequence Handling.
     public:
@@ -150,6 +152,12 @@ namespace QCV
             return "Unnamed device";
         }
         
+    /// Register outputs
+    public:
+        virtual bool registerOutputs ( 
+            std::map< std::string, CIOBase* > &fr_map ) { return false;  }
+        
+
     /// Virtual signals
     signals:
         void     start();
@@ -168,22 +176,6 @@ namespace QCV
         
 
     };
-
-    template <class _Type>
-    class CSeqDeviceControl: public CSeqDeviceControlBase
-    {
-    /// Constructors, Destructors
-    public:
-        /// Constructor
-        CSeqDeviceControl() {}
-
-        /// Destructor
-        virtual ~CSeqDeviceControl() {};
-
-    /// Register outputs
-    public:
-        virtual bool  registerOutputs ( _Type & /*output*/ )  { return false; }
-    };  
 }
 
 #endif // __SEQDEVICECONTROL_H

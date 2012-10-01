@@ -39,7 +39,7 @@ include(${QT_USE_FILE})
 
 set ( LIBQCVSequencer_SRC
      mainWindow.cpp
-     operatorBase.cpp
+     operator.cpp
      seqControlDlg.cpp
      seqControler.cpp
      seqDevHDImg.cpp
@@ -47,11 +47,9 @@ set ( LIBQCVSequencer_SRC
 )
 
 set ( LIBQCVSequencer_HEADERS 
-     deviceOpConnector.h
      imageFromFile.h
      mainWindow.h
      matVector.h
-     operatorBase.h
      operator.h
      qcvVector.h
      seqControlDlg.h

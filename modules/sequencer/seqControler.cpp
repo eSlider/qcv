@@ -37,7 +37,7 @@
 using namespace QCV;
 
 /// Constructor
-CSeqControler::CSeqControler( CSeqDeviceControlBase * const f_device_p )
+CSeqControler::CSeqControler( CSeqDeviceControl * const f_device_p )
         : m_controlDlg_p (                   NULL ),
           m_deviceCtrl_p (             f_device_p )
 {
@@ -64,9 +64,9 @@ CSeqControler::CSeqControler( CSeqDeviceControlBase * const f_device_p )
 
     if ( m_deviceCtrl_p )
     {
-        if ( m_deviceCtrl_p -> getState() == CSeqDeviceControlBase::S_PLAYING )
+        if ( m_deviceCtrl_p -> getState() == CSeqDeviceControl::S_PLAYING )
             m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PLAY );
-        else if (m_deviceCtrl_p -> getState() == CSeqDeviceControlBase::S_PAUSED )
+        else if (m_deviceCtrl_p -> getState() == CSeqDeviceControl::S_PAUSED )
             m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PAUSE );
         else
             m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PLAY_BACKWARD );

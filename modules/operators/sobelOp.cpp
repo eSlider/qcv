@@ -42,10 +42,9 @@
 using namespace QCV;
 
 /// Constructors.
-CSobelOp::CSobelOp ( COperatorBase * const f_parent_p,
+CSobelOp::CSobelOp ( COperator * const f_parent_p,
                      const std::string f_name_str )
-    : COperator<cv::Mat, CMatVector>
-      (                       f_parent_p, f_name_str ),
+    : COperator (             f_parent_p, f_name_str ),
       m_compute_b (                            false ),
       m_ksize_i (                                  3 ),
       m_applyGauss_b (                         false ),
@@ -143,7 +142,7 @@ CSobelOp::cycle()
                    CV_16S, 0, 1, m_ksize_i, 1, 0, cv::BORDER_DEFAULT );
     }
     
-    return COperatorBase::cycle();
+    return COperator::cycle();
 }
 
 /// Show event.
@@ -179,7 +178,7 @@ bool CSobelOp::show()
         list_p->addImage ( m_gradImgs_v[ID_GRADY], 0, 0, size.width, size.height, scale_f, offset_f  );
     }
 
-    return COperatorBase::show();
+    return COperator::show();
 }
 
 /// Init event.
@@ -191,18 +190,18 @@ bool CSobelOp::initialize()
     if (  !getParentOp() )
         setScreenSize ( m_img.size() );
 
-    return COperatorBase::initialize();
+    return COperator::initialize();
 }
 
 /// Reset event.
 bool CSobelOp::reset()
 {
-    return COperatorBase::reset();
+    return COperator::reset();
 }
 
 bool CSobelOp::exit()
 {
-    return COperatorBase::exit();
+    return COperator::exit();
 }
 
 /// Set the input of this operator

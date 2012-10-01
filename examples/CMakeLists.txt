@@ -6,7 +6,7 @@ add_subdirectory ( imgPlayer )
 add_subdirectory ( anaglyphStereo )
 add_subdirectory ( stereoExample )
 add_subdirectory ( imgScaler )
-add_subdirectory ( sobelExample2 )
+#add_subdirectory ( sobelExample2 )
 add_subdirectory ( surfExample )
 add_subdirectory ( houghTransformExample )
 

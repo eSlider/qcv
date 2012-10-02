@@ -239,6 +239,13 @@ namespace QCV
 
     /// Protected methods for internal use.
     protected:
+
+        /// Register output in a given operator
+        template <class _T>
+        static void    registerOutput ( const std::string &f_id_str,
+                                        _T *               f_ptr,
+                                        COperator *        f_op );
+        
         /// Register a drawing list so that is visible and available from the 
         /// beginning.
         void           registerDrawingList ( std::string f_id_str,
@@ -383,14 +390,36 @@ namespace QCV
     template <class _T>
     void
     COperator::registerOutput ( const std::string &f_id_str, 
-                                    _T *               f_ptr )
+                                _T *               f_ptr )
     {
-        m_ios[f_id_str] = new CIO<_T>(f_ptr);
-
+        registerOutput ( f_id_str, f_ptr, this );
+        
         /// Register in parent as well
         if (getParentOp())
-            getParentOp() -> m_ios[f_id_str] = new CIO<_T>(f_ptr);
+            registerOutput ( f_id_str, f_ptr, getParentOp() );
     }
+
+/// Get output of this operator (no search in parent)
+    template <class _T>
+    void
+    COperator::registerOutput ( const std::string &f_id_str,
+                                _T *               f_ptr,
+                                COperator *        f_op )
+    {
+        // Check if object already exists.
+        const std::map<std::string, CIOBase*>::iterator 
+            it = f_op->m_ios.find( f_id_str );
+
+        if ( it != f_op->m_ios.end() )
+        {
+            /// Element exist. Overwrite it.
+            delete it->second;
+            it->second = new CIO<_T>(f_ptr);
+        }
+        else
+            f_op->m_ios[f_id_str] = new CIO<_T>(f_ptr);
+    }
+    
 
 /// Get output of this operator (no search in parent)
     template <class _T>

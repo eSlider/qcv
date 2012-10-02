@@ -111,6 +111,8 @@ namespace QCV
 
         ADD_PARAM_ACCESS         (EStereoAlgorithm,  m_alg_e,           StereoAlgorithm );
         ADD_PARAM_ACCESS_BOUNDED (int,               m_scale_i,         Downscale, 1, 6 );
+        ADD_PARAM_ACCESS         (bool,              m_convert2Float_b, ConvertDispImg2Float );
+        ADD_PARAM_ACCESS         (bool,              m_compute_b,       Compute );
 
     /// Constructor, Desctructors
     public:    
@@ -166,6 +168,9 @@ namespace QCV
 
     private:
 
+        /// Compute?
+        bool                        m_compute_b;
+        
         /// Left image id
         std::string                 m_leftImgId_str;
 
@@ -193,12 +198,17 @@ namespace QCV
         /// Output disparity image
         cv::Mat                     m_dispImg;
 
+        /// Float output disparity image
+        cv::Mat                     m_dispImgFloat;
+
         /// Disparity color encoding
         CColorEncoding              m_dispCE;
 
         /// Down-scale factor
         int                         m_scale_i;
         
+        /// Convert disparity image to float?
+        bool                        m_convert2Float_b;
     };
 }
 #endif // __OPENCVSTEREOOP_H

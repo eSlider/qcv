@@ -100,24 +100,7 @@ namespace QCV
         ADD_PARAM_ACCESS (bool, m_compute_b,               Compute );
         ADD_PARAM_ACCESS (bool, m_useProvidedKeypoints_b,  UseProvidedKeypoints );
         ADD_PARAM_ACCESS (bool, m_computeDescriptors_b,    ComputeDescriptors );
-/*
-    /// I/O registration (implementation required by COperator)
-    public:
-        /// Set the input of this operator
-        bool setInput  ( const cv::Mat & f_input );
 
-        /// Gets the output of this operator
-        bool getOutput ( std::vector<cv::KeyPoint> & fr_output ) const;
-
-    /// Additional I/O registration.
-    public:
-
-        /// Set an input of this operator
-        virtual bool setInput  ( const std::vector<cv::KeyPoint> & f_keyPoints);
-
-        /// Gets the output of this operator
-        virtual bool getOutput ( std::vector<float> & fr_descriptor ) const;
-*/
     /// Help methods
     protected:
 

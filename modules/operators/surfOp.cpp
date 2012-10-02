@@ -297,17 +297,6 @@ bool CSurfOp::exit()
     return COperator::exit();
 }
 
-// /// Gets the output of this operator
-// bool
-// CSurfOp::getOutput ( std::vector<float> & fr_descriptor ) const
-// {
-//     fr_descriptor.insert( fr_descriptor.end(),
-//                           m_descriptors.begin(),
-//                           m_descriptors.end());
-    
-//     return true;
-// }
-
 void 
 CSurfOp::mouseMoved (     CMouseEvent * f_event_p )
 {

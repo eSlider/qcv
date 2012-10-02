@@ -75,7 +75,7 @@ namespace QCV
         
         /// Constructors.
         CSobelOp ( COperator * const f_parent_p = NULL,
-                   const std::string f_name_str = "Image Scaler" );
+                   const std::string f_name_str = "Sobel Operator" );
         
         /// Virtual destructor.
         virtual ~CSobelOp ();
@@ -94,18 +94,6 @@ namespace QCV
     
         /// Exit event.
         virtual bool exit();
-
-    public:
-       
-        /// I/O registration.
-    public:
-        /// Set the input of this operator
-        bool setInput  ( const cv::Mat & f_input );
-
-        /// Gets the output of this operator
-        bool getOutput ( CMatVector & f_output ) const;
-
-    protected:
 
     protected:
 

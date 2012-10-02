@@ -60,15 +60,15 @@ CSobelOp::registerDrawingLists(  )
 {
     registerDrawingList ( "Input Image",
                           S2D<int> (0, 0),
-                          false);
+                          !getParentOp());
 
     registerDrawingList ( "X Gradient",
                           S2D<int> (0, 1),
-                          false);
+                          !getParentOp());
 
     registerDrawingList ( "Y Gradient",
                           S2D<int> (1, 1),
-                          false);
+                          !getParentOp());
 }
 
 void
@@ -124,58 +124,71 @@ CSobelOp::~CSobelOp ()
 bool
 CSobelOp::cycle()
 {
-    if ( m_compute_b && m_img.size().width > 0 )
+    if ( m_compute_b )
     {
-        m_gradImgs_v.resize(2);
+        m_img = getInput<cv::Mat>("Image 0", cv::Mat());
+        
+        if ( m_img.size().width > 0 )
+        {
+            m_gradImgs_v.resize(2);
+            
+            /// Gauss filter.
+            if ( m_applyGauss_b )
+                cv::GaussianBlur( m_img, m_gaussImg, cv::Size(3,3), 0, 0, cv::BORDER_DEFAULT );
+            
+            const cv::Mat &srcImg = m_applyGauss_b?m_gaussImg:m_img;
+            
+            /// Sobel Vert
+            cv::Sobel( srcImg, m_gradImgs_v[ID_GRADX],
+                       CV_16S, 1, 0, m_ksize_i, 1, 0, cv::BORDER_DEFAULT );
+            
+            cv::Sobel( srcImg, m_gradImgs_v[ID_GRADY],
+                       CV_16S, 0, 1, m_ksize_i, 1, 0, cv::BORDER_DEFAULT );
 
-        /// Gauss filter.
-        if ( m_applyGauss_b )
-            cv::GaussianBlur( m_img, m_gaussImg, cv::Size(3,3), 0, 0, cv::BORDER_DEFAULT );
-        else
-            m_gaussImg = m_img;
-
-        /// Sobel Vert
-        cv::Sobel( m_gaussImg, m_gradImgs_v[ID_GRADX], 
-                   CV_16S, 1, 0, m_ksize_i, 1, 0, cv::BORDER_DEFAULT );
-
-        cv::Sobel( m_gaussImg, m_gradImgs_v[ID_GRADY], 
-                   CV_16S, 0, 1, m_ksize_i, 1, 0, cv::BORDER_DEFAULT );
+            registerOutput<CMatVector>( "Image Gradients", &m_gradImgs_v );
+        }
     }
     
     return COperator::cycle();
 }
-
+    
 /// Show event.
 bool CSobelOp::show()
 {
-    CDrawingList * list_p = getDrawingList("Input Image" );
-
-    list_p -> clear();
-    
-    if ( list_p -> isVisible() && m_img.size().width > 0  )
+    if (m_compute_b)
     {
-        list_p->addImage ( m_img );
-    }
-     
-    cv::Size size = m_img.size();
+        /// Set the screen size if this is the parent operator.
+        setScreenSize ( m_img.size() );
 
-    float offset_f = 0.5;
-    float scale_f  = 16.f;
-
-    list_p = getDrawingList("X Gradient" );
-    list_p -> clear();
-
-    if ( list_p -> isVisible() && m_gradImgs_v[ID_GRADX].size().width > 0 )
-    {
-        list_p->addImage ( m_gradImgs_v[ID_GRADX], 0, 0, size.width, size.height, scale_f, offset_f  );
-    }
-
-    list_p = getDrawingList("Y Gradient" );
-    list_p -> clear();
-
-    if ( list_p -> isVisible() && m_gradImgs_v[ID_GRADY].size().width > 0 )
-    {
-        list_p->addImage ( m_gradImgs_v[ID_GRADY], 0, 0, size.width, size.height, scale_f, offset_f  );
+        CDrawingList * list_p = getDrawingList("Input Image" );
+        
+        list_p -> clear();
+        
+        if ( list_p -> isVisible() && m_img.size().width > 0  )
+        {
+            list_p->addImage ( m_img );
+        }
+        
+        cv::Size size = m_img.size();
+        
+        float offset_f = 0.5;
+        float scale_f  = 16.f;
+        
+        list_p = getDrawingList("X Gradient" );
+        list_p -> clear();
+        
+        if ( list_p -> isVisible() && m_gradImgs_v[ID_GRADX].size().width > 0 )
+        {
+            list_p->addImage ( m_gradImgs_v[ID_GRADX], 0, 0, size.width, size.height, scale_f, offset_f  );
+        }
+        
+        list_p = getDrawingList("Y Gradient" );
+        list_p -> clear();
+        
+        if ( list_p -> isVisible() && m_gradImgs_v[ID_GRADY].size().width > 0 )
+        {
+            list_p->addImage ( m_gradImgs_v[ID_GRADY], 0, 0, size.width, size.height, scale_f, offset_f  );
+        }
     }
 
     return COperator::show();
@@ -184,11 +197,11 @@ bool CSobelOp::show()
 /// Init event.
 bool CSobelOp::initialize()
 {
-    m_gradImgs_v.resize(2);
+    m_img = getInput<cv::Mat>("Image 0", cv::Mat());
 
-    /// Set the screen size if this is the parent operator.
-    if (  !getParentOp() )
-        setScreenSize ( m_img.size() );
+    setScreenSize ( m_img.size() );
+
+    m_gradImgs_v.resize(2);
 
     return COperator::initialize();
 }
@@ -204,23 +217,4 @@ bool CSobelOp::exit()
     return COperator::exit();
 }
 
-/// Set the input of this operator
-bool
-CSobelOp::setInput  ( const cv::Mat & f_input )
-{
-    m_img = f_input;
-    return true;
-}
-
-/// Gets the output of this operator
-bool
-CSobelOp::getOutput ( CMatVector & f_output ) const
-{
-    if ( m_gradImgs_v.size() == 0 )
-        return false;
-    
-    f_output = m_gradImgs_v;
-    
-    return true;
-}
 

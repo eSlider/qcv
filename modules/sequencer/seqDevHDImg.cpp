@@ -436,8 +436,9 @@ CSeqDevHDImg::findFiles ( std::string    f_fullPath_str,
     }    
 }
 
-bool CSeqDevHDImg::registerOutputs ( 
-        std::map< std::string, CIOBase* > &fr_map )
+bool
+CSeqDevHDImg::registerOutputs ( 
+    std::map< std::string, CIOBase* > &fr_map )
 {
     fr_map[ "Input Images" ] = new CIO<CInpImgFromFileVector>(&m_imageData_v);
 
@@ -447,6 +448,9 @@ bool CSeqDevHDImg::registerOutputs (
     {
         sprintf(txt, "Image %i", i);
         fr_map[txt] = new CIO<cv::Mat>(&m_imageData_v[i].image);
+
+        sprintf(txt, "Image %i Timestamp", i);
+        fr_map[txt] = new CIO<double>(&m_imageData_v[i].timeStamp_d);
 
         sprintf(txt, "Image %i Path", i);
         fr_map[txt] = new CIO<std::string>(&m_imageData_v[i].path_str);

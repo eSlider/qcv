@@ -360,7 +360,9 @@ COperator::addDrawingListParameter ( std::string f_id_str,
 bool
 COperator::setScreenSize ( S2D<unsigned int> f_size )
 {
-    m_drawingListHandler.setScreenSize(f_size);
+    /// We want only the root to be able to set the size of the screen.
+    if ( ! getParentOp() )
+        m_drawingListHandler.setScreenSize(f_size);
     return true;
 }
 
@@ -379,6 +381,17 @@ COperator::clearIOMap ( )
     {
         COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
         child_p->clearIOMap ( );
+    }
+
+    // Clear elements
+    std::map<std::string, CIOBase*>::iterator 
+        it = m_ios.begin ();
+
+    while (it != m_ios.end() )
+    {
+        /// Delete CIO object
+        delete it->second;
+        ++it;
     }
 
     m_ios.erase( m_ios.begin(), m_ios.end() );

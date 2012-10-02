@@ -25,7 +25,6 @@
  * @file linearHoughTransform.cpp
  *
  * \class CLInearHoughTransform
- * \date  Wed, 10 Feb
  * \author Hernan Badino (hernan.badino@gmail.com)
  *
  * \brief Hough transform for finding linear segments.

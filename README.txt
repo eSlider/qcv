@@ -46,16 +46,23 @@ local build directory, i.e. $HOME/qcv/build.
 Check the example binaries installed in the bin directory
 
 > cd $HOME/qcv/build/bin
+
+# C examples (qcv core only)
 > ./helloWorld
 > ./toyClockExample
 > ./checkStereoPair imgs/left.pgm imgs/right.pgm
 > ./sobelExample imgs/seq/*c0*.jpg
 > ./imgViewer --cam imgs/seq/*c0*.jpg --cam imgs/seq/*c1*.jpg
 > ./anaglyphStereo --left imgs/seq/*c0*.jpg --right imgs/seq/*c1*.jpg
+
+# C++ examples (operators, editor and sequencer)
 > ./stereoExample
 > ./imgScalerExample somevideo.mpg
 > ./sobelExample2 somevideo.mpg
-> ./surfExample somevideo.mpg
+> ./surfExample sequence.xml
+> ./houghTransformExample sequence.xml
 
-You will need to provide valid videos as parameters.
+You will need to provide valid videos as parameters,
+(or just use the provided image sequence by using
+"sequence.xml" instead).
 

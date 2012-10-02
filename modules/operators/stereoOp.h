@@ -94,7 +94,7 @@ namespace QCV
 
     typedef cv::Mat TOutputType;
 
-    class CStereoOp: public COperator<CMatVector, TOutputType>
+    class CStereoOp: public COperator
     {
     /// Constructor, Desctructors
     public:    
@@ -105,14 +105,20 @@ namespace QCV
 
     /// Parameter access
     public:    
-        ADD_PARAM_ACCESS         (EStereoAlgorithm,  m_alg_e,        StereoAlgorithm );
-        ADD_PARAM_ACCESS_BOUNDED (int,               m_scale_i,      Downscale, 1, 6 );
+        ADD_PARAM_ACCESS         (std::string,       m_leftImgId_str,   LeftImageId );
+        ADD_PARAM_ACCESS         (std::string,       m_rightImgId_str,  RightImageId );
+        ADD_PARAM_ACCESS         (std::string,       m_dispImgId_str,   DisparityImageId );
+
+        ADD_PARAM_ACCESS         (EStereoAlgorithm,  m_alg_e,           StereoAlgorithm );
+        ADD_PARAM_ACCESS_BOUNDED (int,               m_scale_i,         Downscale, 1, 6 );
+        ADD_PARAM_ACCESS         (bool,              m_convert2Float_b, ConvertDispImg2Float );
+        ADD_PARAM_ACCESS         (bool,              m_compute_b,       Compute );
 
     /// Constructor, Desctructors
     public:    
         
         /// Constructors.
-        CStereoOp ( COperatorBase * const f_parent_p = NULL,
+        CStereoOp ( COperator * const f_parent_p = NULL,
                     const std::string     f_name_str = "OpenCV Stereo" );
         
         /// Virtual destructor.
@@ -152,13 +158,29 @@ namespace QCV
 
     protected:
 
+        bool getInput();
+        
+        bool validateImages() const;
+
         void registerDrawingLists();
 
         void registerParameters();
 
     private:
 
-        //// Stereo algorithm to use
+        /// Compute?
+        bool                        m_compute_b;
+        
+        /// Left image id
+        std::string                 m_leftImgId_str;
+
+        /// Right image id
+        std::string                 m_rightImgId_str;
+
+        /// Disparity image id
+        std::string                 m_dispImgId_str;
+        
+        /// Stereo algorithm to use
         EStereoAlgorithm            m_alg_e;
         
         ///  SGBM struct
@@ -176,12 +198,17 @@ namespace QCV
         /// Output disparity image
         cv::Mat                     m_dispImg;
 
+        /// Float output disparity image
+        cv::Mat                     m_dispImgFloat;
+
         /// Disparity color encoding
         CColorEncoding              m_dispCE;
 
         /// Down-scale factor
         int                         m_scale_i;
         
+        /// Convert disparity image to float?
+        bool                        m_convert2Float_b;
     };
 }
 #endif // __OPENCVSTEREOOP_H

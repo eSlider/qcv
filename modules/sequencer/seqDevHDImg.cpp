@@ -38,7 +38,7 @@
 using namespace QCV;
 
 
-CSeqDevHDImg::CSeqDevHDImg()
+CSeqDevHDImg::CSeqDevHDImg(const std::string &f_confFilePath_str)
         : m_dialog_p (                          NULL ),
           m_qtPlay_p (                          NULL ),
           m_currentFrame_i (                      -1 ),
@@ -57,6 +57,9 @@ CSeqDevHDImg::CSeqDevHDImg()
     //connect(m_dialog_p, SIGNAL(reset()), this, SLOT(stopAndEmitReset()));
 
     m_currentState_e = S_PAUSED;
+
+    if ( f_confFilePath_str != "" )
+        loadNewSequence ( f_confFilePath_str );
 }
 
 /// Destructor
@@ -304,15 +307,15 @@ std::vector<QDialog *> CSeqDevHDImg::getDialogs ( ) const
     return std::vector<QDialog *>();
 }
 
-bool CSeqDevHDImg::registerOutputs ( CInpImgFromFileVector & f_input_v )
-{
-    f_input_v.clear();
-    f_input_v.insert ( f_input_v.begin(), 
-                       m_imageData_v.begin(), 
-                       m_imageData_v.end() );
+// bool CSeqDevHDImg::registerOutputs ( CInpImgFromFileVector & f_input_v )
+// {
+//     f_input_v.clear();
+//     f_input_v.insert ( f_input_v.begin(), 
+//                        m_imageData_v.begin(), 
+//                        m_imageData_v.end() );
 
-    return true;
-}
+//     return true;
+// }
 
 bool 
 CSeqDevHDImg::loadNewSequence ( const std::string &f_confFilePath_str )
@@ -433,3 +436,28 @@ CSeqDevHDImg::findFiles ( std::string    f_fullPath_str,
     }    
 }
 
+bool
+CSeqDevHDImg::registerOutputs ( 
+    std::map< std::string, CIOBase* > &fr_map )
+{
+    fr_map[ "Input Images" ] = new CIO<CInpImgFromFileVector>(&m_imageData_v);
+
+    char txt[256];
+    
+    for ( uint8_t i = 0 ; i < m_imageData_v.size() ; ++i)
+    {
+        sprintf(txt, "Image %i", i);
+        fr_map[txt] = new CIO<cv::Mat>(&m_imageData_v[i].image);
+
+        sprintf(txt, "Image %i Timestamp", i);
+        fr_map[txt] = new CIO<double>(&m_imageData_v[i].timeStamp_d);
+
+        sprintf(txt, "Image %i Path", i);
+        fr_map[txt] = new CIO<std::string>(&m_imageData_v[i].path_str);
+
+    }
+    
+    fr_map[ "Frame Number" ] = new CIO<int>(&m_currentFrame_i);
+
+    return true;
+}

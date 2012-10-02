@@ -156,7 +156,7 @@ add_definitions(${QT_DEFINITIONS})
 include_directories ( ${CMAKE_CURRENT_BINARY_DIR} )
 
 ### Generated library
-add_library ( qcv SHARED ${LIBQCV_SRC}
+add_library ( qcv SHARED ${LIBQCV_SRC} ${QT_RCC_SRCS}
                          ${LIBQCV_HEADERS_MOC}
                           )
 

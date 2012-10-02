@@ -28,18 +28,18 @@
  ******************************************************************************/
 
 /* INCLUDES */
-#include "operatorBase.h"
+#include "operator.h"
 #include "drawingList.h"
 #include "clock.h"
 #include "displayStateParam.h"
 
 using namespace QCV;
 
-CDrawingListHandler    COperatorBase::m_drawingListHandler;
-CClockHandler          COperatorBase::m_clockHandler;
+CDrawingListHandler    COperator::m_drawingListHandler;
+CClockHandler          COperator::m_clockHandler;
 
-COperatorBase::COperatorBase (  COperatorBase * const f_parent_p /* = NULL */, 
-                                const std::string f_name_str /* = "Unnamed OperatorBase" */ )
+COperator::COperator (  COperator * const f_parent_p /* = NULL */, 
+                                const std::string f_name_str /* = "Unnamed Operator" */ )
     : CNode (      f_parent_p, f_name_str ),
       m_paramSet_p (                 NULL )
 {
@@ -54,7 +54,7 @@ COperatorBase::COperatorBase (  COperatorBase * const f_parent_p /* = NULL */,
         getParentOp() -> getParameterSet ()->addSubset ( m_paramSet_p );
 }
 
-COperatorBase::~COperatorBase ()
+COperator::~COperator ()
 {
     /// Delete parameter set only if this is the root node.
     if ( m_parent_p == NULL )
@@ -64,13 +64,13 @@ COperatorBase::~COperatorBase ()
 }
 
 bool 
-COperatorBase::cycle()
+COperator::cycle()
 {
     bool result_b = true;
 
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
 
         if ( child_p )
         {
@@ -85,13 +85,13 @@ COperatorBase::cycle()
 }
 
 bool 
-COperatorBase::show()
+COperator::show()
 {
     bool result_b = true;
 
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
 
         if ( child_p )
         {
@@ -106,13 +106,13 @@ COperatorBase::show()
 }
 
 bool 
-COperatorBase::initialize()
+COperator::initialize()
 {    
     bool result_b = true;
 
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
 
         if ( child_p )
         {
@@ -127,13 +127,13 @@ COperatorBase::initialize()
 }
 
 bool 
-COperatorBase::reset()
+COperator::reset()
 {
     bool result_b = true;
 
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
 
         if ( child_p )
         {
@@ -148,13 +148,13 @@ COperatorBase::reset()
 }
 
 bool 
-COperatorBase::exit()
+COperator::exit()
 {
     bool result_b = true;
 
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
 
         if ( child_p )
         {
@@ -169,11 +169,11 @@ COperatorBase::exit()
 }
 
 void 
-COperatorBase::mousePressed ( CMouseEvent * const f_event_p )
+COperator::mousePressed ( CMouseEvent * const f_event_p )
 {
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
         
         if ( child_p )
         {
@@ -184,11 +184,11 @@ COperatorBase::mousePressed ( CMouseEvent * const f_event_p )
 }
 
 void 
-COperatorBase::mouseReleased ( CMouseEvent * const f_event_p )
+COperator::mouseReleased ( CMouseEvent * const f_event_p )
 {
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
         
         if ( child_p )
         {
@@ -198,11 +198,11 @@ COperatorBase::mouseReleased ( CMouseEvent * const f_event_p )
 }
 
 void 
-COperatorBase::mouseMoved ( CMouseEvent * const f_event_p )
+COperator::mouseMoved ( CMouseEvent * const f_event_p )
 {
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
         
         if ( child_p )
         {
@@ -212,11 +212,11 @@ COperatorBase::mouseMoved ( CMouseEvent * const f_event_p )
 }
 
 void 
-COperatorBase::wheelTurned ( CWheelEvent * const f_event_p )
+COperator::wheelTurned ( CWheelEvent * const f_event_p )
 {
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
         
         if ( child_p )
         {
@@ -226,12 +226,12 @@ COperatorBase::wheelTurned ( CWheelEvent * const f_event_p )
 }
 
 void 
-COperatorBase::regionSelected ( CRegionSelectedEvent * const 
+COperator::regionSelected ( CRegionSelectedEvent * const 
                                 f_event_p )
 {
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
         
         if ( child_p )
         {
@@ -241,11 +241,11 @@ COperatorBase::regionSelected ( CRegionSelectedEvent * const
 }
 
 void 
-COperatorBase::keyPressed ( CKeyEvent * const f_event_p )
+COperator::keyPressed ( CKeyEvent * const f_event_p )
 {
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
         
         if ( child_p )
         {
@@ -256,14 +256,14 @@ COperatorBase::keyPressed ( CKeyEvent * const f_event_p )
 
 
 std::vector<QWidget*> 
-COperatorBase::getWidgets( ) const
+COperator::getWidgets( ) const
 {
     // Return empty vector.
     std::vector<QWidget *> v;
 
     for (uint32_t i = 0; i < m_children_v.size(); ++i)
     {
-        COperatorBase *child_p = static_cast<COperatorBase *>(m_children_v[i].ptr_p);
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
         
         if ( child_p )
         {
@@ -276,7 +276,7 @@ COperatorBase::getWidgets( ) const
 }
 
 void 
-COperatorBase::registerDrawingList ( std::string f_id_str,
+COperator::registerDrawingList ( std::string f_id_str,
                                      S2D<int>    f_position, 
                                      bool        f_visibile_b,
                                      int         f_overlayLevel_i )
@@ -288,14 +288,14 @@ COperatorBase::registerDrawingList ( std::string f_id_str,
 }
 
 CDrawingList * 
-COperatorBase::getDrawingList ( std::string f_id_str )
+COperator::getDrawingList ( std::string f_id_str )
 {
     return m_drawingListHandler.getDrawingList ( f_id_str, this );
 }
 
 /// Inform the drawing list handler to update the display.
 void 
-COperatorBase::updateDisplay ( )
+COperator::updateDisplay ( )
 {
     m_drawingListHandler.setDisplayUpdateFlag ( true );
 }
@@ -303,21 +303,21 @@ COperatorBase::updateDisplay ( )
 /// Register a clock so that is visible and available from the 
 /// beginning.
 void
-COperatorBase::registerClock ( std::string f_name_str )
+COperator::registerClock ( std::string f_name_str )
 {
     getClock ( f_name_str );
 }
 
 /// Get a clock to measure computation time.
 CClock *
-COperatorBase::getClock ( std::string f_id_str )
+COperator::getClock ( std::string f_id_str )
 {
     return m_clockHandler.getClock ( f_id_str, this );
 }
 
 /// Start clock.
 void
-COperatorBase::startClock ( std::string f_name_str )
+COperator::startClock ( std::string f_name_str )
 {
     CClock *  clock_p = getClock ( f_name_str );
     if ( clock_p ) clock_p -> start();
@@ -325,20 +325,20 @@ COperatorBase::startClock ( std::string f_name_str )
 
 /// Start clock.
 void
-COperatorBase::stopClock ( std::string f_name_str )
+COperator::stopClock ( std::string f_name_str )
 {
     CClock *  clock_p = getClock ( f_name_str );
     if ( clock_p ) clock_p -> stop();
 }
 
 CParameterSet *
-COperatorBase::getParameterSet() const
+COperator::getParameterSet() const
 {
     return m_paramSet_p;
 }
 
 void 
-COperatorBase::addDrawingListParameter ( std::string f_id_str,
+COperator::addDrawingListParameter ( std::string f_id_str,
                                          std::string f_comment_str )
 {
     CDrawingList *list_p;
@@ -358,14 +358,71 @@ COperatorBase::addDrawingListParameter ( std::string f_id_str,
 }
 
 bool
-COperatorBase::setScreenSize ( S2D<unsigned int> f_size )
+COperator::setScreenSize ( S2D<unsigned int> f_size )
 {
-    m_drawingListHandler.setScreenSize(f_size);
+    /// We want only the root to be able to set the size of the screen.
+    if ( ! getParentOp() )
+        m_drawingListHandler.setScreenSize(f_size);
     return true;
 }
 
-S2D<unsigned int> COperatorBase::getScreenSize (  ) const
+S2D<unsigned int> COperator::getScreenSize (  ) const
 {
     return m_drawingListHandler.getScreenSize();
 }
+
+
+        
+/// Clear all I/O registers.
+void
+COperator::clearIOMap ( )
+{
+    for (int i = m_children_v.size()-1; i >=0 ; --i)
+    {
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
+        child_p->clearIOMap ( );
+    }
+
+    // Clear elements
+    std::map<std::string, CIOBase*>::iterator 
+        it = m_ios.begin ();
+
+    while (it != m_ios.end() )
+    {
+        /// Delete CIO object
+        delete it->second;
+        ++it;
+    }
+
+    m_ios.erase( m_ios.begin(), m_ios.end() );
+}
+
+
+
+/// Set the output of this operator.
+void
+COperator::registerOutputs ( const std::map< std::string, CIOBase * > &f_elements )
+{
+    m_ios.insert( f_elements.begin(), f_elements.end() ) ;   
+    
+    if (getParentOp())
+        getParentOp() -> m_ios.insert( f_elements.begin(), f_elements.end() ) ;
+}
+        
+/// Register the outputs of this operator to a second operator.
+void
+COperator::registerOutputsTo ( COperator *f_other_p )
+{
+    f_other_p -> m_ios.insert( m_ios.begin(), m_ios.end() ) ;
+}
+
+
+/// Get output of this operator.
+void
+COperator::getOutputMap ( std::map< std::string, CIOBase* > &fr_elements ) const
+{
+    fr_elements.clear();
+    fr_elements.insert( m_ios.begin(), m_ios.end() );
+}
+
 

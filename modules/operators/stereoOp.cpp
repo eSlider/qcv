@@ -46,10 +46,13 @@ using namespace QCV;
 static const char g_scalerName_str[] = "Stereo Image Scaler";
 
 /// Constructors.
-CStereoOp::CStereoOp ( COperatorBase * const f_parent_p,
+CStereoOp::CStereoOp ( COperator * const f_parent_p,
                        const std::string     f_name_str )
-    : COperator<CMatVector, TOutputType> (
-                              f_parent_p, f_name_str ),
+    : COperator (             f_parent_p, f_name_str ),
+      m_compute_b (                             true ),
+      m_leftImgId_str (                    "Image 0" ),
+      m_rightImgId_str (                   "Image 1" ),
+      m_dispImgId_str (            "Disparity Image" ),
       m_alg_e (                                SA_BM ),
       m_sgbm (                                       ),
       m_sbm (                                        ),
@@ -58,7 +61,8 @@ CStereoOp::CStereoOp ( COperatorBase * const f_parent_p,
       m_dispImg (                                    ),
       m_dispCE (   CColorEncoding::CET_BLUE2GREEN2RED,
                                S2D<float> ( 0, 400 ) ),
-      m_scale_i (                                  2 )
+      m_scale_i (                                  2 ),
+      m_convert2Float_b (                      false )
 {
     registerDrawingLists();
     registerParameters();
@@ -88,6 +92,24 @@ CStereoOp::registerDrawingLists()
 void
 CStereoOp::registerParameters()
 {
+    
+    ADD_BOOL_PARAMETER ( "Compute",
+                         "Compute stereo?",
+                         m_compute_b,
+                         this,
+                         Compute,
+                         CStereoOp );
+
+    ADD_BOOL_PARAMETER ( "Convert to Float",
+                         "Convert output disparity image to float? Output\n"
+                         "id will be \"Float \" + OutputId\n", 
+                         m_convert2Float_b,
+                         this,
+                         ConvertDispImg2Float,
+                         CStereoOp );
+
+
+
     CEnumParameter<EStereoAlgorithm> * algParam_p = static_cast<CEnumParameter<EStereoAlgorithm> * > (
         ADD_ENUM_PARAMETER( "Algorithm",
                             "Stereo algorithm to use",
@@ -312,115 +334,166 @@ CStereoOp::~CStereoOp ()
 {
 }
 
+/// Validate event.
+bool
+CStereoOp::validateImages() const
+{
+    return ( m_leftImg.size().width  > 0 && 
+             m_leftImg.size().height > 0 && 
+             m_leftImg.size() == m_rightImg.size() &&
+             m_leftImg.type() == m_rightImg.type() );    
+}
+
+bool
+CStereoOp::getInput()
+{
+    m_leftImg  = COperator::getInput<cv::Mat> ( m_leftImgId_str,  cv::Mat() );
+    m_rightImg = COperator::getInput<cv::Mat> ( m_rightImgId_str, cv::Mat() );
+    
+    if ( !validateImages() )
+    {
+        CMatVector * vec = COperator::getInput<CMatVector> ( "Images" );
+        if (vec && vec->size() >= 2)
+        {
+            m_leftImg  = (*vec)[0];
+            m_rightImg = (*vec)[1];
+        }
+
+        return validateImages();
+    }
+
+    return true;
+}
+
 /// Cycle event.
 bool
 CStereoOp::cycle()
 {
-    if ( m_leftImg.size().width  > 0 && 
-         m_leftImg.size().height > 0 && 
-         m_leftImg.size() == m_rightImg.size() &&
-         m_leftImg.type() == m_rightImg.type() )
+    if ( m_compute_b )
     {
-        CMatVector vec = m_leftImg;
-        vec.push_back(m_rightImg);
-        
-        /// Scale images
-        getChild<CImageScalerOp *>( g_scalerName_str ) -> compute ( vec, vec );     
+        if ( getInput() )
+        {
+            CMatVector vec = m_leftImg;
+            vec.push_back(m_rightImg);
 
-        cv::Mat auxImg;
+            /// Scale images
+            getChild<CImageScalerOp *>( g_scalerName_str ) -> compute ( vec, vec );
 
-        unsigned int numberOfDisparities = ceil(m_sgbm.numberOfDisparities / (16.0*m_scale_i)) * 16;
-        m_sgbm.numberOfDisparities = numberOfDisparities;
+            cv::Mat auxImg;
 
-        numberOfDisparities = ceil(m_sbm.state->numberOfDisparities / (16.0*m_scale_i)) * 16;
-        m_sbm.state->numberOfDisparities = numberOfDisparities;
+            unsigned int numberOfDisparities = ceil(m_sgbm.numberOfDisparities / (16.0*m_scale_i)) * 16;
+            m_sgbm.numberOfDisparities = numberOfDisparities;
 
-        cv::Size size = vec[0].size();
+            numberOfDisparities = ceil(m_sbm.state->numberOfDisparities / (16.0*m_scale_i)) * 16;
+            m_sbm.state->numberOfDisparities = numberOfDisparities;
+
+            cv::Size size = vec[0].size();
     
-        cv::Mat tmpLeft, tmpRight;
+            cv::Mat tmpLeft, tmpRight;
 
-        if (m_scale_i > 1) 
-        {
-            size.width  /= m_scale_i;
-            size.height /= m_scale_i;
-            
-            cv::resize(vec[0], tmpLeft, size);
-            cv::resize(vec[1], tmpRight, size);
-            auxImg = cv::Mat(size, CV_16S );
-        }
-        else
-        {
-            tmpLeft  = vec[0];
-            tmpRight = vec[1];
-        }
-        
-        if ( m_alg_e == SA_SGBM ) 
-        {
-            if (m_scale_i > 1)
-                m_sgbm(tmpLeft, tmpRight, auxImg);
-            else
-                m_sgbm(tmpLeft, tmpRight, m_dispImg);
-        }
-        else
-        {
-            static int oldScale_i = -1;
-            
-            if (oldScale_i != m_scale_i )
-                m_sbm.init(CV_STEREO_BM_BASIC, m_sbm.state->numberOfDisparities, m_sbm.state->SADWindowSize);
-
-            oldScale_i = m_scale_i;
-
-            // Transform image to CV_8UC1 if not already in that
-            // format. BM works only with in 8 bit grayscale
-            // images.
-            
-            cv::Mat l,r;
-            
-            if ( tmpLeft.type () != CV_8UC1 )
+            if (m_scale_i > 1) 
             {
-                if ( tmpLeft.type () == CV_8UC3 )
+                size.width  /= m_scale_i;
+                size.height /= m_scale_i;
+            
+                cv::resize(vec[0], tmpLeft, size);
+                cv::resize(vec[1], tmpRight, size);
+                auxImg = cv::Mat(size, CV_16S );
+            }
+            else
+            {
+                tmpLeft  = vec[0];
+                tmpRight = vec[1];
+            }
+        
+            if ( m_alg_e == SA_SGBM ) 
+            {
+                if (m_scale_i > 1)
+                    m_sgbm(tmpLeft, tmpRight, auxImg);
+                else
+                    m_sgbm(tmpLeft, tmpRight, m_dispImg);
+            }
+            else
+            {
+                static int oldScale_i = -1;
+            
+                if (oldScale_i != m_scale_i )
+                    m_sbm.init(CV_STEREO_BM_BASIC, m_sbm.state->numberOfDisparities, m_sbm.state->SADWindowSize);
+
+                oldScale_i = m_scale_i;
+
+                // Transform image to CV_8UC1 if not already in that
+                // format. BM works only with in 8 bit grayscale
+                // images.
+            
+                cv::Mat l,r;
+            
+                if ( tmpLeft.type () != CV_8UC1 )
                 {
+                    if ( tmpLeft.type () == CV_8UC3 )
                     {
-                        IplImage src = (IplImage)tmpLeft;
-                        l = cv::Mat( tmpLeft.size(), CV_8UC1);
-                        IplImage dst = (IplImage)l;
-                        cvCvtColor ( &src, &dst, CV_RGB2GRAY);
-                    }
+                        {
+                            IplImage src = (IplImage)tmpLeft;
+                            l = cv::Mat( tmpLeft.size(), CV_8UC1);
+                            IplImage dst = (IplImage)l;
+                            cvCvtColor ( &src, &dst, CV_RGB2GRAY);
+                        }
                     
-                    {
-                        IplImage src = (IplImage)tmpRight;
-                        r = cv::Mat( tmpLeft.size(), CV_8UC1);
-                        IplImage dst = (IplImage)r;
-                        cvCvtColor ( &src, &dst, CV_RGB2GRAY);
+                        {
+                            IplImage src = (IplImage)tmpRight;
+                            r = cv::Mat( tmpLeft.size(), CV_8UC1);
+                            IplImage dst = (IplImage)r;
+                            cvCvtColor ( &src, &dst, CV_RGB2GRAY);
+                        }
                     }
+                    else
+                    {
+                        printf("%s:%i Required image format is CV_8UC1 or CV_8UC3\n", __FILE__, __LINE__);
+                        return false;
+                    }
+
+                    if (m_scale_i > 1)
+                        m_sbm(l, r, auxImg);
+                    else
+                        m_sbm(l, r, m_dispImg);
                 }
                 else
                 {
-                    return COperatorBase::cycle();
+                    if (m_scale_i > 1)
+                        m_sbm(tmpLeft, tmpRight, auxImg);
+                    else
+                        m_sbm(l, r, m_dispImg);
                 }
-                
-                if (m_scale_i > 1)
-                    m_sbm(l, r, auxImg);
-                else
-                    m_sbm(l, r, m_dispImg);
             }
-            else
-            {
-                if (m_scale_i > 1)
-                    m_sbm(tmpLeft, tmpRight, auxImg);
-                else
-                    m_sbm(l, r, m_dispImg);
-            }
-        }
         
-        if (m_scale_i != 1)
-        {
-            cv::resize(auxImg, m_dispImg, vec[0].size(), 0, 0, cv::INTER_NEAREST );
-            m_dispImg *= m_scale_i;
+            if (m_scale_i != 1)
+            {
+                cv::resize(auxImg, m_dispImg, vec[0].size(), 0, 0, cv::INTER_NEAREST );
+                m_dispImg *= m_scale_i;
+            }
+
+            /// Convert to float output
+            m_dispImgFloat = cv::Mat(m_dispImg.size(), CV_32FC1);
+
+            float *t     = (float *)    m_dispImgFloat.data;
+            short int *s = (short int *)m_dispImg.data;
+            const short int * const e = (short int *)(m_dispImg.data + m_dispImg.step * m_dispImg.size().height);
+            for (; s < e; ++s, ++t) *t = *s / 16.f;
+
+            registerOutput<cv::Mat> ( m_dispImgId_str, 
+                                      &m_dispImg );
+
+            registerOutput<cv::Mat> ( std::string("Float ") + m_dispImgId_str, 
+                                      &m_dispImgFloat );        
         }
     }
+    else
+    {
+        printf("%s:%i Invalid input images.\n", __FILE__, __LINE__ );
+        return false;
+    }    
 
-    return true; //COperatorBase::cycle();
+    return true; //COperator::cycle();
 }
 
 /// Show event.
@@ -449,31 +522,33 @@ bool CStereoOp::show()
     if (list_p -> isVisible() )
         list_p->addImage ( m_dispImg, 0, 0, m_dispImg.size().width, m_dispImg.size().height, 100);
 
-    return COperatorBase::show();
+    return COperator::show();
 }
 
 /// Init event.
 bool CStereoOp::initialize()
 {
-    setScreenSize ( m_leftImg.size() );
-    return COperatorBase::initialize();
+    if (!getParentOp() && getInput() )
+        setScreenSize ( m_leftImg.size() );
+
+    return COperator::initialize();
 }
 
 /// Reset event.
 bool CStereoOp::reset()
 {
-    return COperatorBase::reset();
+    return COperator::reset();
 }
 
 bool CStereoOp::exit()
 {
-    return COperatorBase::exit();
+    return COperator::exit();
 }
 
 void 
 CStereoOp::keyPressed ( CKeyEvent * f_event_p )
 {
-    return COperatorBase::keyPressed ( f_event_p );    
+    return COperator::keyPressed ( f_event_p );    
 }
 
 /// Set the input of this operator
@@ -491,12 +566,12 @@ CStereoOp::setInput  ( const CMatVector & f_input_v )
     return true;
 }
 
-/// Gets the output of this operator
-bool
-CStereoOp::getOutput ( TOutputType & f_output ) const
-{
-    f_output = m_dispImg;
-    return true;
-}
+// /// Gets the output of this operator
+// bool
+// CStereoOp::getOutput ( TOutputType & f_output ) const
+// {
+//     f_output = m_dispImg;
+//     return true;
+// }
 
     

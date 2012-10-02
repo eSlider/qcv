@@ -49,7 +49,7 @@
 
 namespace QCV
 {
-    class CSurfOp: public COperator<cv::Mat, std::vector<cv::KeyPoint> >
+    class CSurfOp: public COperator
     {
     public:
             
@@ -70,7 +70,7 @@ namespace QCV
     public:    
         
         /// Constructors.
-        CSurfOp ( COperatorBase * const f_parent_p = NULL,
+        CSurfOp ( COperator * const f_parent_p = NULL,
                   const std::string f_name_str = "Surf Operator" );
         
         /// Virtual destructor.
@@ -101,25 +101,7 @@ namespace QCV
         ADD_PARAM_ACCESS (bool, m_useProvidedKeypoints_b,  UseProvidedKeypoints );
         ADD_PARAM_ACCESS (bool, m_computeDescriptors_b,    ComputeDescriptors );
 
-    /// I/O registration (implementation required by COperator)
-    public:
-        /// Set the input of this operator
-        bool setInput  ( const cv::Mat & f_input );
-
-        /// Gets the output of this operator
-        bool getOutput ( std::vector<cv::KeyPoint> & fr_output ) const;
-
-    /// Additional I/O registration.
-    public:
-
-        /// Set an input of this operator
-        virtual bool setInput  ( const std::vector<cv::KeyPoint> & f_keyPoints);
-
-        /// Gets the output of this operator
-        virtual bool getOutput ( std::vector<float> & fr_descriptor ) const;
-
-    protected:
-
+    /// Help methods
     protected:
 
         void registerDrawingLists(  );
@@ -127,7 +109,10 @@ namespace QCV
         void registerParameters(  );
 
     private:
-
+        
+        /// Input image Id.
+        std::string                m_inpImageId_str;
+        
         /// Compute?
         bool                        m_compute_b;
         

@@ -33,7 +33,6 @@
 #include <QSettings>
 
 #include "mainWindow.h"
-#include "deviceOpConnector.h"
 
 #include "events.h"
 #include "seqControlDlg.h"
@@ -41,20 +40,19 @@
 #include "operator.h"
 
 #include "seqControler.h"
+#include "seqDeviceControl.h"
 #include "displayWidget.h"
 #include "paramEditorDlg.h"
 #include "clockTreeDlg.h"
+#include "io.h"
 
-//#include "displayTreeNode.h"
-//#include "clockTreeNode.h"
-
-CMainWindow::CMainWindow ( CDeviceOpConnectorBase * f_connector_p,
-                           int                      f_sx_i, 
-                           int                      f_sy_i )
+CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
+                           COperator *         f_rootOp_p,
+                           int                 f_sx_i, 
+                           int                 f_sy_i )
     : CSimpleWindow (               ),
-      m_connector_p (       f_connector_p ),
-      m_device_p (             NULL ),
-      m_rootOp_p (             NULL ),
+      m_device_p (       f_device_p ),
+      m_rootOp_p (       f_rootOp_p ),
       m_controler_p (          NULL ),
       m_display_p (            NULL ),
       m_paramEditorDlg_p (     NULL ),
@@ -62,10 +60,6 @@ CMainWindow::CMainWindow ( CDeviceOpConnectorBase * f_connector_p,
 {
     //QStringList list = QCoreApplication::arguments ();
     
-    assert( f_connector_p );
-    m_device_p = f_connector_p -> getDeviceCtrl();
-    m_rootOp_p = f_connector_p -> getRootOperator();
-
     assert( m_device_p );
     assert( m_rootOp_p );    
 
@@ -190,23 +184,31 @@ void CMainWindow::createBaseWidgets()
 
 void CMainWindow::initialize() 
 {     
+    //exit(1);
+    
     if ( not m_device_p -> isInitialized() )
     {
-        printf("Device %s not initialized\n", m_device_p ->getName().c_str());
+        printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
         return;
     }
 
     bool success_b;
     
-    success_b = m_connector_p -> setOperatorInput ( );
+    std::map< std::string, CIOBase * > devOutput;
+    success_b = m_device_p -> registerOutputs ( devOutput );
 
     m_display_p -> update(true);
 
+    m_rootOp_p -> clearIOMap();
+    
     if ( success_b )
     {
+        m_rootOp_p -> registerOutputs ( devOutput );
+        
         m_rootOp_p -> startClock ( "Initialize" );
         success_b = m_rootOp_p -> initialize();
         m_rootOp_p -> stopClock ( "Initialize" );
+        
 
         m_rootOp_p -> startClock ( "Cycle" );
         success_b = m_rootOp_p -> cycle();
@@ -222,7 +224,6 @@ void CMainWindow::initialize()
     m_rootOp_p -> startClock ( "OpenGL Display" );
     m_display_p -> update(true);
     m_rootOp_p -> stopClock ( "OpenGL Display" );
-
 
     // std::vector<QWidget *> opWidgets = m_rootOp_p -> getWidgets();
 
@@ -241,16 +242,21 @@ void CMainWindow::cycle()
 {
     if ( not m_device_p -> isInitialized() )
     {
-        printf("Device %s not initialized\n", m_device_p ->getName().c_str());
+        printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
         return;
     }
 
     bool success_b;
     
-    success_b = m_connector_p -> setOperatorInput (  );
+    std::map< std::string, CIOBase * > devOutput;
+    success_b = m_device_p -> registerOutputs ( devOutput );
+
+    m_rootOp_p -> clearIOMap();
 
     if ( success_b )
     {
+        m_rootOp_p -> registerOutputs ( devOutput );
+
         m_rootOp_p -> startClock ( "Cycle" );
         success_b = m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
@@ -266,7 +272,7 @@ void CMainWindow::cycle()
     m_rootOp_p -> startClock ( "OpenGL Display" );
     m_display_p -> update();
     m_rootOp_p -> stopClock ( "OpenGL Display" );
-
+    
     m_rootOp_p -> startClock ( "Clock Update" );
     m_clockTreeDlg_p -> updateTimes();
     m_rootOp_p -> stopClock ( "Clock Update" );	
@@ -276,16 +282,21 @@ void CMainWindow::stop()
 {
     if ( not m_device_p -> isInitialized() )
     {
-        printf("Device %s not initialized\n", m_device_p ->getName().c_str());
+        printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
         return;
     }
 
     bool success_b;
     
-    success_b = m_connector_p -> setOperatorInput (  );
+    std::map< std::string, CIOBase * > devOutput;
+    success_b = m_device_p -> registerOutputs ( devOutput );
 
+    m_rootOp_p -> clearIOMap();
+    
     if ( success_b )
     {
+        m_rootOp_p -> registerOutputs ( devOutput );
+
         m_rootOp_p -> startClock ( "Reset" );
         success_b = m_rootOp_p -> reset();
         m_rootOp_p -> stopClock ( "Reset" );
@@ -301,8 +312,6 @@ void CMainWindow::stop()
         m_rootOp_p -> startClock ( "Show" );
         success_b = m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
-#if defined HAVE_QGLVIEWER
-#endif
     } 
 
     m_display_p -> setScreenSize ( m_rootOp_p -> getScreenSize() );
@@ -320,7 +329,7 @@ void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )
 {
     if ( not m_device_p -> isInitialized() )
     {
-        printf("Device %s not initialized\n", m_device_p ->getName().c_str());
+        printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
         return;
     }
 
@@ -329,7 +338,7 @@ void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )
     if ( keyEvent_p -> key() == Qt::Key_P || 
          keyEvent_p -> key() == Qt::Key_Space )
     {
-        if ( m_device_p -> getState() == CSeqDeviceControlBase::S_PLAYING )
+        if ( m_device_p -> getState() == CSeqDeviceControl::S_PLAYING )
         {
             m_controler_p -> pauseClicked();
         }
@@ -343,7 +352,7 @@ void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )
         m_controler_p -> stopClicked();
     }
 
-    if ( m_device_p -> getState() != CSeqDeviceControlBase::S_PLAYING )
+    if ( m_device_p -> getState() != CSeqDeviceControl::S_PLAYING )
     {
         if ( keyEvent_p -> key() == Qt::Key_Right ||
              keyEvent_p -> key() == Qt::Key_P )
@@ -381,7 +390,7 @@ CMainWindow::mouseReleased  ( CMouseEvent *  f_event_p )
 {
     if ( not m_device_p -> isInitialized() )
     {
-        printf("Device %s not initialized\n", m_device_p ->getName().c_str());
+        printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
         return;
     }
 
@@ -394,7 +403,7 @@ void CMainWindow::mouseMoved     ( CMouseEvent *  f_event_p )
 {
     if ( not m_device_p -> isInitialized() )
     {
-        printf("Device %s not initialized\n", m_device_p ->getName().c_str());
+        printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
         return;
     }
 
@@ -407,7 +416,7 @@ void CMainWindow::wheelTurned    ( CWheelEvent *  f_event_p )
 {
     if ( not m_device_p -> isInitialized() )
     {
-        printf("Device %s not initialized\n", m_device_p ->getName().c_str());
+        printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
         return;
     }
 
@@ -420,7 +429,7 @@ void CMainWindow::regionSelected ( CRegionSelectedEvent *  f_event_p )
 {
     if ( not m_device_p -> isInitialized() )
     {
-        printf("Device %s not initialized\n", m_device_p ->getName().c_str());
+        printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
         return;
     }
 

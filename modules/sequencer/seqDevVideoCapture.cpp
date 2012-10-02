@@ -182,17 +182,38 @@ std::vector<QDialog *> CSeqDevVideoCapture::getDialogs ( ) const
     return std::vector<QDialog *>();
 }
 
-bool CSeqDevVideoCapture::registerOutputs ( CInpImgFromFileVector & f_input_v )
-{
-    if ( m_imageData_v.size() == 0 ||
-         m_imageData_v[0].image.size().width == 0 )
-        return false;
+// bool CSeqDevVideoCapture::registerOutputs ( CInpImgFromFileVector & f_input_v )
+// {
+//     if ( m_imageData_v.size() == 0 ||
+//          m_imageData_v[0].image.size().width == 0 )
+//         return false;
     
-    f_input_v.clear();
+//     f_input_v.clear();
 
-    f_input_v.insert ( f_input_v.begin(), 
-                       m_imageData_v.begin(), 
-                       m_imageData_v.end() );
+//     f_input_v.insert ( f_input_v.begin(), 
+//                        m_imageData_v.begin(), 
+//                        m_imageData_v.end() );
+
+//     return true;
+// }
+
+bool CSeqDevVideoCapture::registerOutputs ( 
+        std::map< std::string, CIOBase* > &fr_map )
+{
+    fr_map[ "Input Images" ] = new CIO<CInpImgFromFileVector>(&m_imageData_v);
+
+    char txt[256];
+    
+    for ( uint8_t i = 0 ; i < m_imageData_v.size() ; ++i)
+    {
+        sprintf(txt, "Image %i", i);
+        fr_map[txt] = new CIO<cv::Mat>(&m_imageData_v[i].image);
+
+        sprintf(txt, "Image %i Path", i);
+        fr_map[txt] = new CIO<std::string>(NULL);
+    }
+    
+    fr_map[ "Frame Number" ] = new CIO<int>(&m_currentFrame_i);
 
     return true;
 }

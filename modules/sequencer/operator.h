@@ -107,7 +107,10 @@ namespace QCV
     /// Sequence Cycle Events
     public:
 
-        /// Show event.
+        /// Compute event (convenience function).
+        virtual bool compute() { return cycle(); }
+
+        /// Cycle event.
         virtual bool cycle();
 
         /// Show event.
@@ -193,11 +196,11 @@ namespace QCV
     public:
         
         /// Clear all I/O registers.
-        virtual void    clearIOMap ( );
+        virtual void      clearIOMap ( );
 
         /// Set the output of this operator.
         template <class _T>
-        void             registerOutput ( const std::string &f_id_str, 
+        void              registerOutput ( const std::string &f_id_str, 
                                           _T *               f_ptr );
         
         /// Set the output of this operator.
@@ -317,7 +320,9 @@ namespace QCV
                 _OpType ptr_p = static_cast<_OpType> ( m_children_v[i].ptr_p );
                 if (!ptr_p)
                 {
-                    printf("Operator with name %s is not of type %s\n",
+                    printf("%s:%i Operator with name %s is not of type %s\n",
+                           __FILE__, 
+                           __LINE__,
                            f_name_str.c_str(), typeid(ptr_p).name() );
                 }
                 
@@ -433,7 +438,7 @@ namespace QCV
         if ( it == m_ios.end() )    
         {
             // Return empty element.
-            printf("%s:%i Object with Id \"%s\" not found.", f_id_str.c_str());
+            printf("%s:%i Object with Id \"%s\" not found.", __FILE__, __LINE__, f_id_str.c_str());
             return NULL;
         }
     

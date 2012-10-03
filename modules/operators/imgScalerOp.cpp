@@ -46,7 +46,7 @@ CImageScalerOp::CImageScalerOp ( COperator * const f_parent_p,
                                  const std::string f_name_str,
                                  const int f_preferedNumImgs_i )
     : COperator (             f_parent_p, f_name_str ),
-      m_inputId_str (                       "Images" ),
+      m_inputId_str (                 "Input Images" ),
       m_outputId_str (               "Scaled Images" ),
       m_compute_b (                             true ),
       m_scaleMode_e (                      SM_FACTOR ),
@@ -84,7 +84,7 @@ CImageScalerOp::registerParameters( int f_numReg_i )
 {
 
     BEGIN_PARAMETER_GROUP("Computation", false, SRgb(220,0,0));
-      ADD_BOOL_PARAMETER ( "Compute",
+    ADD_BOOL_PARAMETER ( "Compute",
                          "Perform the scaling?.",
                          m_compute_b,
                          this,
@@ -92,33 +92,33 @@ CImageScalerOp::registerParameters( int f_numReg_i )
                          CImageScalerOp );
     
 
-      CEnumParameter<EScaleMode> * algParam_p = static_cast<CEnumParameter<EScaleMode> * > (
-          ADD_ENUM_PARAMETER( "Algorithm",
-                              "ImageScaler algorithm to use",
-                              EScaleMode,
-                              m_scaleMode_e,
-                              this,
-                              ScaleMode,
-                              CImageScalerOp ) );
-      
-      algParam_p -> addDescription ( SM_FACTOR, "Scale factor" );
-      algParam_p -> addDescription ( SM_SIZE,   "Size" );    
-      
-      ADD_FLT2D_PARAMETER ( "Factors",
-                            "Scale factors for scaling the image.",
-                            m_scaleFactor,
-                            "X", "Y",
+    CEnumParameter<EScaleMode> * algParam_p = static_cast<CEnumParameter<EScaleMode> * > (
+        ADD_ENUM_PARAMETER( "Algorithm",
+                            "ImageScaler algorithm to use",
+                            EScaleMode,
+                            m_scaleMode_e,
                             this,
-                            ScaleFactor,
-                            CImageScalerOp );
+                            ScaleMode,
+                            CImageScalerOp ) );
+      
+    algParam_p -> addDescription ( SM_FACTOR, "Scale factor" );
+    algParam_p -> addDescription ( SM_SIZE,   "Size" );    
+      
+    ADD_FLT2D_PARAMETER ( "Factors",
+                          "Scale factors for scaling the image.",
+                          m_scaleFactor,
+                          "X", "Y",
+                          this,
+                          ScaleFactor,
+                          CImageScalerOp );
 
-      ADD_UINT2D_PARAMETER ( "Size",
-                             "Fix size to scale the input image.",
-                             m_scaleSize,
-                             "width", "height",
-                             this,
-                             ScaleSize,
-                             CImageScalerOp );
+    ADD_UINT2D_PARAMETER ( "Size",
+                           "Fix size to scale the input image.",
+                           m_scaleSize,
+                           "width", "height",
+                           this,
+                           ScaleSize,
+                           CImageScalerOp );
 
     CEnumParameter<int> * scaleMode_p = static_cast<CEnumParameter<int> * > (
         ADD_ENUM_PARAMETER( "Interpolation",
@@ -176,15 +176,13 @@ CImageScalerOp::compute ( const CMatVector & f_input_v,
     fr_output_v = f_input_v;
 }
 
-
 /// Cycle event.
 bool
 CImageScalerOp::cycle()
 {
     if ( m_compute_b )
     {
-        m_img_v = getInput<CMatVector>(m_inputId_str, CMatVector() );
-
+        getInputs();
         resize();
     }
     else
@@ -262,10 +260,29 @@ CImageScalerOp::show()
     return COperator::show();
 }
 
+bool 
+CImageScalerOp::getInputs()
+{
+    m_img_v.clear();
+    char str[256];
+    for (int i = 0; ; ++i)
+    {
+        sprintf(str, "Image %i", i);
+        cv::Mat img = getInput<cv::Mat>(str, cv::Mat() );
+        if (img.size().width > 0)
+            m_img_v.push_back(img);
+        else
+            break;
+    }
+
+    return m_img_v.size() > 0;
+}
+
 /// Init event.
 bool CImageScalerOp::initialize()
 {
-   /// Set the screen size if this is the parent operator.
+    getInputs();
+    /// Set the screen size if this is the parent operator.
     if ( m_img_v.size() > 0 &&
          !getParentOp() )
     {

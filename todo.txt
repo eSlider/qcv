@@ -1,2 +1,6 @@
-Add default values to the columns of the DrawingList tree.
+Find out why in Ubuntu 12 all windows are on top of the display window.
+HoughTransform start with a 2x2 configuration (if previously sobel started)
+Sobel does not compute by default.
+
+
 

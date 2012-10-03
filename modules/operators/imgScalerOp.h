@@ -55,14 +55,14 @@ namespace QCV
     {
     public:
 
-    /// Constructor, Desctructors
+        /// Constructor, Desctructors
     public:    
         typedef enum {
             SM_FACTOR,
             SM_SIZE
         } EScaleMode;            
 
-    /// Parameter access
+        /// Parameter access
     public:    
         ADD_PARAM_ACCESS (std::string, m_inputId_str,        InputId );
         ADD_PARAM_ACCESS (std::string, m_outputId_str,       OutputId );
@@ -78,7 +78,7 @@ namespace QCV
         bool              setScaleSize ( S2D<unsigned int> f_size );
         S2D<unsigned int> getScaleSize ( ) const;
 
-    /// Constructor, Desctructors
+        /// Constructor, Desctructors
     public:    
         
         /// Constructors.
@@ -104,7 +104,7 @@ namespace QCV
         /// Exit event.
         virtual bool exit();
 
-    /// User Operation Events
+        /// User Operation Events
     public:
         /// Compute
         virtual bool compute ( const CMatVector & f_input, 
@@ -120,6 +120,8 @@ namespace QCV
 
         void resize();
         
+	bool getInputs();
+
     private:
 
         /// Input image id

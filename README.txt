@@ -1,24 +1,28 @@
-QCV v00.30
+QCV v00.40
 
 To install the source code you will need to install first 
 OpenCV 2.X and Qt 4.X. You will also need OpenGL and glut.
 To obtain the code from SourceForge.net you need mercurial
-as well. CMake is required to compile the code.
+as well. CMake and g++ are required to compile the code.
 
-If you run Ubuntu, these lines should provide you with the 
-required dependencies:
+If you run Ubuntu 10.x or 11.x, these lines should provide
+you with the required dependencies:
 
-> sudo apt-get install freeglut3-dev mercurial libqt4-dev cmake
+> sudo apt-get install freeglut3-dev mercurial libqt4-dev cmake g++
 > sudo add-apt-repository ppa:gijzelaar/opencv2
 > sudo apt-get update
 > sudo apt-get install opencv
 > sudo apt-get install libopencv-dev
 
+If you run another Ubuntu version (including 12.x) or 
+another Linux distribution, you will need to download 
+OpenCv and install it in your system.
+
 Get the code now from SourceForge.net
 
 > hg clone http://hg.code.sf.net/p/qcv/code qcv
 
-or download the zip file from here:
+or download the tar.gz (tar.bz or zip) file from here:
 
 http://sourceforge.net/projects/qcv/?source=directory
 
@@ -66,3 +70,4 @@ You will need to provide valid videos as parameters,
 (or just use the provided image sequence by using
 "sequence.xml" instead).
 
+Plase, send comments or questions to hernan.badino@gmail.com

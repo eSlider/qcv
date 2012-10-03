@@ -40,7 +40,6 @@
 #include <cv.h>
 #include <highgui.h>
 
-CV_MINOR_VERSION 
 #if CV_MAJOR_VERSION > 2 || ( CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION >= 4 )
 #include <opencv2/nonfree/features2d.hpp>
 #endif

@@ -45,7 +45,7 @@ using namespace QCV;
 CSobelOp::CSobelOp ( COperator * const f_parent_p,
                      const std::string f_name_str )
     : COperator (             f_parent_p, f_name_str ),
-      m_compute_b (                            false ),
+      m_compute_b (                             true ),
       m_ksize_i (                                  3 ),
       m_applyGauss_b (                         false ),
       m_img (                                        ),

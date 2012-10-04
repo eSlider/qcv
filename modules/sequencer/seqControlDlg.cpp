@@ -35,7 +35,7 @@
 using namespace QCV;
 
 CSeqControlDlg::CSeqControlDlg(QWidget *f_parent_p /* = 0 */ )
-        : QDialog (                       f_parent_p ),
+        : QWidget (                       f_parent_p ),
           m_numFrames_i (                         -1 ),
           m_currentFrame_i (                       1 ),
           m_prevFrame_i (                          0 ),

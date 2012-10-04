@@ -38,7 +38,7 @@
 
 /* CONSTANTS */
 
-class QDialog;
+class QWidget;
 
 namespace QCV
 {
@@ -131,10 +131,10 @@ namespace QCV
         virtual EState_t getState() const { return m_currentState_e; }
 
         /// Get the dialogs of this device.
-        virtual std::vector<QDialog *> 
+        virtual std::vector<QWidget *> 
                          getDialogs ( ) const
         { 
-            std::vector<QDialog *> diag_v;
+            std::vector<QWidget *> diag_v;
             return diag_v;
         }
 

@@ -45,7 +45,7 @@
 
 namespace QCV
 {
-    class CSeqControlDlg: public QDialog, private Ui::CSeqControlDlgDesign
+    class CSeqControlDlg: public QWidget, private Ui::CSeqControlDlgDesign
     {
         Q_OBJECT
     //// Constants

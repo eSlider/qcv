@@ -275,7 +275,7 @@ CSeqControler::refreshControlDlg()
     //m_controlDlg_p -> setPositionMode
 }
 
-QDialog * 
+QWidget * 
 CSeqControler::getDialog() const
 { 
     return m_controlDlg_p;

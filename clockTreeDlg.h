@@ -31,7 +31,7 @@
 ******************************************************************************/
 
 /* INCLUDES */
-#include <QDialog>
+#include <QWidget>
 
 /* CONSTANTS */
 
@@ -50,7 +50,7 @@ namespace QCV
 
     /* CLASS DEFINITION */
 
-    class CClockTreeDlg: public QDialog //, private Ui::CClockTreeDlgDesign
+    class CClockTreeDlg: public QWidget //, private Ui::CClockTreeDlgDesign
     {
         Q_OBJECT
         

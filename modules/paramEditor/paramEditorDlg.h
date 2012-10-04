@@ -42,7 +42,7 @@
  ******************************************************************************/
 
 /* INCLUDES */
-#include <QDialog>
+#include <QWidget>
 #include <QModelIndex>
 /* CONSTANTS */
 
@@ -62,7 +62,7 @@ namespace QCV
 
 /* CLASS DEFINITION */
 
-    class CParameterEditorDlg: public QDialog
+    class CParameterEditorDlg: public QWidget
     {
         Q_OBJECT
         

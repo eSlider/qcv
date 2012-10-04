@@ -438,12 +438,23 @@ namespace QCV
         if ( it == m_ios.end() )    
         {
             // Return empty element.
-            printf("%s:%i Object with Id \"%s\" not found.", __FILE__, __LINE__, f_id_str.c_str());
+            printf("%s:%i Object with Id \"%s\" not found.\n", __FILE__, __LINE__, f_id_str.c_str());
             return NULL;
         }
     
         // Return corresponding element.
-        return (dynamic_cast< CIO<_T> *> (it->second))->getPtr();
+        CIO<_T> * cio_p = dynamic_cast< CIO<_T> *> (it->second);
+        if ( cio_p )
+            return (_T *) cio_p ->getPtr();
+        else
+        {
+            // Return empty element.
+            printf("%s:%i Object with Id \"%s\" is not of type %s.\n", __FILE__, __LINE__,
+                   f_id_str.c_str(),
+                   typeid(_T).name() );
+            
+            return NULL;
+        }
     }
     
     /// Get output of this operator.
@@ -458,19 +469,30 @@ namespace QCV
         if ( it == m_ios.end() )    
         {
             // Return empty element.
-            printf("%s:%i Object with Id \"%s\" not found.", __FILE__, __LINE__, f_id_str.c_str());
+            printf("%s:%i Object with Id \"%s\" not found.\n", __FILE__, __LINE__, f_id_str.c_str());
             return NULL;
         }
         
         // Return corresponding element.
-        return (const _T*) (dynamic_cast< CIO<_T> *> (it->second))->getPtr();
+        CIO<_T> * cio_p = dynamic_cast< CIO<_T> *> (it->second);
+        if ( cio_p )
+            return (const _T *) cio_p ->getPtr();
+        else
+        {
+            // Return empty element.
+            printf("%s:%i Object with Id \"%s\" is not of type %s.\n", __FILE__, __LINE__,
+                   f_id_str.c_str(),
+                   typeid(_T).name() );
+            
+            return NULL;
+        }
     }
     
     /// Get input for this operator
     template <class _T>
-    const _T & 
+    const _T &
     COperator::getInput ( const std::string &f_id_str,
-                              const _T          & f_default) const
+                          const _T          & f_default) const
     {
         // Find object.
         const std::map<std::string, CIOBase*>::const_iterator 
@@ -486,14 +508,26 @@ namespace QCV
             else
             {
                 // Return empty element.
-                printf("%s:%i Object with Id \"%s\" not found.", __FILE__, __LINE__,f_id_str.c_str());
+                printf("%s:%i Object with Id \"%s\" not found.\n", __FILE__, __LINE__,f_id_str.c_str());
                 return f_default;
             }
         }
         else
         { 
+            printf("Returning element %s\n", f_id_str.c_str() );
             // Return corresponding element.
-            return (const _T &) *(dynamic_cast< CIO<_T> *> (it->second))->getPtr();
+            CIO<_T> * cio_p = dynamic_cast< CIO<_T> *> (it->second);
+            if ( cio_p )
+                return (const _T &) *( cio_p ->getPtr() );
+            else
+            {
+                // Return empty element.
+                printf("%s:%i Object with Id \"%s\" is not of type %s.\n", __FILE__, __LINE__,
+                       f_id_str.c_str(),
+                       typeid(_T).name() );
+
+                return f_default;
+            }
         }
     }
 
@@ -516,14 +550,25 @@ namespace QCV
             else
             {
                 // Return empty element.
-                printf("%s:%i Object with Id \"%s\" not found.", __FILE__, __LINE__,f_id_str.c_str());
+                printf("%s:%i Object with Id \"%s\" not found.\n", __FILE__, __LINE__,f_id_str.c_str());
                 return NULL;
             }
         }
         else
         { 
             // Return corresponding element.
-            return (const _T*) (dynamic_cast< CIO<_T> *> (it->second))->getPtr();
+            CIO<_T> * cio_p = dynamic_cast< CIO<_T> *> (it->second);
+            if ( cio_p )
+                return (_T *) cio_p ->getPtr();
+            else
+            {
+                // Return empty element.
+                printf("%s:%i Object with Id \"%s\" is not of type %s.\n", __FILE__, __LINE__,
+                       f_id_str.c_str(),
+                       typeid(_T).name() );
+
+                return NULL;
+            }
         }
     }
 
@@ -546,7 +591,7 @@ namespace QCV
             else
             {
                 // Return empty element.
-                printf("%s:%i Object with Id \"%s\" not found.", __FILE__, __LINE__, f_id_str.c_str());
+                printf("%s:%i Object with Id \"%s\" not found.\n", __FILE__, __LINE__, f_id_str.c_str());
                 return NULL;
             }
         }
@@ -555,11 +600,11 @@ namespace QCV
             // Return corresponding element.
             CIO<_T> * io_p = dynamic_cast< CIO<_T> *> (it->second);
             if (io_p)
-                return io_p->getPtr();
+                return (_T *) io_p->getPtr();
             else
             {
                 // Return empty element.
-                printf("%s:%i Object with Id \"%s\" is not of type %s.", __FILE__, __LINE__,
+                printf("%s:%i Object with Id \"%s\" is not of type %s.\n", __FILE__, __LINE__,
                        f_id_str.c_str(),
                        typeid(_T).name() );
 

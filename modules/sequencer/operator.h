@@ -514,7 +514,6 @@ namespace QCV
         }
         else
         { 
-            printf("Returning element %s\n", f_id_str.c_str() );
             // Return corresponding element.
             CIO<_T> * cio_p = dynamic_cast< CIO<_T> *> (it->second);
             if ( cio_p )

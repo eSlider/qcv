@@ -67,7 +67,7 @@ int main(int f_argc_i, char *f_argv_p[])
     /// Create the main window passing the connector. 2x2 default screen count.
     CMainWindow *mwind_p = new CMainWindow ( device_p,
                                              rootOp_p,
-                                             2, 1 );
+                                             2, 2 );
     
     /// Show main window
     mwind_p->show();

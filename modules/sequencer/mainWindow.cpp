@@ -72,11 +72,14 @@ CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
     QSettings qSettings;
     int sx_i = qSettings.value ( ( QString("QCVApplication/") + 
                                    QString(m_rootOp_p->getName().c_str()) + 
-                                   QString("/ScreenXCount") ), "2").toInt();
+                                   QString("/ScreenXCount") ), "-1").toInt();
     int sy_i = qSettings.value ( ( QString("QCVApplication/") + 
                                    QString(m_rootOp_p->getName().c_str()) + 
-                                   QString("/ScreenYCount") ), "2").toInt();
+                                   QString("/ScreenYCount") ), "-1").toInt();
     
+    if (sx_i == -1) sx_i = f_sx_i;
+    if (sy_i == -1) sy_i = f_sy_i;
+
     m_display_p -> setScreenCount ( S2D<unsigned int>(sx_i, sy_i) );
 
 

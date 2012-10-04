@@ -45,6 +45,7 @@
 /* INCLUDES */
 #include "seqDeviceControl.h"
 #include "imageFromFile.h"
+#include "matVector.h"
 #include "io.h"
 
 #include <highgui.h>
@@ -55,7 +56,7 @@
 
 /* PROTOTYPES */
 class QTimer;
-class QDialog;
+class QWidget;
 
 namespace QCV
 {   
@@ -125,7 +126,7 @@ namespace QCV
         virtual bool isBidirectional() const;
 
         /// Get the dialogs of this device.
-        virtual std::vector<QDialog *> getDialogs ( ) const;
+        virtual std::vector<QWidget *> getDialogs ( ) const;
 
         /// Derived from CSeqDeviceControl
         bool     isInitialized() const { return m_framesCount_i > 0; }
@@ -173,8 +174,11 @@ namespace QCV
         /// Acknowledge flag
 	bool                          m_acknowledge_b;
         
-        /// Vector containing current image data
+        /// Vector containing current image data, paths and timestamps
         CInpImgFromFileVector         m_imageData_v;
+
+        /// Vector containing only current image data
+        CMatVector                    m_imageVector_v;
 
         /// Video capture
         cv::VideoCapture *            m_capture_p;

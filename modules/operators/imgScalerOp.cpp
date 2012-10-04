@@ -263,16 +263,20 @@ CImageScalerOp::show()
 bool 
 CImageScalerOp::getInputs()
 {
-    m_img_v.clear();
-    char str[256];
-    for (int i = 0; ; ++i)
-    {
-        sprintf(str, "Image %i", i);
-        cv::Mat img = getInput<cv::Mat>(str, cv::Mat() );
-        if (img.size().width > 0)
-            m_img_v.push_back(img);
-        else
-            break;
+    m_img_v = getInput<CMatVector>( "Device Images", CMatVector());
+
+    if (m_img_v.size() == 0)
+    {   
+        char str[256];
+        for (int i = 0; ; ++i)
+        {
+            sprintf(str, "Image %i", i);
+            cv::Mat img = getInput<cv::Mat>(str, cv::Mat() );
+            if (img.size().width > 0)
+                m_img_v.push_back(img);
+            else
+                break;
+        }
     }
 
     return m_img_v.size() > 0;

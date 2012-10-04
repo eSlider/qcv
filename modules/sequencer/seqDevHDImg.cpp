@@ -302,9 +302,9 @@ bool CSeqDevHDImg::isBidirectional() const
 }
 
 /// Get the dialogs of this device.
-std::vector<QDialog *> CSeqDevHDImg::getDialogs ( ) const
+std::vector<QWidget *> CSeqDevHDImg::getDialogs ( ) const
 {
-    return std::vector<QDialog *>();
+    return std::vector<QWidget *>();
 }
 
 bool 
@@ -430,7 +430,11 @@ bool
 CSeqDevHDImg::registerOutputs ( 
     std::map< std::string, CIOBase* > &fr_map )
 {
-    fr_map[ "Input Images" ] = new CIO<CInpImgFromFileVector>(&m_imageData_v);
+    fr_map[ "Device Images" ] = new CIO<CInpImgFromFileVector>(&m_imageData_v);
+
+    m_imageVector_v = m_imageData_v;
+
+    fr_map[ "Input Images" ] = new CIO<CMatVector>(&m_imageVector_v);
 
     char txt[256];
     

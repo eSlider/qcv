@@ -92,6 +92,7 @@ bool CSeqDevVideoCapture::nextFrame()
     (*m_capture_p) >> frame; // get a new frame from camera
 
     if ( frame.size().width < 0 ) return false;
+
     m_imageData_v.resize(1);
     m_imageData_v[0].image = frame.clone();
 
@@ -177,9 +178,9 @@ bool CSeqDevVideoCapture::isBidirectional() const
 }
 
 /// Get the dialogs of this device.
-std::vector<QDialog *> CSeqDevVideoCapture::getDialogs ( ) const
+std::vector<QWidget *> CSeqDevVideoCapture::getDialogs ( ) const
 {
-    return std::vector<QDialog *>();
+    return std::vector<QWidget *>();
 }
 
 // bool CSeqDevVideoCapture::registerOutputs ( CInpImgFromFileVector & f_input_v )
@@ -200,7 +201,11 @@ std::vector<QDialog *> CSeqDevVideoCapture::getDialogs ( ) const
 bool CSeqDevVideoCapture::registerOutputs ( 
         std::map< std::string, CIOBase* > &fr_map )
 {
-    fr_map[ "Input Images" ] = new CIO<CInpImgFromFileVector>(&m_imageData_v);
+    fr_map[ "Device Images" ] = new CIO<CInpImgFromFileVector>(&m_imageData_v);
+
+    m_imageVector_v = m_imageData_v;
+    
+    fr_map[ "Input Images" ] = new CIO<CMatVector>(&m_imageVector_v);
 
     char txt[256];
     

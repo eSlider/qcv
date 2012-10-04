@@ -103,7 +103,7 @@ namespace QCV
 
     /// Get/Set Methods.
     public:
-        QDialog * getDialog() const;
+        QWidget * getDialog() const;
         
     /// Private slots
     protected slots:

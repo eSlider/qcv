@@ -22,7 +22,7 @@
 #ifndef __DISPLAYWIDGET_H
 #define __DISPLAYWIDGET_H
 
-//#include <QDialog>
+//#include <QWidget>
 #include <QMainWindow>
 #include <QApplication>
 

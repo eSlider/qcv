@@ -43,7 +43,7 @@ using namespace QCV;
 
 CClockTreeDlg::CClockTreeDlg  ( QWidget *         f_parent_p,
                                 CClockOpNode *    f_rootNode_p )
-        : QDialog (                      f_parent_p ),
+        : QWidget (                      f_parent_p ),
           m_treeItemModel_p (                  NULL ),
           m_qcbUpdate_p (                      NULL )
 {

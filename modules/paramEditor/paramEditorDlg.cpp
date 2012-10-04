@@ -55,7 +55,7 @@ using namespace QCV;
 
 CParameterEditorDlg::CParameterEditorDlg  ( CParameterSet *  f_rootNode_p,
                                             QWidget *        f_parent_p )
-        : QDialog (                      f_parent_p ),
+        : QWidget (                      f_parent_p ),
           m_rootNode_p (               f_rootNode_p ),
           m_currentPage_p (                    NULL ),
           m_splitter_p (                       NULL ),

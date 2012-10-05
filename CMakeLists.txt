@@ -75,8 +75,7 @@ set ( LIBQCV_SRC
      windowListView.cpp
 )
 set ( LIBQCV_HEADERS 
-     clock.h
-     cinterface.h
+    cinterface.h
      clipLine.h
      clock.h
      clockHandler.h
@@ -89,29 +88,30 @@ set ( LIBQCV_HEADERS
      displayCEImageList.h
      display.h
      displayImageList.h
+     displayState.h
      displayTreeDlg.h
      displayTreeItemModel.h
      displayTreeNode.h
      displayTreeView.h
-     displayState.h
      displayWidget.h
      drawingElementList.h
      drawingList.h
      drawingListHandler.h
      drawingListPreview.h
      ellipseList.h
-     eventHandler.h
      eventHandlerBase.h
+     eventHandler.h
      events.h
-     helpWidget.h
      glheader.h
+     helpWidget.h
      lineList.h
      linePlotter.h
      linePlotter_inline.h
-     simpleWindow.h
      node.h
      polygonList.h
      rectList.h
+     s2d.h
+     simpleWindow.h
      standardTypes.h
      textList.h
      triangleList.h

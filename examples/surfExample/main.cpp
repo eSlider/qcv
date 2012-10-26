@@ -18,7 +18,7 @@
  * to this license. Do not download, install, copy or use the
  * software, if you do not agree to this license.
  */
-
+#include <unistd.h>
 #include <QApplication>
 #include <QTimer>
 
@@ -74,12 +74,18 @@ int main(int f_argc_i, char *f_argv_p[])
     /// Execute Qt app.
     int retval_i = app.exec();
 
+    // while (1)
+    // {
+    //     usleep(1000);
+    //     app.processEvents();
+    // };
+
     /// Save parameters
     rootOp_p->getParameterSet() -> save ( pio );
     pio.save ("params_surf.xml");
 
     delete mwind_p;
-        delete device_p;
+    delete device_p;
 
     return retval_i;
 }

@@ -48,6 +48,7 @@ set ( LIBQCVSequencer_SRC
 
 set ( LIBQCVSequencer_HEADERS 
      imageFromFile.h
+     io.h
      mainWindow.h
      matVector.h
      operator.h

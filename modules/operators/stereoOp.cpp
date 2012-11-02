@@ -338,8 +338,8 @@ CStereoOp::~CStereoOp ()
 bool
 CStereoOp::validateImages() const
 {
-    return ( m_leftImg.size().width  > 0 && 
-             m_leftImg.size().height > 0 && 
+    return ( m_leftImg.size().width  > 32 && 
+             m_leftImg.size().height > 32 && 
              m_leftImg.size() == m_rightImg.size() &&
              m_leftImg.type() == m_rightImg.type() );    
 }
@@ -462,7 +462,7 @@ CStereoOp::cycle()
                     if (m_scale_i > 1)
                         m_sbm(tmpLeft, tmpRight, auxImg);
                     else
-                        m_sbm(tmpLeft, tmpRight, auxImg);
+                        m_sbm(tmpLeft, tmpRight, m_dispImg);
                 }
             }
         
@@ -486,6 +486,8 @@ CStereoOp::cycle()
             registerOutput<cv::Mat> ( std::string("Float ") + m_dispImgId_str, 
                                       &m_dispImgFloat );        
         }
+        else
+            return false;        
     }
     else
     {
@@ -566,12 +568,3 @@ CStereoOp::setInput  ( const CMatVector & f_input_v )
     return true;
 }
 
-// /// Gets the output of this operator
-// bool
-// CStereoOp::getOutput ( TOutputType & f_output ) const
-// {
-//     f_output = m_dispImg;
-//     return true;
-// }
-
-    

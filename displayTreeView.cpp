@@ -230,7 +230,7 @@ CDisplayTreeView::updateTree()
 }
 
 void
-CDisplayTreeView::focusInEvent(QFocusEvent *f_event_p)
+CDisplayTreeView::focusInEvent(QFocusEvent * /*f_event_p*/ )
 {
     updateTree();    
 }

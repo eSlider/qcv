@@ -86,7 +86,7 @@ namespace QCV
         bool              setScreenSize ( const S2D<unsigned int> f_size );
 
         /// Set the default screen size.
-        S2D<unsigned int> getScreenSize ( ) { return m_screenSize; }
+        S2D<unsigned int> getScreenSize ( ) const { return m_screenSize; }
         
 
         /// Get drawing-list-changed flag.

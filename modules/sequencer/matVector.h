@@ -56,7 +56,7 @@ namespace QCV
 
         CMatVector ( const CInpImgFromFileVector & f_inp_v )
         {
-            for (int i = 0; i < f_inp_v.size(); ++i)
+            for (unsigned int i = 0; i < f_inp_v.size(); ++i)
             {
                 std::vector<cv::Mat>::push_back ( f_inp_v[i].image );
             }

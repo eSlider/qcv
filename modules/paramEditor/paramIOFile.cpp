@@ -76,21 +76,13 @@ CParamIOFile::load ( std::string f_filePath_str )
             }
             else
             {
-                printf("The file is not an QCVPAR version 1.0 file.\n");
+                printf("The file is not an VICPAR version 1.0 file.\n");
                 qxsReader.raiseError(QObject::tr("The file is not an QCVPAR version 1.0 file."));
                 return false;    
             }
         }
         else
         {
-#if 0 // some debug
-            printf("end element? %i %i %i %i\n", 
-                   qxsReader.isEndElement(),
-                   qxsReader.isStartDocument (),
-                   qxsReader.hasError(),
-                   qxsReader.isWhitespace () );
-            printf("%s\n", qxsReader.errorString().toStdString().c_str());
-#endif
         }
         
     }

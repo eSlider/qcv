@@ -92,15 +92,18 @@ int main(int f_argc_i, char *f_argv_p[])
     return retval_i;
 }
 
-bool callBackTimer( CTimerEvent *f_cevent_p )
+bool
+callBackTimer( CTimerEvent * /*f_cevent_p*/ )
 {
     ++g_counter_i;
     g_counter_i %= g_maxImages_i;
     loadFrame ( );
+    return true;
 }
 
 
-bool callBackKeyboard( CKeyEvent *f_kevent_p )
+bool
+callBackKeyboard( CKeyEvent *f_kevent_p )
 {
     const int timeout_i = 1;
     static int ms_i = 0;
@@ -159,20 +162,21 @@ bool callBackKeyboard( CKeyEvent *f_kevent_p )
     return true;
 }
 
-void loadFrame (  )
+void
+loadFrame (  )
 {
     static cv::Mat src;
 
     cv::Size maxSize(0,0);
     
-    for (int c = 0; c < g_files_v.size(); ++c)
+    for (unsigned int c = 0; c < g_files_v.size(); ++c)
     {
         char str[256];
         sprintf(str, "Camera %i Image", c );            
 
         getDrawingList ( str ) -> clear();
 
-        if ( g_files_v[c].size() > g_counter_i)
+        if ( (int)g_files_v[c].size() > g_counter_i)
         {
             src = cv::imread (  g_files_v[c][g_counter_i].c_str() );
 
@@ -195,7 +199,8 @@ void loadFrame (  )
     
 }
 
-void registerDrawingLists()
+void
+registerDrawingLists()
 {
     /// Position drawing list in default location.
     /// User might want to change the order of display by
@@ -208,7 +213,7 @@ void registerDrawingLists()
     /// Set screen count.
     setScreenCount ( cv::Size(countX_i,countY_i));
     
-    for (int i = 0; i < g_files_v.size(); ++i)
+    for (unsigned int i = 0; i < g_files_v.size(); ++i)
     {    
         char str[256];
         sprintf(str, "Camera %i Image", i );

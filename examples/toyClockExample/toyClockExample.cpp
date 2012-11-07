@@ -25,7 +25,7 @@
 
 using namespace QCV;
 
-bool callBackKeyboard    ( CKeyEvent *f_kevent_p );
+bool callBackKeyboard ( CKeyEvent *f_kevent_p );
 bool callBackTimer    ( CTimerEvent *f_cevent_p );
 
 int main(int f_argc_i, char *f_argv_p[])
@@ -80,6 +80,7 @@ struct SLine
 
     SLine()
     {
+        x1 = y1 = x2 = y2 = dx1 = dy1 = dx2 = dy2 = 0.f;
     }
     
     SLine(int scrWidth_i, int scrHeight_i )
@@ -119,11 +120,11 @@ bool callBackTimer ( CTimerEvent * /* f_clockEvent_p */ )
     int scrHeight_i = getScreenHeight();
 
     startClock ("Lines motion");    
-    if ( g_lines.size() == 0 )
+    if ( g_lines.empty() )
         for (int i = 0; i < 30; ++ i)
             g_lines.push_back( SLine ( scrWidth_i, scrHeight_i) );
 
-    for (size_t i = 0; i < g_lines.size()-1;++i)
+    for (size_t i = 0; i < g_lines.size() ; ++i)
         g_lines[i].advance( scrWidth_i, scrHeight_i );
     stopClock ("Lines motion");    
 
@@ -136,7 +137,7 @@ bool callBackTimer ( CTimerEvent * /* f_clockEvent_p */ )
     list_p->setLineColor ( 255, 255, 255 );
     list_p->addRectangle ( 0,0,list_p->getScreenWidth(), list_p->getScreenHeight());
 
-    for (size_t i = 0; i < g_lines.size()-1;++i)
+    for (size_t i = 0; i < g_lines.size(); ++i)
     {        
         list_p->setLineColor ( g_lines[i].color );
         list_p->addLine ( g_lines[i].x1, g_lines[i].y1, g_lines[i].x2, g_lines[i].y2 );
@@ -193,5 +194,7 @@ bool callBackKeyboard( CKeyEvent *f_kevent_p )
         g_rotSpeed_d = std::max(std::min(1.1*g_rotSpeed_d, 1.2), 0.012);
     else if ( f_kevent_p -> qtKeyEvent_p -> key() == Qt::Key_F2 )
         g_rotSpeed_d = std::max(g_rotSpeed_d/1.1-0.01, 0.);
+
+    return true;
 }
 

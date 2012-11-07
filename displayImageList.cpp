@@ -281,7 +281,7 @@ bool CDisplayImageList::clear ()
     }
     
     m_image_v.clear();
-    return m_image_v.size() == 0;
+    return true;
 }
 
 // Draw all lines.

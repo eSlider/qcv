@@ -209,16 +209,15 @@ void CMainWindow::initialize()
         m_rootOp_p -> registerOutputs ( devOutput );
         
         m_rootOp_p -> startClock ( "Initialize" );
-        success_b = m_rootOp_p -> initialize();
+        m_rootOp_p -> initialize();
         m_rootOp_p -> stopClock ( "Initialize" );
-        
 
         m_rootOp_p -> startClock ( "Cycle" );
-        success_b = m_rootOp_p -> cycle();
+        m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
 
         m_rootOp_p -> startClock ( "Show" );
-        success_b = m_rootOp_p -> show();
+        m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
     }
 
@@ -261,11 +260,11 @@ void CMainWindow::cycle()
         m_rootOp_p -> registerOutputs ( devOutput );
 
         m_rootOp_p -> startClock ( "Cycle" );
-        success_b = m_rootOp_p -> cycle();
+        m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
 
         m_rootOp_p -> startClock ( "Show" );
-        success_b = m_rootOp_p -> show();
+        m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
     }
 
@@ -301,19 +300,19 @@ void CMainWindow::stop()
         m_rootOp_p -> registerOutputs ( devOutput );
 
         m_rootOp_p -> startClock ( "Reset" );
-        success_b = m_rootOp_p -> reset();
+        m_rootOp_p -> reset();
         m_rootOp_p -> stopClock ( "Reset" );
 
         m_rootOp_p -> startClock ( "Initialize" );
-        success_b = m_rootOp_p -> initialize();
+        m_rootOp_p -> initialize();
         m_rootOp_p -> stopClock ( "Initialize" );
 
         m_rootOp_p -> startClock ( "Cycle" );
-        success_b = m_rootOp_p -> cycle();
+        m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
 
         m_rootOp_p -> startClock ( "Show" );
-        success_b = m_rootOp_p -> show();
+        m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
     } 
 

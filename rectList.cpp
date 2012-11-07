@@ -111,7 +111,7 @@ bool
 CRectangleList::clear ()
 {
     m_rect_v.clear();
-    return m_rect_v.size() == 0;
+    return m_rect_v.size();
 }
 
 // Draw all rectangles.

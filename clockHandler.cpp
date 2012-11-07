@@ -78,8 +78,7 @@ CClockHandler::getClock ( std::string  f_name_str,
 
     if ( level_i == MAX_CONTAINER_LEVELS )
     {
-        char str[256];
-        printf( "The maximal amount of container levels of %i has been achieved.",
+        printf( "The maximal amount of container levels %i has been achieved.\n",
                 MAX_CONTAINER_LEVELS  );
     }
 
@@ -120,8 +119,8 @@ CClockHandler::getClock ( std::string  f_name_str,
 
     if (!child_p)
     {
-        CClock * clock_p = (CClock *) new CClock ( f_name_str );
-        child_p    = new CClockNode ( clock_p );
+        CClock * clock_p = new CClock ( f_name_str );
+        child_p          = new CClockNode ( clock_p );
         
         node_p -> appendChild ( child_p );
         return clock_p;

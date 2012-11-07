@@ -317,7 +317,7 @@ CLinearHoughTransform::allocateAccumulator()
     m_cosLUV.resize(m_accumImg.size().width);
     m_sinLUV.resize(m_accumImg.size().width);
 
-    for (unsigned int j = 0; j < m_accumImg.size().width; ++j)
+    for (int j = 0; j < m_accumImg.size().width; ++j)
     {
         double theta_d =  m_theta.min + j * m_scale.x;
         m_cosLUV[j] = cos( theta_d );
@@ -396,7 +396,7 @@ CLinearHoughTransform::addPoint ( double f_x_d,
     cv::Size size = m_accumImg.size();
 
     S2D<float> p1, p2;
-    for (unsigned int j = 0; j < size.width; ++j)
+    for (int j = 0; j < size.width; ++j)
     {
         float value_f = f_weight_d;
 
@@ -638,8 +638,8 @@ CLinearHoughTransform::getParameterSet ( std::string f_name_str )
 bool
 CLinearHoughTransform::hough2Image ( double f_theta_d,
                                      double f_range_d,
-                                     double fr_u_d,
-                                     double fr_v_d ) const
+                                     double &fr_u_d,
+                                     double &fr_v_d ) const
 {
     fr_u_d = theta2Column ( f_theta_d );
     fr_v_d = range2Row    ( f_range_d );
@@ -651,8 +651,8 @@ CLinearHoughTransform::hough2Image ( double f_theta_d,
 bool
 CLinearHoughTransform::image2Hough ( double f_u_d,
                                      double f_v_d,
-                                     double fr_theta_d,
-                                     double fr_range_d ) const
+                                     double &fr_theta_d,
+                                     double &fr_range_d ) const
 {
     fr_theta_d = column2Theta ( f_u_d );
     fr_range_d = row2Range    ( f_v_d );

@@ -462,7 +462,7 @@ CStereoOp::cycle()
                     if (m_scale_i > 1)
                         m_sbm(tmpLeft, tmpRight, auxImg);
                     else
-                        m_sbm(tmpLeft, tmpRight, auxImg);
+                        m_sbm(tmpLeft, tmpRight, m_dispImg);
                 }
             }
         

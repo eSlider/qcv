@@ -168,10 +168,7 @@ double CSeqDevHDImg::getTimeStampFromFilename( std::string f_fileName_p )
     if (fieldsRead_i == 1)
         return tt_d/1000000.0;    
 #else
-    char str[1024];
-    int num_i;
-    int cam_i;
-    
+
     double tt_d = 0;
     
     int offset_i = f_fileName_p.find_first_of ( '_' );
@@ -311,7 +308,6 @@ bool
 CSeqDevHDImg::loadNewSequence ( const std::string &f_confFilePath_str )
 {
     CParamIOFile  paraReader;
-    char paramName_str[256];
     bool ok_b;
 
     ok_b = paraReader.load ( f_confFilePath_str );
@@ -345,6 +341,7 @@ CSeqDevHDImg::loadNewSequence ( const std::string &f_confFilePath_str )
     else
     {
         int i;
+        char paramName_str[256];
         
         /// Lets load the image paths.
         for ( i = 0 ; i < m_maxImgsPerFrame_uc ; ++i )

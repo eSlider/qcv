@@ -87,7 +87,7 @@ bool
 CTextList::clear ()
 {
     m_text_v.clear();
-    return m_text_v.size() == 0;
+    return m_text_v.size();
 }
 
 // Draw all texts.

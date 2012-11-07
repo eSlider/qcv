@@ -155,7 +155,7 @@ namespace QCV
     /// Register outputs
     public:
         virtual bool registerOutputs ( 
-            std::map< std::string, CIOBase* > &fr_map ) { return false;  }
+            std::map< std::string, CIOBase* > & /*fr_map*/ ) { return false;  }
         
 
     /// Virtual signals

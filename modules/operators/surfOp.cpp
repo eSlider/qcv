@@ -229,9 +229,9 @@ bool CSurfOp::show()
     list_p = getDrawingList("Keypoints" );
     list_p->clear();
     
-    if ( list_p->isVisible() && m_keyPoints.size() > 0)
+    if ( list_p->isVisible() && m_keyPoints.size())
     {
-        for (int i = 0; i < m_keyPoints.size(); ++i)
+        for (unsigned int i = 0; i < m_keyPoints.size(); ++i)
         {
             SRgb color;
             
@@ -306,7 +306,7 @@ CSurfOp::mouseMoved (     CMouseEvent * f_event_p )
     list2_p -> setPosition ( f_event_p -> displayScreen );
     list2_p -> clear();    
     
-    if ( m_descriptors.size() == 0 ||
+    if ( m_descriptors.size() ||
          f_event_p -> displayScreen != list1_p->getPosition() ||
          !list1_p->isVisible() )
         return;
@@ -315,7 +315,7 @@ CSurfOp::mouseMoved (     CMouseEvent * f_event_p )
     float minSqDist_f = 10000.f*10000.f;
     int   idx_i = -1;
     
-    for (int i = 0; i < m_keyPoints.size(); ++i)
+    for (unsigned int i = 0; i < m_keyPoints.size(); ++i)
     {
         float dx_f = (m_keyPoints[i].pt.x - f_event_p->posInScreen.x);
         float dy_f = (m_keyPoints[i].pt.y - f_event_p->posInScreen.y);

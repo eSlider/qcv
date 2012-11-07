@@ -313,7 +313,7 @@ namespace QCV
     template <typename _OpType>
     _OpType COperator::getChild ( std::string f_name_str )
     {
-        for (int i = 0; i < m_children_v.size(); ++i)
+        for (unsigned int i = 0; i < m_children_v.size(); ++i)
         {
             if ( m_children_v[i].ptr_p->getName() == f_name_str )
             {
@@ -445,7 +445,7 @@ namespace QCV
         // Return corresponding element.
         CIO<_T> * cio_p = dynamic_cast< CIO<_T> *> (it->second);
         if ( cio_p )
-            return (_T *) cio_p ->getPtr();
+            return static_cast<_T *>(cio_p ->getPtr());
         else
         {
             // Return empty element.
@@ -476,7 +476,7 @@ namespace QCV
         // Return corresponding element.
         CIO<_T> * cio_p = dynamic_cast< CIO<_T> *> (it->second);
         if ( cio_p )
-            return (const _T *) cio_p ->getPtr();
+            return static_cast<const _T *>( cio_p ->getPtr() );
         else
         {
             // Return empty element.
@@ -558,7 +558,7 @@ namespace QCV
             // Return corresponding element.
             CIO<_T> * cio_p = dynamic_cast< CIO<_T> *> (it->second);
             if ( cio_p )
-                return (_T *) cio_p ->getPtr();
+                return static_cast<_T *> (cio_p ->getPtr() );
             else
             {
                 // Return empty element.
@@ -599,7 +599,7 @@ namespace QCV
             // Return corresponding element.
             CIO<_T> * io_p = dynamic_cast< CIO<_T> *> (it->second);
             if (io_p)
-                return (_T *) io_p->getPtr();
+                return static_cast<_T *> ( io_p->getPtr() );
             else
             {
                 // Return empty element.

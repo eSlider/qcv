@@ -51,7 +51,7 @@ namespace QCV
     /// Constructors / Destructor
     public:
         
-        CParameterBaseConnector () {}
+        CParameterBaseConnector (): m_parameter_p (0) {}
         virtual ~CParameterBaseConnector () {}
 
     /// Virtual public functions

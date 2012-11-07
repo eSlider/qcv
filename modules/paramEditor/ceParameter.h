@@ -62,8 +62,7 @@ namespace QCV
         return param_p;
     } 
 
-    static
-    bool
+    inline bool
     addColorEncodingParameter ( CColorEncoding        &f_ce,
                                 CParameterSet *        fr_paramSet_p,
                                 std::string            f_name_str,

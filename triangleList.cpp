@@ -165,7 +165,7 @@ bool
 CTriangleList::clear ()
 {
     m_triangle_v.clear();
-    return m_triangle_v.size() == 0;
+    return m_triangle_v.size();
 }
 
 // Draw all triangles.

@@ -94,7 +94,7 @@ namespace QCV
             int       priority_i;
             
             /// Node < for sorting operations.
-            int operator < ( SChildren &other )
+            int operator < ( SChildren &other ) const
             {
                 return priority_i < other.priority_i;
             }            

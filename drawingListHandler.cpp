@@ -43,7 +43,6 @@ CDrawingListHandler::CDrawingListHandler (  CNode * f_opRoot_p )
 {
     if ( f_opRoot_p )
     {
-        printf("f_opRoot_p  = %p\n",  f_opRoot_p );
         m_root_p = new CDisplayOpNode( f_opRoot_p );
     }
 }
@@ -117,7 +116,7 @@ CDrawingListHandler::getDrawingList ( std::string  f_name_str,
 
     if (!child_p)
     {
-        CDrawingList * drawList_p = (CDrawingList *) new CDrawingList ( f_name_str );
+        CDrawingList * drawList_p = new CDrawingList ( f_name_str );
         child_p    = new CDisplayNode ( drawList_p );
         node_p -> appendChild ( child_p );
         return drawList_p;

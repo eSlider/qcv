@@ -140,8 +140,6 @@ CImageScalerOp::registerParameters( int f_numReg_i )
 
     BEGIN_PARAMETER_GROUP("Display", false, SRgb(220,0,0));
 
-    char str[256];
-    
     for (int i = 0; i < f_numReg_i; ++i)
     {
         char str[256];
@@ -170,10 +168,13 @@ CImageScalerOp::compute ( const CMatVector & f_input_v,
         m_img_v = f_input_v;
         resize();
         fr_output_v = m_scaledImgs_v;
-        return true;
     }
-    
-    fr_output_v = f_input_v;
+    else
+    {
+        fr_output_v = f_input_v;
+    }
+
+    return true;
 }
 
 /// Cycle event.
@@ -197,7 +198,7 @@ CImageScalerOp::resize()
 {
     m_scaledImgs_v.resize(m_img_v.size());
         
-    for ( int i = 0; i < m_img_v.size(); ++i )
+    for ( unsigned int i = 0; i < m_img_v.size(); ++i )
     {
         if ( m_img_v[i].size().width  > 0 && 
              m_img_v[i].size().height > 0 )
@@ -233,7 +234,7 @@ CImageScalerOp::resize()
 bool
 CImageScalerOp::show()
 {
-    for ( int i = 0; i < m_scaledImgs_v.size(); ++i )
+    for ( unsigned int i = 0; i < m_scaledImgs_v.size(); ++i )
     {
         char name_str[256];
         if ( m_img_v[i].size().width  > 0 && 

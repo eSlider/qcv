@@ -342,7 +342,7 @@ bool CHoughTransformOp::cycle()
                 float *  sl1_p = &accumImg.at<float>(i,   3);
                 float *  sl2_p = &accumImg.at<float>(i+1, 3);
 
-                for (int j = 3; j < (signed)accumImg.size().width-3; ++j, *sl0_p++, *sl1_p++, *sl2_p++ )
+                for (int j = 3; j < (signed)accumImg.size().width-3; ++j, sl0_p++, sl1_p++, sl2_p++ )
                 {
                     if ( *sl1_p >= m_minHoughVal_f && 
                          *sl1_p > *sl0_p && 
@@ -376,7 +376,7 @@ bool CHoughTransformOp::cycle()
                 size = accumImg.size();
                 m_binImg2 = cv::Mat::zeros(accumImg.size(), m_binImg.type());
                 
-                for (int k = 0; k < m_lines.size(); ++k)
+                for (unsigned int k = 0; k < m_lines.size(); ++k)
                 {
                     if (  m_binImg2.at<uint8_t>(m_lines[k].y_f+0.5f,m_lines[k].x_f+0.5f) == 0 )
                     {
@@ -635,7 +635,7 @@ bool CHoughTransformOp::show()
             for (int i = 0; i < num_i; ++i)
             {
                 double theta_d = m_houghTransOp.column2Theta ( m_lines[i].x_f );
-                double range_d = m_houghTransOp.row2Range    ( m_lines[i].y_f );           
+                double range_d = m_houghTransOp.row2Range    ( m_lines[i].y_f );
 
                 float m = -cos(theta_d) / sin(theta_d);
                 float b =  range_d / sin(theta_d);
@@ -757,9 +757,6 @@ CHoughTransformOp::mouseMoved ( CMouseEvent * f_event_p )
     
     if ( mouseOnAccum_b )
     {
-        int resi_i = 0;
-        int resj_i = 0;
-
         const int w_ui = m_gradX.size().width;
         const int h_ui = m_gradX.size().height;
         

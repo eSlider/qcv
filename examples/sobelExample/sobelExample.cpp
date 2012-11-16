@@ -70,11 +70,12 @@ int main(int f_argc_i, char *f_argv_p[])
     return retval_i;
 }
 
-bool callBackTimer( CTimerEvent *f_cevent_p )
+bool callBackTimer( CTimerEvent * /*f_cevent_p*/ )
 {
     ++g_counter_i;
     g_counter_i %= g_files_v.size();
     computeSobel ( );
+    return true;
 }
 
 

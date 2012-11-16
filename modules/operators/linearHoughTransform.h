@@ -92,14 +92,14 @@ namespace QCV
         /// Hough to Image space
         bool        hough2Image ( double f_theta_d,
                                   double f_range_d,
-                                  double fr_u_d,
-                                  double fr_v_d ) const;
+                                  double &fr_u_d,
+                                  double &fr_v_d ) const;
 
         /// Image to Hough space
         bool        image2Hough ( double f_u_d,
                                   double f_v_d,
-                                  double fr_theta_d,
-                                  double fr_range_d ) const;
+                                  double &fr_theta_d,
+                                  double &fr_range_d ) const;
 
         /// Image to Hough space
         double      theta2Column ( double f_theta_d ) const;

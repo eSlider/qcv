@@ -127,7 +127,8 @@ CSeqControler::playClicked()
     
     result_b = m_deviceCtrl_p -> startPlaying();
 
-    m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PLAY );
+    if ( result_b ) 
+        m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PLAY );
 }
 
 void
@@ -137,7 +138,8 @@ CSeqControler::playBackwardClicked()
     
     result_b = m_deviceCtrl_p -> startPlayingBackward();
 
-    m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PLAY_BACKWARD );
+    if ( result_b ) 
+        m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PLAY_BACKWARD );
 }
 
 void
@@ -155,7 +157,8 @@ CSeqControler::pauseClicked()
     
     result_b = m_deviceCtrl_p -> pause();
 
-    m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PAUSE );
+    if (result_b)
+        m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PAUSE );
 }
 
 void

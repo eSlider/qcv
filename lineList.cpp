@@ -83,7 +83,7 @@ bool
 CLineList::clear ()
 {
     m_line_v.clear();
-    return m_line_v.size() == 0;
+    return m_line_v.size();
 }
 
 // Draw all lines.

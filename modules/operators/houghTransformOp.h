@@ -52,7 +52,7 @@ namespace QCV
         float y_f;
         float val_f;
 
-        SHoughLine () {}
+        SHoughLine () { x_f = y_f = val_f = 0.f; }
             
         SHoughLine (float f_x_f, float f_y_f, float f_val_f )
             : x_f (     f_x_f ),

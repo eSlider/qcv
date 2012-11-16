@@ -62,7 +62,7 @@ CDisplayTreeItemModel::data ( const QModelIndex &f_index,
     if (f_role_i == Qt::CheckStateRole && f_index.column() == 2)
     {
         if ( node_p -> getNodeType() == CDisplayTreeNodeAbstract::NT_DISPLAY )
-            return ( (CDisplayNode *) node_p ) -> isVisible()?Qt::Checked:Qt::Unchecked;
+            return ( static_cast<CDisplayNode *>( node_p ) -> isVisible()?Qt::Checked:Qt::Unchecked );
         else
             return QVariant();
     }

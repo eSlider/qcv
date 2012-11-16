@@ -40,6 +40,7 @@
 
 #include "imgScalerOp.h"
 #include "matVector.h"
+#include "stereoCamera.h"
 
 using namespace QCV;
 
@@ -62,7 +63,9 @@ CStereoOp::CStereoOp ( COperator * const f_parent_p,
       m_dispCE (   CColorEncoding::CET_BLUE2GREEN2RED,
                                S2D<float> ( 0, 400 ) ),
       m_scale_i (                                  2 ),
-      m_convert2Float_b (                      false )
+      m_convert2Float_b (                      false ),
+      m_3DPointImg (                                 ),
+      m_show3D_b (                              true )
 {
     registerDrawingLists();
     registerParameters();
@@ -322,6 +325,17 @@ CStereoOp::registerParameters()
                                      getParameterSet(),
                                      "Disparity",
                                      "Color encoding for the disparity image" );
+
+#if HAVE_QGLVIEWER
+        ADD_LINE_SEPARATOR;
+        
+        ADD_BOOL_PARAMETER ( "Show 3D Mesh",
+                             "Show 3D mesh of the reconstructed scene.",
+                             &m_show3D_b,
+                             this,
+                             Show3DMesh,
+                             CStereoOp );
+#endif
       END_PARAMETER_GROUP;
 
     END_PARAMETER_GROUP;
@@ -487,13 +501,11 @@ CStereoOp::cycle()
                                       &m_dispImgFloat );        
         }
         else
-            return false;        
+        {
+            printf("%s:%i Invalid input images.\n", __FILE__, __LINE__ );
+            return false;
+        }    
     }
-    else
-    {
-        printf("%s:%i Invalid input images.\n", __FILE__, __LINE__ );
-        return false;
-    }    
 
     return true; //COperator::cycle();
 }
@@ -524,8 +536,55 @@ bool CStereoOp::show()
     if (list_p -> isVisible() )
         list_p->addImage ( m_dispImg, 0, 0, m_dispImg.size().width, m_dispImg.size().height, 100);
 
+#ifdef HAVE_QGLVIEWER
+    if ( m_3dViewer_p && m_show3D_b )
+        show3D();    
+#endif // HAVE_QGLVIEWER
+    
     return COperator::show();
 }
+
+void CStereoOp::show3D()
+{
+#ifdef HAVE_QGLVIEWER
+    cv::Mat textureImg = m_leftImg;
+
+    m_3dViewer_p -> clear(); /// This might clear 3D added by other operators.
+
+    m_3DPointImg = cv::Mat::zeros( m_dispImg.size(), CV_64FC3 );
+        
+    // Let set just some approximate calibration params
+    CStereoCamera cam;    
+    cam.setBaseline(0.15);
+    cam.setFocalLength(800/m_leftImg.cols*m_dispImg.cols);
+    cam.setU0(m_dispImg.rows/2);
+    cam.setV0(m_dispImg.cols/2);
+        
+    if ( m_dispImg.cols != m_leftImg.cols )
+    {
+        CMatVector vec = COperator::getInput<CMatVector> ( "Scaled Images", CMatVector() );
+        if (!vec.empty())
+            textureImg = vec[0];
+    }
+
+    for (int i = 0; i < m_dispImg.rows; ++i)
+    {
+        short int *p     = &m_dispImg.at<short int>(i, 0);
+        C3DVector *img_p = &m_3DPointImg.at<C3DVector>(i, 0);
+            
+        for (int j = 0; j < m_dispImg.cols; ++j, ++p, ++img_p)
+        {
+            if (*p > 0)
+            {
+                cam.image2Local ( j, i, *p/16.f, *img_p);
+            }
+        }
+    }   
+
+    m_3dViewer_p -> addMesh ( m_3DPointImg, textureImg, 2, 1000);
+#endif // HAVE_QGLVIEWER
+}
+
 
 /// Init event.
 bool CStereoOp::initialize()
@@ -568,3 +627,4 @@ CStereoOp::setInput  ( const CMatVector & f_input_v )
     return true;
 }
 
+    

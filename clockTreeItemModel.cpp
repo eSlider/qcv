@@ -75,21 +75,21 @@ CClockTreeItemModel::data ( const QModelIndex &f_index,
         if ( f_index.column() == 1 )
         {
             QString str;
-            str.setNum ( (int) ( ( (CClockNode *) node_p ) -> getCount() ) );
+            str.setNum ( (int) ( static_cast<CClockNode *>(node_p) -> getCount() ) );
             return ( str );
         }
 
         if ( f_index.column() == 2 )
         {
             QString str;
-            str.setNum( (double) ( ( (CClockNode *) node_p ) -> getTotalTime() ) );
+            str.setNum( (double) ( static_cast<CClockNode *>(node_p) -> getTotalTime() ) );
             return ( str );
         }
 
         if ( f_index.column() == 3 )
         {
             QString str;
-            str.setNum( (double) ( ( (CClockNode *) node_p ) -> getLoopTime() ) );
+            str.setNum( (double) ( static_cast<CClockNode *>(node_p) -> getLoopTime() ) );
             return ( str );
         }
     }

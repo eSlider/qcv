@@ -281,7 +281,7 @@ bool CDisplayImageList::clear ()
     }
     
     m_image_v.clear();
-    return m_image_v.size() == 0;
+    return true;
 }
 
 // Draw all lines.
@@ -317,7 +317,8 @@ bool CDisplayImageList::show () const
         glEnd();        
     }
 
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glDisable(GL_TEXTURE_RECTANGLE_NV); //  This takes a very long
+                                        //  time. It sould be optimized!
 
     /// Todo: Check GL status and return value.
     return true;

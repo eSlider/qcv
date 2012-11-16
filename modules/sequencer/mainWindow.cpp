@@ -46,6 +46,10 @@
 #include "clockTreeDlg.h"
 #include "io.h"
 
+#if defined HAVE_QGLVIEWER
+#include "glViewer.h"
+#endif
+
 CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
                            COperator *         f_rootOp_p,
                            int                 f_sx_i, 
@@ -120,6 +124,12 @@ CMainWindow::~CMainWindow( )
     if (m_clockTreeDlg_p)
         delete m_clockTreeDlg_p;
     m_clockTreeDlg_p = NULL;
+
+#if defined HAVE_QGLVIEWER
+    if (m_3dViewer_p)
+        delete m_3dViewer_p;
+    m_3dViewer_p = NULL;
+#endif
 }
 
 void CMainWindow::createBaseWidgets()
@@ -140,11 +150,22 @@ void CMainWindow::createBaseWidgets()
     m_clockTreeDlg_p   = new CClockTreeDlg ( this,
                                              m_rootOp_p -> getClockHandler() -> getRootNode() );
 
+    /// Create the 3D viewer
+#if defined HAVE_QGLVIEWER
+    m_3dViewer_p       = new CGLViewer;
+    m_rootOp_p -> set3DViewer ( m_3dViewer_p );
+#endif
+
+
     CSimpleWindow::insertWindow ( m_controler_p -> getDialog() );
     CSimpleWindow::insertWindow ( m_display_p );
     CSimpleWindow::insertWindow ( m_display_p -> getDialog() );
     CSimpleWindow::insertWindow ( m_paramEditorDlg_p );
     CSimpleWindow::insertWindow ( m_clockTreeDlg_p );
+
+#if defined HAVE_QGLVIEWER
+    CSimpleWindow::insertWindow ( m_3dViewer_p );
+#endif
 
     std::vector<QWidget *> opWidgets = m_rootOp_p -> getWidgets();
 
@@ -209,16 +230,15 @@ void CMainWindow::initialize()
         m_rootOp_p -> registerOutputs ( devOutput );
         
         m_rootOp_p -> startClock ( "Initialize" );
-        success_b = m_rootOp_p -> initialize();
+        m_rootOp_p -> initialize();
         m_rootOp_p -> stopClock ( "Initialize" );
-        
 
         m_rootOp_p -> startClock ( "Cycle" );
-        success_b = m_rootOp_p -> cycle();
+        m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
 
         m_rootOp_p -> startClock ( "Show" );
-        success_b = m_rootOp_p -> show();
+        m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
     }
 
@@ -227,6 +247,12 @@ void CMainWindow::initialize()
     m_rootOp_p -> startClock ( "OpenGL Display" );
     m_display_p -> update(true);
     m_rootOp_p -> stopClock ( "OpenGL Display" );
+
+#if defined HAVE_QGLVIEWER
+    m_rootOp_p -> startClock ( "3D Viewer" );
+    m_3dViewer_p -> update();
+    m_rootOp_p -> stopClock ( "3D Viewer" );
+#endif
 
     // std::vector<QWidget *> opWidgets = m_rootOp_p -> getWidgets();
 
@@ -261,11 +287,11 @@ void CMainWindow::cycle()
         m_rootOp_p -> registerOutputs ( devOutput );
 
         m_rootOp_p -> startClock ( "Cycle" );
-        success_b = m_rootOp_p -> cycle();
+        m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
 
         m_rootOp_p -> startClock ( "Show" );
-        success_b = m_rootOp_p -> show();
+        m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
     }
 
@@ -276,6 +302,12 @@ void CMainWindow::cycle()
     m_display_p -> update();
     m_rootOp_p -> stopClock ( "OpenGL Display" );
     
+#if defined HAVE_QGLVIEWER
+        m_rootOp_p -> startClock ( "3D Viewer" );
+        m_3dViewer_p -> update();
+        m_rootOp_p -> stopClock ( "3D Viewer" );
+#endif
+
     m_rootOp_p -> startClock ( "Clock Update" );
     m_clockTreeDlg_p -> updateTimes();
     m_rootOp_p -> stopClock ( "Clock Update" );	
@@ -301,19 +333,19 @@ void CMainWindow::stop()
         m_rootOp_p -> registerOutputs ( devOutput );
 
         m_rootOp_p -> startClock ( "Reset" );
-        success_b = m_rootOp_p -> reset();
+        m_rootOp_p -> reset();
         m_rootOp_p -> stopClock ( "Reset" );
 
         m_rootOp_p -> startClock ( "Initialize" );
-        success_b = m_rootOp_p -> initialize();
+        m_rootOp_p -> initialize();
         m_rootOp_p -> stopClock ( "Initialize" );
 
         m_rootOp_p -> startClock ( "Cycle" );
-        success_b = m_rootOp_p -> cycle();
+        m_rootOp_p -> cycle();
         m_rootOp_p -> stopClock ( "Cycle" );
 
         m_rootOp_p -> startClock ( "Show" );
-        success_b = m_rootOp_p -> show();
+        m_rootOp_p -> show();
         m_rootOp_p -> stopClock ( "Show" );
     } 
 
@@ -322,6 +354,12 @@ void CMainWindow::stop()
     m_rootOp_p -> startClock ( "OpenGL Display" );
     m_display_p -> update();
     m_rootOp_p -> stopClock ( "OpenGL Display" );
+
+#if defined HAVE_QGLVIEWER
+    m_rootOp_p -> startClock ( "3D Viewer" );
+    m_3dViewer_p -> update();
+    m_rootOp_p -> stopClock ( "3D Viewer" );
+#endif
 
     m_rootOp_p -> startClock ( "Clock Update" );
     m_clockTreeDlg_p -> updateTimes();    

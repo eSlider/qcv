@@ -45,7 +45,6 @@ CSeqDevVideoCapture::CSeqDevVideoCapture ( std::string f_file_str )
     connect(m_qtPlay_p, SIGNAL(timeout()), this, SLOT(timeOut()));
 
     m_currentState_e = S_PAUSED;
-    int cameraId_i = 0;
 
     if ( f_file_str == "" ) 
         m_capture_p = new cv::VideoCapture ( 0 );
@@ -118,7 +117,7 @@ bool CSeqDevVideoCapture::prevFrame()
 }
 
 /// Load next frame
-bool CSeqDevVideoCapture::goToFrame( int f_frameNumber_i )
+bool CSeqDevVideoCapture::goToFrame( int /*f_frameNumber_i*/ )
 {
     return false;
 }

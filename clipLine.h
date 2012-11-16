@@ -77,7 +77,6 @@ bool clipLine( float &fr_u1_f, float &fr_v1_f,
 
     float f_du_f = fr_u2_f - fr_u1_f;
     float f_dv_f = fr_v2_f - fr_v1_f;
-    float f_a_f;
 
     if (fabs(f_du_f) < 1.e-6 && fabs(f_dv_f) < 1.e-6)
         return false;
@@ -95,6 +94,7 @@ bool clipLine( float &fr_u1_f, float &fr_v1_f,
     else
     {
         float f_limit_f;
+        float f_a_f;
 
         f_a_f = f_dv_f / f_du_f;        
         

@@ -207,73 +207,53 @@ void CDisplay::resizeGL(const int f_width_i, const int f_height_i)
 QImage
 CDisplay::renderGL ()
 {
-    //setActiveWindow();
-    //raise();
-    if (0)
-    {        
-        QPixmap pixmap = QGLWidget::renderPixmap(0, 0, true);
-        QImage fullImage = pixmap.toImage();
-        QImage saveImage;
-        
-        int sx = -1;
-        int sy = 0;
-        
-        if (sx == -1)
-            saveImage = fullImage;
-        else
-            saveImage = fullImage.copy(int(sx*m_screenSize.width), int(sy*m_screenSize.height), m_screenSize.width, m_screenSize.height );
-        return saveImage;
-    }
-    else
+    
+    /// Must reset all PixelTransferf methods to default value
+    /// otherwise th rendering is very slow.
+    glPixelTransferf ( GL_RED_SCALE,   1. );
+    glPixelTransferf ( GL_RED_BIAS,    0. );
+    glPixelTransferf ( GL_GREEN_SCALE, 1.);
+    glPixelTransferf ( GL_GREEN_BIAS,  0.);
+    glPixelTransferf ( GL_BLUE_SCALE,  1.);
+    glPixelTransferf ( GL_BLUE_BIAS,   0.);
+    
+    glPixelStorei ( GL_UNPACK_ALIGNMENT, 8);
+    
+    int offset_i = 0;
+    cv::Size size ( width(), height() );
+    
+    if ( size.width % 4 )
     {
-        
-        /// Must reset all PixelTransferf methods to default value
-        /// otherwise th rendering is very slow.
-        glPixelTransferf ( GL_RED_SCALE,   1. );
-        glPixelTransferf ( GL_RED_BIAS,    0. );
-        glPixelTransferf ( GL_GREEN_SCALE, 1.);
-        glPixelTransferf ( GL_GREEN_BIAS,  0.);
-        glPixelTransferf ( GL_BLUE_SCALE,  1.);
-        glPixelTransferf ( GL_BLUE_BIAS,   0.);
-
-        glPixelStorei ( GL_UNPACK_ALIGNMENT, 8);
-        
-        int offset_i = 0;
-        cv::Size size ( width(), height() );
-
-        if ( size.width % 4 )
-        {
-            offset_i = (size.width % 4)/2;
-            size.width -= size.width % 4;
-        }
-        
-        if ( m_snapshot.size() != size )
-
-        {
-            m_snapshot.create(size, CV_8UC3);
-            m_aux.create(size, CV_8UC3);
-
-        }
-
-        // printf("allocate array and read pixels into it.\n")
-        // allocate array and read pixels into it.
-
-        glReadPixels(offset_i, 0, size.width, size.height, GL_RGB, GL_UNSIGNED_BYTE, m_aux.data);
-        
-        /// printf("Flip image vertically.\n")
-        /// Flip image vertically.
-        for (int i =0; i < size.height; ++i)
-
-        {
-            memcpy( &m_snapshot.at<SRgb>(i,0),
-                    &m_aux.at<SRgb>(size.height-i-1,0),
-                    sizeof(SRgb) * size.width);
-
-        }
-
-        QImage img( (unsigned char *)m_snapshot.data, size.width, size.height, QImage::Format_RGB888);
-        return img.copy();
+        offset_i = (size.width % 4)/2;
+        size.width -= size.width % 4;
     }
+    
+    if ( m_snapshot.size() != size )
+        
+    {
+        m_snapshot.create(size, CV_8UC3);
+        m_aux.create(size, CV_8UC3);
+        
+    }
+
+    // printf("allocate array and read pixels into it.\n")
+    // allocate array and read pixels into it.
+
+    glReadPixels(offset_i, 0, size.width, size.height, GL_RGB, GL_UNSIGNED_BYTE, m_aux.data);
+        
+    /// printf("Flip image vertically.\n")
+    /// Flip image vertically.
+    for (int i =0; i < size.height; ++i)
+
+    {
+        memcpy( &m_snapshot.at<SRgb>(i,0),
+                &m_aux.at<SRgb>(size.height-i-1,0),
+                sizeof(SRgb) * size.width);
+
+    }
+
+    QImage img( (unsigned char *)m_snapshot.data, size.width, size.height, QImage::Format_RGB888);
+    return img.copy();
 }
 
 void CDisplay::mousePressEvent( QMouseEvent * f_event_p )
@@ -688,7 +668,7 @@ CDisplay::show ( )
 }
 
 void
-CDisplay::showEvent ( QShowEvent * f_event_p )
+CDisplay::showEvent ( QShowEvent * /*f_event_p*/ )
 {
     m_initialized_b = true;
     resizeGL(width(), height());
@@ -826,8 +806,6 @@ void CDisplay::dragMoveEvent(QDragMoveEvent *f_event_p)
             {
                 dataStream >> ptr_ui;
                
-                CDisplayNode *  node_p = static_cast<CDisplayNode *>((void*)ptr_ui);
-               
                 /// normalize position.
                 QPoint pos = f_event_p -> pos ();
                 S2D<float> mousePos;
@@ -935,7 +913,7 @@ CDisplay::getScreenSize ( ) const
 }
 
 void
-CDisplay::timerEvent ( QTimerEvent * f_event_p )
+CDisplay::timerEvent ( QTimerEvent * /*f_event_p*/ )
 {
     /// activate it and implement here the deactivation of the drag 
     

@@ -44,7 +44,7 @@ namespace QCV
     /// RGBA Color
     struct SRgba
     {
-        SRgba() {};
+        SRgba(): r(0), g(0), b(0), a(0) {}
         SRgba ( const int f_r_i, 
                 const int f_g_i, 
                 const int f_b_i, 
@@ -106,7 +106,7 @@ namespace QCV
             return ! (operator == ( other ));
         }
 
-        operator bool ( )
+        operator bool ( ) const
         {
             return r != 0 || g!=0 || b!=0 || a!=0;
         }
@@ -137,7 +137,7 @@ namespace QCV
     /// RGB Color
     struct SRgb 
     {
-        SRgb() {};
+        SRgb(): r(0), g(0), b(0) {};
         SRgb ( const int f_r_i, 
                const int f_g_i, 
                const int f_b_i )
@@ -193,9 +193,9 @@ namespace QCV
             return ! (operator == ( other ));
         }
 
-        operator bool ( )
+        operator bool ( ) const
         {
-            return r != 0 || g!=0 || b!=0;
+            return r != 0 || g!=0 || b != 0;
         }
         
         void set (  const int f_r_i, 
@@ -253,7 +253,7 @@ namespace QCV
     {
     public:
         
-        SHsv() {};
+        SHsv(): h(0), s(0), v(0) {}
         SHsv ( const float f_h_f, 
                const float f_s_f, 
                const float f_v_f )
@@ -277,7 +277,7 @@ namespace QCV
             v = f_other[0];
         }
 
-        const SHsv& operator = ( const SHsv & other )
+        SHsv& operator = ( const SHsv & other )
         {
             h = other.h;
             s = other.s;
@@ -323,7 +323,7 @@ namespace QCV
     {
     public:
         
-        SHsl() {};
+        SHsl(): h(0), s(0), l(0) {};
         SHsl ( const float f_h_f, 
                const float f_s_f, 
                const float f_l_f )
@@ -347,7 +347,7 @@ namespace QCV
             l = f_other[0];
         }
 
-        const SHsl& operator = ( const SHsl & other )
+        SHsl& operator = ( const SHsl & other )
         {
             h = other.h;
             s = other.s;
@@ -355,7 +355,7 @@ namespace QCV
             return (*this);
         }
         
-        operator cv::Vec3b ()
+        operator cv::Vec3b () const
         {
             return cv::Vec3b(l,s,h);
         }

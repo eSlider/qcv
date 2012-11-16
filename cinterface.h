@@ -30,6 +30,11 @@
 #include "clockTreeDlg.h"
 #include "clock.h"
 #include "simpleWindow.h"
+
+#if defined HAVE_QGLVIEWER
+#include "glViewer.h"
+#endif
+
 #include <stdio.h>
 #include <iostream> 
 
@@ -45,8 +50,12 @@ namespace QCV
     CSimpleWindow *       g_mainWindow_p   = NULL;
     CClockTreeDlg *       g_clockTree_p    = NULL;
     CClockHandler *       g_clockHandler_p = NULL;
+#if defined HAVE_QGLVIEWER
+    CGLViewer *           g_3dViewer_p     = NULL;
+#endif
 
-    static 
+
+    inline 
     void initialize( std::string f_title_str = "Application")
     {
         if ( !g_disp_p )
@@ -73,16 +82,24 @@ namespace QCV
             g_evHandler_p = new CEventHandler( g_disp_p );
             assert(g_evHandler_p);
 
+#if defined HAVE_QGLVIEWER
+            g_3dViewer_p       = new CGLViewer;
+            //g_rootOp_p -> set3DViewer ( g_3dViewer_p );
+#endif
+
             g_mainWindow_p -> insertWindow ( g_disp_p );
             g_mainWindow_p -> insertWindow ( g_disp_p->getDialog() );
             g_mainWindow_p -> insertWindow ( g_clockTree_p );
 
+#if defined HAVE_QGLVIEWER
+            g_mainWindow_p -> insertWindow ( g_3dViewer_p );
+#endif
             /// The window list now.
             g_mainWindow_p -> show();
         }
     }
 
-    static 
+    inline 
     void terminate( )
     {
         if ( g_mainWindow_p )
@@ -108,9 +125,14 @@ namespace QCV
         if (g_evHandler_p)
             delete g_evHandler_p;
         g_evHandler_p = NULL;        
-    }
 
-    static 
+#if defined HAVE_QGLVIEWER
+        if (g_3dViewer_p)
+            delete g_3dViewer_p;
+#endif
+    }    
+
+    inline 
     CDrawingList * 
     displayImage ( cv::Mat     f_img, 
                    std::string f_title_str, 
@@ -143,7 +165,7 @@ namespace QCV
         return list_p;    
     }
 
-    static 
+    inline 
     CDrawingList * 
     registerDrawingList ( std::string f_title_str, 
                           int         f_sx_i, 
@@ -165,7 +187,7 @@ namespace QCV
         return list_p;    
     }
 
-    static 
+    inline 
     CDrawingList *
     getDrawingList( std::string f_title_str )
     {
@@ -180,91 +202,91 @@ namespace QCV
         return g_drawHandler_p->getDrawingList ( f_title_str, g_rootNode_p );
     }
 
-    static 
+    inline 
     void updateDisplay()
     {
         g_disp_p -> update ( true );
     }
 
-    static 
+    inline 
     bool  setKeyPressedEventCBF(       bool (*f_keyEv_p)           (CKeyEvent *   ))
     {
         return  g_evHandler_p -> setKeyPressedEventCBF ( f_keyEv_p  );
     }    
     
-    static 
+    inline 
     bool  setMousePressedEventCBF (    bool (*f_mousePressedEv_p)  (CMouseEvent * ))
     {
         return  g_evHandler_p -> setMousePressedEventCBF (  f_mousePressedEv_p );
     }
     
-    static 
+    inline 
     bool  setMouseReleasedEventCBF (   bool (*f_mouseReleasedEv_p) (CMouseEvent * ))
     {
         return  g_evHandler_p -> setMouseReleasedEventCBF ( f_mouseReleasedEv_p );
     }
     
-    static 
+    inline 
     bool  setMouseMovedEventCBF (      bool (*f_mouseMovedEv_p)    (CMouseEvent * ))
     {
         return  g_evHandler_p -> setMouseMovedEventCBF (    f_mouseMovedEv_p );
     }
     
-    static 
+    inline 
     bool  setWheelTurnedEventCBF (     bool (*f_wheelTurnedEv_p)   (CWheelEvent * ))
     {
         return  g_evHandler_p -> setWheelTurnedEventCBF (   f_wheelTurnedEv_p );
     }
 
-    static 
+    inline 
     bool  setTimerEventCBF (     bool (*f_timerEv_p)   (CTimerEvent * ), int f_mstime_i = 10 )
     {
         return  g_evHandler_p -> setTimerEventCBF (   f_timerEv_p, f_mstime_i );
     }
     
-    static 
+    inline 
     bool  setRegionSelectedEventCBF (  bool (*f_regionSelectedEv_p)(CRegionSelectedEvent * ))
     {
         return  g_evHandler_p -> setRegionSelectedEventCBF (f_regionSelectedEv_p );
     }
 
-    static 
+    inline 
     void setScreenSize( cv::Size size )
     {
         g_disp_p->setScreenSize( size );
     }
 
-    static 
+    inline 
     int getScreenWidth()
     {
         return g_disp_p->getDisplay()->getScreenWidth();
     }
     
-    static 
+    inline 
     int getScreenHeight()
     {
         return g_disp_p->getDisplay()->getScreenHeight();
     }
     
-    static 
+    inline 
     void setScreenCount( cv::Size size )
     {
         g_disp_p->setScreenCount(size);
     }
 
-    static 
+    inline 
     void startClock( std::string f_name_str )
     {
         g_clockHandler_p->getClock(f_name_str, g_rootNode_p)->start();
     }
 
-    static 
+    inline 
     void stopClock( std::string f_name_str )
     {
         g_clockHandler_p->getClock(f_name_str, g_rootNode_p)->stop();
     }
 
-    static 
+    inline 
     void updateClocks(  )
     {
         g_clockTree_p->updateTimes();

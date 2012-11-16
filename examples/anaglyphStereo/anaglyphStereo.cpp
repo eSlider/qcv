@@ -91,11 +91,12 @@ int main(int f_argc_i, char *f_argv_p[])
     return retval_i;
 }
 
-bool callBackTimer( CTimerEvent *f_cevent_p )
+bool callBackTimer( CTimerEvent * /*f_cevent_p*/ )
 {
     ++g_counter_i;
     g_counter_i %= g_maxImages_i;
     loadAndShowFrame ( );
+    return true;
 }
 
 
@@ -164,12 +165,12 @@ void loadAndShowFrame (  )
 
     cv::Size size(0,0);
 
-    for (int c = 0; c < g_files_v.size(); ++c)
+    for (unsigned int c = 0; c < g_files_v.size(); ++c)
     {
         CDrawingList *list_p = getDrawingList ( std::string("Anaglyph") + (c?"Left":"Right") );
         list_p -> clear();
         
-        if ( g_counter_i < g_files_v[c].size() )
+        if ( g_counter_i < (int) g_files_v[c].size() )
         {
             src = cv::imread (  g_files_v[c][g_counter_i].c_str() );
 

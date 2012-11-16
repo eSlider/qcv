@@ -190,8 +190,6 @@ CParameterEditorDlg::reloadParameterPage ( const QModelIndex & f_index  )
     
     for (unsigned int i = 0; i < m_currentPage_p -> getParameterCount(); ++i)
     {
-        QWidget * paramEditor_p;
-
         CParameter *  param_p    = m_currentPage_p -> getParameter ( i );
         //if ( param_p ) 
         //    printf("param_p->getName() = %s\n", param_p->getName().c_str());
@@ -265,6 +263,8 @@ CParameterEditorDlg::reloadParameterPage ( const QModelIndex & f_index  )
         }
         else
         {
+            QWidget * paramEditor_p;
+        
             param_p -> updateFromContainer();
 
             paramEditor_p = param_p -> createEditor();

@@ -109,12 +109,12 @@ namespace QCV
     public:
         
         /// Set the number of frames to skip.
-        virtual bool     setFrameSkip(int f_skip_i ) { return false; };
+        virtual bool     setFrameSkip(int /*f_skip_i*/ ) { return false; };
 
         /// Set loop mode.
-        virtual bool     setLoopMode( bool f_val_b ) { return false; };
+        virtual bool     setLoopMode( bool /*f_val_b*/ ) { return false; };
 
-        virtual bool     setExitOnLastFrame( bool f_val_b )  { return false; };
+        virtual bool     setExitOnLastFrame( bool /*f_val_b*/ )  { return false; };
 
         /// Get number of frames in this sequence.
         virtual int getNumberOfFrames() const;

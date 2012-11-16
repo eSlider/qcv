@@ -118,7 +118,7 @@ CEllipseList::add (  float   f_u_f,
 bool CEllipseList::clear ()
 {
     m_ellipse_v.clear();
-    return m_ellipse_v.size() == 0;
+    return m_ellipse_v.size();
 }
 
 // Draw all ellipses.

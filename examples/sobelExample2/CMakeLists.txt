@@ -29,6 +29,7 @@ set (QCV_LIB qcv )
 set (QCVParamEditor_LIB qcvpeditor )
 set (QCVSequencer_LIB qcvsequencer )
 set (QCVOperators_LIB qcvoperators )
+set (QCVMisc_LIB        qcvmisc )
 
 # Include directories
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../..")
@@ -55,6 +56,7 @@ add_executable ( sobelExample2 ${LIBCHECKIMGSCALERPAIR_SRC} )
 target_link_libraries(sobelExample2 ${QT_LIBRARIES} 
                              -lglut -lGL -lGLU
                              ${QCVOperators_LIB} 
+                             ${QCVMisc_LIB} 
                              ${QCVParamEditor_LIB} 
                              ${QCVSequencer_LIB} 
                              ${QCV_LIB}

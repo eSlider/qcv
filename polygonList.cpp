@@ -103,7 +103,7 @@ bool
 CPolygonList::clear ()
 {
     m_polygon_v.clear();
-    return m_polygon_v.size() == 0;
+    return m_polygon_v.size();
 }
 
 // Draw all polygons.

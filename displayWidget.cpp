@@ -408,7 +408,7 @@ void CDisplayWidget::switchFullScreen ()
         int myDesktop_i = desktop_p->screenNumber(this);
         QRect rect = desktop_p->screenGeometry(myDesktop_i);
 
-        m_glDisplay_p -> setWindowState ( Qt::WindowStates(Qt::WindowFullScreen | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint) );
+        m_glDisplay_p -> setWindowState ( Qt::WindowStates((unsigned int)Qt::WindowFullScreen | (unsigned int)Qt::WindowStaysOnTopHint | (unsigned int)Qt::FramelessWindowHint) );
         m_glDisplay_p -> setGeometry(rect);
         m_glDisplay_p -> show();
     }
@@ -491,19 +491,17 @@ CDisplayWidget::keyPressed ( CKeyEvent * f_keyEvent_p )
             }        
         }
     }
+
     if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_Escape && m_saveImgsTimerId_i != 0)
     {
-        if ( m_saveImgsTimerId_i ) 
+        killTimer(m_saveImgsTimerId_i);
+        m_saveImgsTimerId_i = 0;
+        
+        for (unsigned int i = 0; i < m_imgBuffer_v.size(); ++i)
         {
-            killTimer(m_saveImgsTimerId_i);
-            m_saveImgsTimerId_i = 0;
-            
-            for (int i = 0; i < m_imgBuffer_v.size(); ++i)
-            {
-                delete m_imgBuffer_v[i];
-            }
-            m_imgBuffer_v.clear();
+            delete m_imgBuffer_v[i];
         }
+        m_imgBuffer_v.clear();
     }
     
     else if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_H)
@@ -533,7 +531,7 @@ void CDisplayWidget::timerEvent ( QTimerEvent * f_event_p )
     {
         m_grabbing_i = 0;
 
-        if ( m_imgBuffer_v.size() == 0 )
+        if ( m_imgBuffer_v.empty() )
         {
             killTimer ( m_saveImgsTimerId_i );
             m_saveImgsTimerId_i = 0;
@@ -542,7 +540,7 @@ void CDisplayWidget::timerEvent ( QTimerEvent * f_event_p )
         {
             char fileName_p[256];
             
-            sprintf(fileName_p, "grabbedDisplayWidgetImg_%05i.%s", m_imgBuffer_v.size()-1, m_imgFormat_str.c_str() );
+            sprintf(fileName_p, "grabbedDisplayWidgetImg_%05i.%s", (int)(m_imgBuffer_v.size())-1, m_imgFormat_str.c_str() );
             
             m_imgBuffer_v.back()->save( fileName_p, m_imgFormat_str.c_str(), 100 );
             

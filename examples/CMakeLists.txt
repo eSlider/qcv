@@ -10,6 +10,7 @@ add_subdirectory ( sobelExample2 )
 add_subdirectory ( surfExample )
 add_subdirectory ( houghTransformExample )
 
+
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/imgs ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/imgs COPYONLY)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/imgs DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

@@ -110,7 +110,7 @@ CDisplayColorEncImageList::clear ()
     }
     
     m_image_v.clear();
-    return m_image_v.size() == 0;
+    return true;
 }
 
 // Draw all lines.
@@ -174,7 +174,7 @@ CDisplayColorEncImageList::showWithType ( const SDisplayColorEncImage & f_elem )
     // OPENMP HERE?
     for (int v = 0; v < h_i; ++v)
     {
-        Type_ *ptr_p = ((Type_ *) f_elem.image_p->data) + v * w_ui;
+        Type_ *ptr_p = ((Type_ *)(f_elem.image_p->data)) + v * w_ui;
         SRgba colorAlpha;
         SRgb  color;
 

@@ -30,6 +30,11 @@
 #include "clockTreeDlg.h"
 #include "clock.h"
 #include "simpleWindow.h"
+
+#if defined HAVE_QGLVIEWER
+#include "glViewer.h"
+#endif
+
 #include <stdio.h>
 #include <iostream> 
 
@@ -45,6 +50,10 @@ namespace QCV
     CSimpleWindow *       g_mainWindow_p   = NULL;
     CClockTreeDlg *       g_clockTree_p    = NULL;
     CClockHandler *       g_clockHandler_p = NULL;
+#if defined HAVE_QGLVIEWER
+    CGLViewer *           g_3dViewer_p     = NULL;
+#endif
+
 
     inline 
     void initialize( std::string f_title_str = "Application")
@@ -73,10 +82,18 @@ namespace QCV
             g_evHandler_p = new CEventHandler( g_disp_p );
             assert(g_evHandler_p);
 
+#if defined HAVE_QGLVIEWER
+            g_3dViewer_p       = new CGLViewer;
+            //g_rootOp_p -> set3DViewer ( g_3dViewer_p );
+#endif
+
             g_mainWindow_p -> insertWindow ( g_disp_p );
             g_mainWindow_p -> insertWindow ( g_disp_p->getDialog() );
             g_mainWindow_p -> insertWindow ( g_clockTree_p );
 
+#if defined HAVE_QGLVIEWER
+            g_mainWindow_p -> insertWindow ( g_3dViewer_p );
+#endif
             /// The window list now.
             g_mainWindow_p -> show();
         }
@@ -108,7 +125,12 @@ namespace QCV
         if (g_evHandler_p)
             delete g_evHandler_p;
         g_evHandler_p = NULL;        
-    }
+
+#if defined HAVE_QGLVIEWER
+        if (g_3dViewer_p)
+            delete g_3dViewer_p;
+#endif
+    }    
 
     inline 
     CDrawingList * 

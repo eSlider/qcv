@@ -67,6 +67,10 @@
 #include "drawingListHandler.h"
 #include "clockHandler.h"
 
+#if defined HAVE_QGLVIEWER
+#include "glViewer.h"
+#endif
+
 //#include <iostream>
 #include <string>
 #include <vector>
@@ -90,6 +94,8 @@ namespace QCV
     class CDrawingListHandler;
     class CDrawingList;
     
+    class CGLViewer;
+
     class COperator: public CNode
     {
         friend class CMainWindow;
@@ -161,13 +167,16 @@ namespace QCV
         }
 
         /// Get drawing handler.
-        static CClockHandler *        getClockHandler() 
+        static CClockHandler * getClockHandler() 
         {
             return &m_clockHandler;
         }
 
+        /// Set 3D viewer
+        static  void          set3DViewer ( CGLViewer * f_viewer_p );
+
         /// Get the input of this operator.
-        virtual COperator*        getParentOp ( ) const { return static_cast<COperator *> (m_parent_p); }
+        virtual COperator*    getParentOp ( ) const { return static_cast<COperator *> (m_parent_p); }
         
         /// Get a child of a given type and name
         template <class _OpType>
@@ -294,6 +303,9 @@ namespace QCV
 
         /// Drawing handler
         static CClockHandler              m_clockHandler;
+
+        /// 3D Viewer.
+        static CGLViewer *                m_3dViewer_p;
 
         /// Plots handling.
         /// to be implemented.

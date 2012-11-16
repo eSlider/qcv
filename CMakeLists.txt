@@ -29,6 +29,8 @@ set(QT_USE_QTXML true)
 #OpenCV
 find_package ( OpenCV REQUIRED )
 
+find_package( QGLViewer  )
+
 # Include directories before QGLViewer otherwise headers will be found first in 
 # QGLViewer directory (for example camera.h).
 
@@ -76,8 +78,14 @@ set ( LIBQCV_SRC
      windowListItemModel.cpp
      windowListView.cpp
 )
+
 set ( LIBQCV_HEADERS 
-    cinterface.h
+     3DMatrix.h
+     3DMatrix_inline.h
+     3DPointVector.h
+     3DRowVector.h
+     3DRowVector_inline.h
+     cinterface.h
      clipLine.h
      clock.h
      clockHandler.h
@@ -138,7 +146,24 @@ set ( LIBQCV_MOC_HEADERS
      simpleWindow.h
      windowListView.h
      windowListItemModel.h
- )
+)
+
+if(QGLVIEWER_FOUND)
+  list(APPEND LIBQCV_SRC
+        glViewer.cpp
+	3DPointList.cpp )
+
+  list ( APPEND LIBQCV_HEADERS
+        glViewer.h
+	3DDrawingElementList.h
+	3DPointList.h )
+
+  list ( APPEND LIBQCV_MOC_HEADERS 
+        glViewer.h )
+
+  add_definitions(-DHAVE_QGLVIEWER)
+
+endif()
 
 # Wrap ui files.
 QT4_WRAP_UI ( LIBQCV_FORMS_HEADERS
@@ -155,15 +180,16 @@ QT4_ADD_RESOURCES(QT_RCC_SRCS ${QT_RCCS})
 
 add_definitions(${QT_DEFINITIONS})
 
-include_directories ( ${CMAKE_CURRENT_BINARY_DIR} )
+include_directories ( ${CMAKE_CURRENT_BINARY_DIR} ${QGLVIEWER_INCLUDE_DIR} )
 
 ### Generated library
 add_library ( qcv SHARED ${LIBQCV_SRC} ${QT_RCC_SRCS}
                          ${LIBQCV_HEADERS_MOC}
-                          )
-
+			 )
 target_link_libraries(qcv  ${QT_LIBRARIES} 
-                           -lglut -lGL ${OpenCV_LIBS})
+                           -lglut -lGL ${OpenCV_LIBS}
+                           ${QGLVIEWER_LIBRARIES} )
+
 
 ### Set library to be installed under lib directory
 install ( TARGETS qcv LIBRARY DESTINATION lib)

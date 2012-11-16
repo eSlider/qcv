@@ -151,9 +151,6 @@ namespace QCV
         /// Set the input of this operator
         bool setInput  ( const CMatVector & f_input );
 
-        /// Gets the output of this operator
-        bool getOutput ( TOutputType & f_output ) const;
-
     protected:
 
     protected:

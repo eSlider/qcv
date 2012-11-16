@@ -63,6 +63,7 @@ namespace QCV
     class CMouseEvent;
     class CWheelEvent;
     class CRegionSelectedEvent;
+    class CGLViewer;
     
     class CMainWindow: public CSimpleWindow
     {
@@ -109,10 +110,10 @@ namespace QCV
     private:
 
         /// Input device.
-        CSeqDeviceControl *   m_device_p;
+        CSeqDeviceControl *       m_device_p;
 
         /// Root operator
-        COperator *           m_rootOp_p;
+        COperator *               m_rootOp_p;
 
         /// Control Window.
         CSeqControler *           m_controler_p;
@@ -125,6 +126,10 @@ namespace QCV
 
         /// Clock Tree Dialog
         CClockTreeDlg *           m_clockTreeDlg_p;
+
+        /// 3D Viewer
+        CGLViewer *               m_3dViewer_p;
+
     };
 }
 

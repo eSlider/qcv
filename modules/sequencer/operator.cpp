@@ -37,6 +37,7 @@ using namespace QCV;
 
 CDrawingListHandler    COperator::m_drawingListHandler;
 CClockHandler          COperator::m_clockHandler;
+CGLViewer *            COperator::m_3dViewer_p = NULL;
 
 COperator::COperator (  COperator * const f_parent_p /* = NULL */, 
                                 const std::string f_name_str /* = "Unnamed Operator" */ )
@@ -425,4 +426,10 @@ COperator::getOutputMap ( std::map< std::string, CIOBase* > &fr_elements ) const
     fr_elements.insert( m_ios.begin(), m_ios.end() );
 }
 
+/// Set the 3D viewer
+void
+COperator::set3DViewer ( CGLViewer * f_viewer_p )
+{
+    m_3dViewer_p = f_viewer_p;
+}
 

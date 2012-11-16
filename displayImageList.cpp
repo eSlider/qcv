@@ -317,7 +317,8 @@ bool CDisplayImageList::show () const
         glEnd();        
     }
 
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glDisable(GL_TEXTURE_RECTANGLE_NV); //  This takes a very long
+                                        //  time. It sould be optimized!
 
     /// Todo: Check GL status and return value.
     return true;

@@ -486,12 +486,12 @@ CStereoOp::cycle()
             registerOutput<cv::Mat> ( std::string("Float ") + m_dispImgId_str, 
                                       &m_dispImgFloat );        
         }
+        else
+        {
+            printf("%s:%i Invalid input images.\n", __FILE__, __LINE__ );
+            return false;
+        }    
     }
-    else
-    {
-        printf("%s:%i Invalid input images.\n", __FILE__, __LINE__ );
-        return false;
-    }    
 
     return true; //COperator::cycle();
 }
@@ -565,13 +565,5 @@ CStereoOp::setInput  ( const CMatVector & f_input_v )
     m_rightImg = f_input_v[1];
     return true;
 }
-
-// /// Gets the output of this operator
-// bool
-// CStereoOp::getOutput ( TOutputType & f_output ) const
-// {
-//     f_output = m_dispImg;
-//     return true;
-// }
 
     

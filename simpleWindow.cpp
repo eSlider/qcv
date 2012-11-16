@@ -77,6 +77,7 @@ CSimpleWindow::~CSimpleWindow( )
                        saveGeometry());
 
     /// Iterate over windows and close them.
+
     delete m_listView_p;
 }
 
@@ -133,7 +134,6 @@ void CSimpleWindow::createMenues()
     qmHelp_p -> addAction ( qaAbout_p );
     // Connect action to quit slot.
     connect( qaAbout_p, SIGNAL(triggered(bool)), this, SLOT(about()) );
-
 }
 
 void
@@ -165,7 +165,7 @@ void CSimpleWindow::showAllWindows()
 
 void 
 CSimpleWindow::insertWindow( QWidget * f_widget_p, 
-                           bool f_showNow_b )
+                             bool      f_showNow_b )
 {
     m_listView_p -> insertWindow ( f_widget_p, f_showNow_b );
 }

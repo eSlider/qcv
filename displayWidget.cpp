@@ -491,19 +491,17 @@ CDisplayWidget::keyPressed ( CKeyEvent * f_keyEvent_p )
             }        
         }
     }
+
     if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_Escape && m_saveImgsTimerId_i != 0)
     {
-        if ( m_saveImgsTimerId_i ) 
+        killTimer(m_saveImgsTimerId_i);
+        m_saveImgsTimerId_i = 0;
+        
+        for (unsigned int i = 0; i < m_imgBuffer_v.size(); ++i)
         {
-            killTimer(m_saveImgsTimerId_i);
-            m_saveImgsTimerId_i = 0;
-            
-            for (unsigned int i = 0; i < m_imgBuffer_v.size(); ++i)
-            {
-                delete m_imgBuffer_v[i];
-            }
-            m_imgBuffer_v.clear();
+            delete m_imgBuffer_v[i];
         }
+        m_imgBuffer_v.clear();
     }
     
     else if (f_keyEvent_p -> qtKeyEvent_p -> key() == Qt::Key_H)
@@ -533,7 +531,7 @@ void CDisplayWidget::timerEvent ( QTimerEvent * f_event_p )
     {
         m_grabbing_i = 0;
 
-        if ( !m_imgBuffer_v.empty() )
+        if ( m_imgBuffer_v.empty() )
         {
             killTimer ( m_saveImgsTimerId_i );
             m_saveImgsTimerId_i = 0;

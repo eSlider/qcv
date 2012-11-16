@@ -293,8 +293,10 @@ namespace QCV
     /// Support functions for internal use.
     protected:
 
-    /// Private data types
+    /// Protected data types
     protected:
+        /// 3D Viewer.
+        static CGLViewer *                m_3dViewer_p;
 
     /// Private static members
     private:
@@ -303,9 +305,6 @@ namespace QCV
 
         /// Drawing handler
         static CClockHandler              m_clockHandler;
-
-        /// 3D Viewer.
-        static CGLViewer *                m_3dViewer_p;
 
         /// Plots handling.
         /// to be implemented.

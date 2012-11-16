@@ -40,6 +40,7 @@
 
 #include "imgScalerOp.h"
 #include "matVector.h"
+#include "stereoCamera.h"
 
 using namespace QCV;
 
@@ -521,6 +522,29 @@ bool CStereoOp::show()
     list_p -> clear();    
     if (list_p -> isVisible() )
         list_p->addImage ( m_dispImg, 0, 0, m_dispImg.size().width, m_dispImg.size().height, 100);
+
+    CStereoCamera cam;
+    
+    cam.setBaseline(0.3);
+    
+    cam.setFocalLength(800);
+    cam.setU0(400);
+    cam.setV0(300);
+    
+    for (int i = 0; i < m_dispImg.rows; ++i)
+    {
+        short int *p = &m_dispImg.at<short int>(i, 0);
+        for (int j = 0; j < m_dispImg.cols; ++j, ++p)
+        {
+            if (*p > 0)
+            {
+                C3DVector point;
+                cam.image2Local ( j, i, *p/16.f, point);
+                m_3dViewer_p -> addPoint ( point );
+                //printf("Adding point %f %f %f\n", point.x(), point.y(), point.z());
+            }
+        }
+    }   
 
     return COperator::show();
 }

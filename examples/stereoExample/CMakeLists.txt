@@ -25,16 +25,18 @@ find_package ( OpenCV REQUIRED )
 #find_package(GLU REQUIRED)
 
 #Qcv
-set (QCV_LIB qcv )
+set (QCV_LIB            qcv )
 set (QCVParamEditor_LIB qcvpeditor )
-set (QCVSequencer_LIB qcvsequencer )
-set (QCVOperators_LIB qcvoperators )
+set (QCVSequencer_LIB   qcvsequencer )
+set (QCVOperators_LIB   qcvoperators )
+set (QCVMisc_LIB        qcvmisc )
 
 # Include directories
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/paramEditor" )
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/sequencer" )
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/operators" )
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/misc" )
 
 
 #################################################
@@ -55,6 +57,7 @@ add_executable ( stereoExample ${LIBCHECKSTEREOPAIR_SRC} )
 target_link_libraries(stereoExample ${QT_LIBRARIES} 
                              -lglut -lGL -lGLU
                              ${QCVOperators_LIB} 
+                             ${QCVMisc_LIB} 
                              ${QCVParamEditor_LIB} 
                              ${QCVSequencer_LIB} 
                              ${QCV_LIB}

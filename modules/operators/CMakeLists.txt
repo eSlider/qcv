@@ -32,6 +32,7 @@ find_package ( OpenCV REQUIRED )
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/paramEditor")
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/sequencer")
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../../modules/misc" )
 
 #################################################
 

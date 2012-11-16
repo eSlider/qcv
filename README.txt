@@ -1,4 +1,4 @@
-QCV v00.40
+QCV v00.60
 
 To install the source code you will need to install first 
 OpenCV 2.X and Qt 4.X. You will also need OpenGL and glut.
@@ -14,15 +14,20 @@ you with the required dependencies:
 > sudo apt-get install opencv
 > sudo apt-get install libopencv-dev
 
-If you run another Ubuntu version (including 12.x) or 
-another Linux distribution, you will need to download 
-OpenCv and install it in your system.
+If you want 3D display capability, you will need to install
+QGLViewer
 
-Get the code now from SourceForge.net
+> sudo apt-get install libqglviewer-qt4-dev
+
+If you run another Ubuntu version (including 12.x) or
+another Linux distribution, you will need to download 
+OpenCV and install it in your system.
+
+Now, get the code now from SourceForge.net
 
 > hg clone http://hg.code.sf.net/p/qcv/code qcv
 
-or download the tar.gz (tar.bz or zip) file from here:
+or download the tar.gz (tar.bz2 or zip) file from here:
 
 http://sourceforge.net/projects/qcv/?source=directory
 
@@ -70,4 +75,5 @@ You will need to provide valid videos as parameters,
 (or just use the provided image sequence by using
 "sequence.xml" instead).
 
-Plase, send comments or questions to hernan.badino@gmail.com
+Plase, send comments or questions to 
+hernan.badino@gmail.com

@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2012 Hernan Badino <hernan.badino@gmail.com>
+ *
+ * This file is part of QCV
+ *
+ * QCV is under the terms of the GNU Lesser General Public License
+ * version 3. See the GNU LGPL version 3 for details.
+ * QCV is distributed "AS IS" without ANY WARRANTY, without even the
+ * implied warranty of merchantability or fitness for a particular
+ * purpose. 
+ *
+ * In no event shall the authors or contributors be liable
+ * for any direct, indirect, incidental, special, exemplary, or
+ * consequential damages arising in any way out of the use of this
+ * software.
+ *
+ * By downloading, copying, installing or using the software you agree
+ * to this license. Do not download, install, copy or use the
+ * software, if you do not agree to this license.
+ */
+
 #ifndef __GLVIEWER_H
 #define __GLVIEWER_H
 
@@ -7,7 +28,6 @@
  * @file glViewer.h
  *
  * \class CGLViewer
- * \date  Tue Oct 13, 2009
  * \author Hernan Badino (hernan.badino@gmail.com)
  *
  * \brief Interface class for the QGLViewer.
@@ -20,6 +40,7 @@
 
 #include "3DRowVector.h"
 #include "3DPointList.h"
+#include "3DMeshList.h"
 #include "colors.h"
 
 namespace QCV
@@ -40,7 +61,12 @@ namespace QCV
                                           const float       f_size_f = 1.f,
                                           const C3DVector & f_normal = C3DVector (0,0,0) );
         
-
+        /// Add a 3D mesh.
+        void                   addMesh ( cv::Mat     f_vectorImg,
+                                         cv::Mat     f_dispTexture,
+                                         const float f_maxDist_f,
+                                         const float f_maxInvDist_f  );
+        
         bool                   setBackgroundColor ( SRgb f_bgColor ) { m_bgColor = f_bgColor; return true; }
         SRgb                   getBackgroundColor (  ) const { return m_bgColor; }
         
@@ -82,6 +108,9 @@ namespace QCV
     private:
         /// 3D point list
         C3DPointList               m_pointList;
+
+        /// 3D mesh list
+        C3DMeshList                m_meshList;
 
         /// Background color.
         SRgb                       m_bgColor;

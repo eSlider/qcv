@@ -114,6 +114,8 @@ namespace QCV
         ADD_PARAM_ACCESS         (bool,              m_convert2Float_b, ConvertDispImg2Float );
         ADD_PARAM_ACCESS         (bool,              m_compute_b,       Compute );
 
+        ADD_PARAM_ACCESS         (bool,              m_show3D_b,        Show3DMesh );
+
     /// Constructor, Desctructors
     public:    
         
@@ -163,6 +165,7 @@ namespace QCV
 
         void registerParameters();
 
+        void show3D();
     private:
 
         /// Compute?
@@ -206,6 +209,14 @@ namespace QCV
         
         /// Convert disparity image to float?
         bool                        m_convert2Float_b;
+
+        /// For 3D point mesh
+        cv::Mat                     m_3DPointImg;
+
+        /// Show 3D mesh?
+        bool                        m_show3D_b;
+        
+
     };
 }
 #endif // __OPENCVSTEREOOP_H

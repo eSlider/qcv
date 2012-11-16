@@ -1,7 +1,27 @@
+/*
+ * Copyright (C) 2012 Hernan Badino <hernan.badino@gmail.com>
+ *
+ * This file is part of QCV
+ *
+ * QCV is under the terms of the GNU Lesser General Public License
+ * version 3. See the GNU LGPL version 3 for details.
+ * QCV is distributed "AS IS" without ANY WARRANTY, without even the
+ * implied warranty of merchantability or fitness for a particular
+ * purpose. 
+ *
+ * In no event shall the authors or contributors be liable
+ * for any direct, indirect, incidental, special, exemplary, or
+ * consequential damages arising in any way out of the use of this
+ * software.
+ *
+ * By downloading, copying, installing or using the software you agree
+ * to this license. Do not download, install, copy or use the
+ * software, if you do not agree to this license.
+ */
+
 /*@@@**************************************************************************
-* \file  glViewer
+* \file  glViewer.cpp
 * \author Hernan Badino
-* \date  Tue Sep  8 13:34:41 EDT 2009
 * \notes 
 *******************************************************************************
 *****          (C) COPYRIGHT Hernan Badino - All Rights Reserved          *****
@@ -31,6 +51,8 @@ void CGLViewer::draw()
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
+    glScalef( -1, 1, 1);
+
     camera()->setSceneRadius( m_sceneRadius_f );
 
     // Reset modelview matrix
@@ -56,7 +78,7 @@ void CGLViewer::draw()
     m_pointList.show();
     
     /// Meshes
-    //m_meshList.draw();
+    m_meshList.show();
 
     /////////// End drawing figures /////////
 
@@ -144,18 +166,16 @@ void CGLViewer::addPoint ( const C3DVector & f_point,
     m_pointList.add( f_point, f_color, f_size_f, f_normal );    
 }
 
+void CGLViewer::addMesh ( cv::Mat     f_vectorImg,
+                          cv::Mat     f_dispTexture,
+                          const float f_maxDist_f,
+                          const float f_maxInvDist_f  )
+{
+    m_meshList.add( f_vectorImg, f_dispTexture,  f_maxDist_f, f_maxInvDist_f );
+}
+
 void CGLViewer::clear ()
 {
     m_pointList.clear();
-    //m_meshList.clear();
+    m_meshList.clear();
 }
-
-/* ////////////  Version History ///////////////
- *  $Log: glViewer.cpp,v $
- *  Revision 1.3  2010/01/18 17:12:29  badino
- *  General updates and added new classes.
- *
- *  Revision 1.2  2009/11/18 15:50:15  badino
- *  badino: global changes.
- *
- *//////////////////////////////////////////////

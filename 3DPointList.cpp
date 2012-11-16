@@ -81,7 +81,7 @@ C3DPointList::clear ()
 
 // Draw all 3DPoints.
 bool
-C3DPointList::show () const
+C3DPointList::show ()
 {
     std::vector< S3DPoint >::const_iterator last = m_3DPoint_v.end();
 

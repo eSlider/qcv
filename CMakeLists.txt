@@ -151,18 +151,22 @@ set ( LIBQCV_MOC_HEADERS
 if(QGLVIEWER_FOUND)
   list(APPEND LIBQCV_SRC
         glViewer.cpp
-	3DPointList.cpp )
+	3DPointList.cpp
+	3DMeshList.cpp )
 
   list ( APPEND LIBQCV_HEADERS
         glViewer.h
 	3DDrawingElementList.h
-	3DPointList.h )
+	3DPointList.h 
+	3DMeshList.h )
 
   list ( APPEND LIBQCV_MOC_HEADERS 
         glViewer.h )
 
   add_definitions(-DHAVE_QGLVIEWER)
 
+  list(APPEND OPT_INCLUDES  ${QGLVIEWER_INCLUDE_DIR} )
+  list(APPEND OPT_LIBRARIES ${QGLVIEWER_LIBRARIES} )
 endif()
 
 # Wrap ui files.
@@ -180,7 +184,7 @@ QT4_ADD_RESOURCES(QT_RCC_SRCS ${QT_RCCS})
 
 add_definitions(${QT_DEFINITIONS})
 
-include_directories ( ${CMAKE_CURRENT_BINARY_DIR} ${QGLVIEWER_INCLUDE_DIR} )
+include_directories ( ${CMAKE_CURRENT_BINARY_DIR} ${OPT_INCLUDES})
 
 ### Generated library
 add_library ( qcv SHARED ${LIBQCV_SRC} ${QT_RCC_SRCS}
@@ -188,7 +192,7 @@ add_library ( qcv SHARED ${LIBQCV_SRC} ${QT_RCC_SRCS}
 			 )
 target_link_libraries(qcv  ${QT_LIBRARIES} 
                            -lglut -lGL ${OpenCV_LIBS}
-                           ${QGLVIEWER_LIBRARIES} )
+                           ${OPT_LIBRARIES} )
 
 
 ### Set library to be installed under lib directory

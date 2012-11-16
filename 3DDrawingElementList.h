@@ -61,7 +61,7 @@ namespace QCV
         virtual bool clear() = 0;
         
         // Draw all elements.
-        virtual bool show() const = 0;
+        virtual bool show() = 0;
         
         // Number of elements.
         virtual int  getSize() const = 0;

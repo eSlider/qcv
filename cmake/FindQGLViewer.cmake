@@ -14,9 +14,9 @@ find_path(QGLVIEWER_INCLUDE_DIR
          )
 
 if(QGLVIEWER_INCLUDE_DIR)
-  message(status "Found QglViewer include-dir: ${QGLVIEWER_INCLUDE_DIR}")
+  message( "Found QGLViewer include-dir: ${QGLVIEWER_INCLUDE_DIR}")
 else()
-  message(status "Could NOT find QglViewer include-dir.")
+  message( "Could NOT find QGLViewer include-dir.")
 endif()
 
 
@@ -33,9 +33,9 @@ find_library(QGLVIEWER_LIBRARY_RELEASE
   )
 
 if(QGLVIEWER_LIBRARY_RELEASE)
-  message(status "Found QGLViewer library: ${QGLVIEWER_LIBRARY_RELEASE}")
+  message( "Found QGLViewer library: ${QGLVIEWER_LIBRARY_RELEASE}")
 else()
-  message(status "Could NOT find QglViewer library.")
+  message( "Could NOT find QGLViewer library.")
 endif()
 
 find_library(QGLVIEWER_LIBRARY_DEBUG
@@ -50,9 +50,9 @@ find_library(QGLVIEWER_LIBRARY_DEBUG
   )
 
 if(QGLVIEWER_LIBRARY_DEBUG)
-  message(status "Found QGlViewer library (debug): ${QGLVIEWER_LIBRARY_DEBUG}")
+  message( "Found QGLViewer library (debug): ${QGLVIEWER_LIBRARY_DEBUG}")
 else()
-  message(status "Could NOT find QGlViewer library (debug).")
+  message( "Could NOT find QGLViewer library (debug).")
 endif()
 
 if(QGLVIEWER_LIBRARY_RELEASE)
@@ -72,7 +72,7 @@ ENDIF(QGLVIEWER_INCLUDE_DIR AND QGLVIEWER_LIBRARIES)
 
 IF(QGLVIEWER_FOUND)
   IF(NOT QGLViewer_FIND_QUIETLY)
-    message(status "QGLViewer found: ${QGLVIEWER_LIBRARIES}")
+    message( "QGLViewer found: ${QGLVIEWER_LIBRARIES}")
   ENDIF(NOT QGLViewer_FIND_QUIETLY)
 ELSE(QGLVIEWER_FOUND)
   IF(QGLViewer_FIND_REQUIRED)

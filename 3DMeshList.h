@@ -19,25 +19,25 @@
  * software, if you do not agree to this license.
  */
 
-#ifndef __3DPOINTLIST_H
-#define __3DPOINTLIST_H
+#ifndef __3DMESHLIST_H
+#define __3DMESHLIST_H
 
 /**
  *******************************************************************************
  *
- * @file 3DPointList.h
+ * @file 3DMeshList.h
  *
- * \class C3DPointList
+ * \class C3DMeshList
  * \author Hernan Badino (hernan.badino@gmail.com)
  *
- * \brief Handles a list of 3DPoints for displaying in QGLViewer
+ * \brief Handles a list of 3DMeshs for displaying in QGLViewer
  *
- * The class is derived from C3DDrawingElementList implementing a list of 3DPoints.
- * 3DPoints are composed of: 
- *  - 3D point
+ * The class is derived from C3DDrawingElementList implementing a list of 3DMeshs.
+ * 3DMeshs are composed of: 
+ *  - 3D mesh
  *  - 3D normal
  *  - a color, and
- *  - a point size.
+ *  - a mesh size.
  *
  *******************************************************************************/
 
@@ -52,62 +52,68 @@
 
 namespace QCV
 {
-    class C3DPointList: public C3DDrawingElementList
+    class C3DMeshList: public C3DDrawingElementList
     {
     /// Constructor, Destructor
     public:
         /// Constructor
-        C3DPointList( int f_bufferSize_i = -1);
+        C3DMeshList( int f_bufferSize_i = -1);
 
         /// Destructor.
-        virtual ~C3DPointList();
+        virtual ~C3DMeshList();
 
     /// Operations.
     public:
 
-        // Add drawing 3DPoints from other list.
-        virtual bool add (  const C3DPointList & f_otherList );
+        // Add drawing 3DMeshs from other list.
+        virtual bool add (  const C3DMeshList & f_otherList );
 
-        // Draw all 3DPoints.
-        virtual bool add (  C3DVector f_point,
-                            SRgba     f_color,
-                            float     f_pointSize_i,
-                            C3DVector f_normal = C3DVector(0,0,0) );
+        // Draw all 3DMeshs.
+        virtual bool add (  cv::Mat     f_vectorImg,
+                            cv::Mat     f_dispTexture,
+                            const float f_maxDist_f,
+                            const float f_maxInvDist_f );
 
-        // Clear all 3DPoints.
+        // Clear all 3DMeshs.
         virtual bool clear ();
 
-        // Draw all 3DPoints.
+        // Draw all 3DMeshs.
         virtual bool show ();
 
         // Return number of elements.
         virtual int  getSize () const;
 
         // Element names.
-        virtual std::string  getGroupName() const { return "3DPoints"; };
+        virtual std::string  getGroupName() const { return "3DMeshes"; };
 
     protected:
-        typedef struct
+
+        struct SMeshData
         {
-            /// 3d point
-            C3DVector      point;
+            /// Image of 3D points
+            cv::Mat       vectorImg;
 
-            /// 3d point
-            C3DVector      normal;
+            /// Texture image
+            cv::Mat       dispTexture;
 
-            /// Color information
-            SRgba          color;
+            /// Max distance to form triangles.
+            float         maxDist_f;
 
-            /// 3DPoint width
-            float          pointSize_f;
+            /// Max inverse distance to form triangles
+            float         maxInvDist_f;
 
-        } S3DPoint;
+            /// Flag indicating that the mesh already was created.
+            bool          created_b;
+
+            /// Id of mesh
+            unsigned int  displayList_ui;
+        };
 
     /// Private Members
     private:
-        std::vector<S3DPoint>    m_3DPoint_v;
+        std::vector<SMeshData>    m_mesh_v;
     };
 } // Namespace QCV
 
 
-#endif // __3DPOINTLIST_H
+#endif // __3DMESHLIST_H

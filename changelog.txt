@@ -1,0 +1,7 @@
+Version 0.5:
+
+3D display using QGLViewer.
+Multiple bug fixes.
+Compilation warnings removed.
+
+

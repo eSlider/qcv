@@ -352,8 +352,8 @@ CStereoOp::~CStereoOp ()
 bool
 CStereoOp::validateImages() const
 {
-    return ( m_leftImg.size().width  > 0 && 
-             m_leftImg.size().height > 0 && 
+    return ( m_leftImg.size().width  > 32 && 
+             m_leftImg.size().height > 32 && 
              m_leftImg.size() == m_rightImg.size() &&
              m_leftImg.type() == m_rightImg.type() );    
 }

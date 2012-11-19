@@ -4,7 +4,7 @@
  * This file is part of QCV
  *
  * QCV is under the terms of the GNU Lesser General Public License
- * version 3. See the GNU LGPL version 3 for details.
+ * version 2.1. See the GNU LGPL version 2.1 for details.
  * QCV is distributed "AS IS" without ANY WARRANTY, without even the
  * implied warranty of merchantability or fitness for a particular
  * purpose. 
@@ -95,7 +95,7 @@ CHelpWidget::showAbout()
                          "Copyright (C) 2012 Hernan Badino\n"
                          "<hernan.badino@gmail.com>\n\n"
                          "QCV is under the terms of the GNU Lesser General Public License "
-                         "version 3. See the GNU LGPL version 3 for details. "
+                         "version 2.1. See the GNU LGPL version 2.1 for details. "
                          "QCV is distributed \"AS IS\" without ANY WARRANTY, without even the "
                          "implied warranty of merchantability or fitness for a particular "
                          "purpose.\n\n"

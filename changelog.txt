@@ -1,4 +1,10 @@
 ___________________________
+Version 0.7
+
+Bug fix in Clock dialog window.
+Bug fix in CStereoOp operator.
+
+___________________________
 Version 0.6:
 
 License is now LGPL 2.1.

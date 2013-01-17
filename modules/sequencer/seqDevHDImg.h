@@ -164,7 +164,7 @@ namespace QCV
         
         bool   loadCurrentFrame();
 
-        bool   loadImageFile( std::string f_filePath_str, cv::Mat * f_image_p );
+        bool   loadImageFile( std::string f_filePath_str, cv::Mat &fr_image_p );
 
         double getTimeStampFromFilename( std::string f_fileName_p );
         

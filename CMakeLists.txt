@@ -12,6 +12,8 @@ set (CMAKE_VERBOSE_MAKEFILE true)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${QCV_BINARY_DIR}/bin)
 
+#set(CMAKE_BUILD_TYPE Debug)
+
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -DNDEBUG -Wall -Wextra -fno-strict-aliasing")
 
 #################################################

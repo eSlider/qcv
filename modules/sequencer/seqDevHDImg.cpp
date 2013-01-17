@@ -28,6 +28,7 @@
 ******************************************************************************/
 
 /* INCLUDES */
+#include <QApplication>
 #include <QDir>
 #include <QTimer>
 #include <highgui.h>
@@ -50,7 +51,7 @@ CSeqDevHDImg::CSeqDevHDImg(const std::string &f_confFilePath_str)
           m_fskip_i (                              0 ),
           m_loopMode_b (                       false ),
           m_exitOnLastFrame_b (                false )
-{    
+{
     m_qtPlay_p = new QTimer ( this );
     connect(m_qtPlay_p, SIGNAL(timeout()), this, SLOT(timeOut()));
 
@@ -111,7 +112,7 @@ bool CSeqDevHDImg::nextFrame()
             pause();
 
         if ( m_exitOnLastFrame_b )
-            exit(1);
+            QApplication::exit(1);
     }
     
     return loadCurrentFrame();
@@ -141,7 +142,7 @@ bool CSeqDevHDImg::loadCurrentFrame()
 
             m_filePaths_p[i] = (std::string) fullPathFile_str;
 
-            if (!loadImageFile ( fullPathFile_str, &m_imageData_v[i].image ))
+            if (!loadImageFile ( fullPathFile_str, m_imageData_v[i].image ))
             {
                 res_b = false;
                 printf("File \"%s\" could not be read", fullPathFile_str.c_str() );
@@ -182,14 +183,14 @@ double CSeqDevHDImg::getTimeStampFromFilename( std::string f_fileName_p )
     return -1.0;
 }
 
-
-bool CSeqDevHDImg::loadImageFile( std::string f_filePath_str, 
-                                  cv::Mat *   f_image_p )
+inline bool 
+CSeqDevHDImg::loadImageFile( std::string f_filePath_str, 
+                             cv::Mat &   fr_image )
 {
-    *f_image_p = cv::imread ( f_filePath_str );
+    fr_image = cv::imread ( f_filePath_str );
 
-    return ( f_image_p -> size().width  > 0 && 
-             f_image_p -> size().height > 0 );
+    return ( fr_image.size().width  > 0 && 
+             fr_image.size().height > 0 );
 }
 
 /// Load previous frame
@@ -449,6 +450,7 @@ CSeqDevHDImg::registerOutputs (
     }
     
     fr_map[ "Frame Number" ] = new CIO<int>(&m_currentFrame_i);
+    fr_map[ "Frame Count" ]  = new CIO<int>(&m_framesCount_i);
 
     return true;
 }

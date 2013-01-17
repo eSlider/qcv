@@ -31,7 +31,7 @@
  *******************************************************************************/
 
 /* INCLUDES */
-#include <QObject>
+#include <QtCore/QObject>
 #include <map>
 #include <vector>
 

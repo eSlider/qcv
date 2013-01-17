@@ -41,7 +41,7 @@
 
 /* INCLUDES */
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include "simpleWindow.h"
 

@@ -18,11 +18,44 @@ set(QT_USE_QTOPENGL true)
 set(QT_USE_QTXML true)
 find_package(Qt4 REQUIRED)
 
-#OpenCV
-find_package ( OpenCV REQUIRED )
 
-#OpenGL
-#find_package(GLU REQUIRED)
+##################################
+# OpenGL
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+
+# Fix OpenGL variables
+if(EXISTS OPENGL_FOUND)
+    set(OpenGL_FOUND ${OPENGL_FOUND})
+endif(EXISTS OPENGL_FOUND)
+if(EXISTS OPENGL_LIBRARIES)
+    set(OpenGL_LIBRARIES ${OPENGL_LIBRARIES})
+endif(EXISTS OPENGL_LIBRARIES)
+
+set(QT_USE_QTOPENGL true)
+set(QT_USE_QTXML true)
+
+##################################
+# OpenCV
+if("${CMAKE_SYSTEM}" MATCHES "Darwin")
+      # add paths for OS X + Macports + OpenCV
+      list(APPEND CMAKE_MODULE_PATH "/opt/local/lib/cmake/" "/opt/local/lib/"  "/opt/local/lib/cmake" "/opt/local/share/OpenCV")
+      set(OpenCV_DIR "/opt/local/lib/cmake/")
+      message(STATUS "OpenCV_DIR:${OpenCV_DIR} manually set for Darwin OpenCV dependency")
+endif()
+
+find_package ( OpenCV REQUIRED )
+if(NOT EXISTS OPENCV_FOUND)
+  set(OPENCV_FOUND ${OpenCV_FOUND})
+endif(NOT EXISTS OPENCV_FOUND)
+if(NOT EXISTS OpenCV_FOUND)
+  set(OpenCV_FOUND ${OPENCV_FOUND})
+endif(NOT EXISTS OpenCV_FOUND)
+
+if(OPENCV_FOUND)
+  set(OpenCV_LIBRARIES ${OpenCV_LIBS})
+  include_directories(${OpenCV_INCLUDE_DIRS})
+endif(OPENCV_FOUND)
 
 #Qcv
 set (QCV_LIB            qcv )
@@ -55,7 +88,7 @@ add_definitions(${QT_DEFINITIONS})
 add_executable ( stereoExample ${LIBCHECKSTEREOPAIR_SRC} )
 
 target_link_libraries(stereoExample ${QT_LIBRARIES} 
-                             -lglut -lGL -lGLU
+                             ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY}
                              ${QCVOperators_LIB} 
                              ${QCVMisc_LIB} 
                              ${QCVParamEditor_LIB} 

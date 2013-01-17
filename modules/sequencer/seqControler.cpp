@@ -28,7 +28,7 @@
  ******************************************************************************/
 
 /* INCLUDES */
-#include <QObject>
+#include <QtCore/QObject>
 
 #include "seqControler.h"
 #include "seqControlDlg.h"

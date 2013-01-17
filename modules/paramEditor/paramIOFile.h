@@ -39,7 +39,7 @@
 /* INCLUDES */
 #include"paramIOHandling.h"
 
-#include <QXmlStreamReader>
+#include <QtCore/QXmlStreamReader>
 #include <map>
 
 /* CONSTANTS */

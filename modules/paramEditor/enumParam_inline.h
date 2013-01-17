@@ -29,7 +29,7 @@
  ******************************************************************************/
 
 /* INCLUDES */
-#include <QWidget>
+#include <QtGui/QWidget>
 #include "enumParam.h"
 #include "stringOp.h"
 #include "enumParamEditor.h"

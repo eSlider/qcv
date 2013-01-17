@@ -52,7 +52,7 @@
 
 #include <vector>
 #include <map>
-#include <QObject>
+#include <QtCore/QObject>
 
 /* PROTOTYPES */
 class QTimer;

@@ -39,7 +39,7 @@
  *******************************************************************************/
 
 /* INCLUDES */
-#include <QWidget>
+#include <QtGui/QWidget>
 
 /* PROTOTYPES */
 class QLineEdit;

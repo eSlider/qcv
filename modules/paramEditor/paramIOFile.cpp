@@ -31,8 +31,8 @@
 /* INCLUDES */
 #include "paramIOFile.h"
 
-#include <QXmlStreamReader>
-#include <QFile>
+#include <QtCore/QXmlStreamReader>
+#include <QtCore/QFile>
 
 using namespace QCV;
 

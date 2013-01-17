@@ -22,8 +22,8 @@
 #ifndef __DISPLAYWIDGET_H
 #define __DISPLAYWIDGET_H
 
-//#include <QWidget>
-#include <QMainWindow>
+//#include <QtGui/QWidget>
+#include <QtGui/QMainWindow>
 #include <QApplication>
 
 #include "display.h"

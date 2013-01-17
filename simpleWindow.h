@@ -36,7 +36,7 @@
  *******************************************************************************/
 
 /* INCLUDES */
-#include <QMainWindow>
+#include <QtGui/QMainWindow>
 #include "events.h"
 
 /* CONSTANTS */

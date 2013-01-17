@@ -29,7 +29,7 @@
  ******************************************************************************/
 
 /* INCLUDES */
-#include <QWidget>
+#include <QtGui/QWidget>
 #include "floatParam.h"
 #include "stringOp.h"
 #include "floatParamEditor.h"

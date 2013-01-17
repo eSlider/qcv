@@ -32,7 +32,12 @@
 #include <QtGui>
 #include <QtOpenGL>
 #include <QGLContext>
+
+#ifdef __APPLE__
+  #include <GLUT/glut.h>
+#else // __APPLE__
 #include <GL/glut.h>
+#endif // __APPLE__
 
 #include "display.h"
 #include "displayTreeNode.h"

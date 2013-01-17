@@ -28,7 +28,7 @@
 ******************************************************************************/
 
 /* INCLUDES */
-#include <QWidget>
+#include <QtGui/QWidget>
 
 #include "windowListItemModel.h"
 #include <stdio.h>

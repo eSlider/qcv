@@ -32,7 +32,7 @@
 ******************************************************************************/
 
 /* INCLUDES */
-#include <QWidget>
+#include <QtGui/QWidget>
 
 /* CONSTANTS */
 namespace QCV

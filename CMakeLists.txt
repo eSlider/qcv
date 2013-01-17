@@ -12,6 +12,8 @@ set (CMAKE_VERBOSE_MAKEFILE true)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${QCV_BINARY_DIR}/bin)
 
+#set(CMAKE_BUILD_TYPE Debug)
+
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -DNDEBUG -Wall -Wextra -fno-strict-aliasing")
 
 #################################################
@@ -21,13 +23,46 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${QCV_BINARY_DIR}/bin)
 #Qt
 find_package(Qt4 REQUIRED)
 
-#OpenGL
-#find_package(GLU REQUIRED)
+##################################
+# OpenGL
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+
+# Fix OpenGL variables
+if(EXISTS OPENGL_FOUND)
+    set(OpenGL_FOUND ${OPENGL_FOUND})
+endif(EXISTS OPENGL_FOUND)
+if(EXISTS OPENGL_LIBRARIES)
+    set(OpenGL_LIBRARIES ${OPENGL_LIBRARIES})
+endif(EXISTS OPENGL_LIBRARIES)
+
 set(QT_USE_QTOPENGL true)
 set(QT_USE_QTXML true)
 
-#OpenCV
+##################################
+# OpenCV
+if("${CMAKE_SYSTEM}" MATCHES "Darwin")
+      # add paths for OS X + Macports + OpenCV
+      list(APPEND CMAKE_MODULE_PATH "/opt/local/lib/cmake/" "/opt/local/lib/"  "/opt/local/lib/cmake" "/opt/local/share/OpenCV")
+      set(OpenCV_DIR "/opt/local/lib/cmake/")
+      message(STATUS "OpenCV_DIR:${OpenCV_DIR} manually set for Darwin OpenCV dependency")
+endif()
+
 find_package ( OpenCV REQUIRED )
+if(NOT EXISTS OPENCV_FOUND)
+  set(OPENCV_FOUND ${OpenCV_FOUND})
+endif(NOT EXISTS OPENCV_FOUND)
+if(NOT EXISTS OpenCV_FOUND)
+  set(OpenCV_FOUND ${OPENCV_FOUND})
+endif(NOT EXISTS OpenCV_FOUND)
+
+if(OPENCV_FOUND)
+  set(OpenCV_LIBRARIES ${OpenCV_LIBS})
+  include_directories(${OpenCV_INCLUDE_DIRS})
+endif(OPENCV_FOUND)
+
+##################################
+# QGLViewer
 
 find_package( QGLViewer  )
 
@@ -191,7 +226,9 @@ add_library ( qcv SHARED ${LIBQCV_SRC} ${QT_RCC_SRCS}
                          ${LIBQCV_HEADERS_MOC}
 			 )
 target_link_libraries(qcv  ${QT_LIBRARIES} 
-                           -lglut -lGL ${OpenCV_LIBS}
+                           ${OPENGL_LIBRARIES}
+                           ${GLUT_glut_LIBRARY}
+                           ${OpenCV_LIBS}
                            ${OPT_LIBRARIES} )
 
 

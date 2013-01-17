@@ -409,7 +409,7 @@ CStereoOp::cycle()
             {
                 size.width  /= m_scale_i;
                 size.height /= m_scale_i;
-            
+ 
                 cv::resize(vec[0], tmpLeft, size);
                 cv::resize(vec[1], tmpRight, size);
                 auxImg = cv::Mat(size, CV_16S );
@@ -537,7 +537,7 @@ bool CStereoOp::show()
         list_p->addImage ( m_dispImg, 0, 0, m_dispImg.size().width, m_dispImg.size().height, 100);
 
 #ifdef HAVE_QGLVIEWER
-    if ( m_3dViewer_p && m_show3D_b )
+    if ( m_3dViewer_p && m_show3D_b && m_compute_b)
         show3D();    
 #endif // HAVE_QGLVIEWER
     

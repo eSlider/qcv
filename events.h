@@ -37,10 +37,10 @@
  *******************************************************************************/
 
 /* INCLUDES */
-#include <QMouseEvent>
-#include <QRegion>
-#include <QKeyEvent>
-#include <QWheelEvent>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QRegion>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QWheelEvent>
 
 #include "standardTypes.h"
 

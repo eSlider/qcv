@@ -559,6 +559,8 @@ bool CHoughTransformOp::show()
         if (list_p -> isVisible() )
         {
             list_p -> addImage ( m_srcImg, 0, 0, w_f, h_f);
+            list_p -> setLineColor ( 0, 255, 0 );
+            list_p -> addText ( "Left click and move mouse", 5, 5, 24, false );
         }
     
         list_p = getDrawingList("Accumulator");
@@ -578,6 +580,9 @@ bool CHoughTransformOp::show()
                                              m_colorEncHoughImg,
                                              0, 0, 
                                              w_f, h_f, 1., true );
+
+                list_p -> setLineColor ( 0, 255, 0 );
+                list_p -> addText ( "Left click and move mouse", 5, 5, 24, false );
             }
         }
     

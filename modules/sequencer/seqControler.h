@@ -38,7 +38,7 @@
  *******************************************************************************/
 
 /* INCLUDES */
-#include <QWidget>
+#include <QtGui/QWidget>
 
 /* CONSTANTS */
 

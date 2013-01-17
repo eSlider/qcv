@@ -42,7 +42,7 @@
  ******************************************************************************/
 
 /* INCLUDES */
-#include <QWidget>
+#include <QtGui/QWidget>
 #include <QModelIndex>
 /* CONSTANTS */
 

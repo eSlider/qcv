@@ -29,7 +29,7 @@
 ******************************************************************************/
 
 /* INCLUDES */
-#include <QWidget>
+#include <QtGui/QWidget>
 #include "parameter.h"
 #include "paramBaseConnector.h"
 

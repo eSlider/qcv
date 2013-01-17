@@ -36,6 +36,8 @@
 
 #include <stdio.h>
 
+#include "glheader.h"
+
 extern QGLContext * g_QGLContext_p;
 
 using namespace QCV;

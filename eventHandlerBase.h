@@ -22,7 +22,7 @@
 #ifndef __EVENTHANDLERBASE_H
 #define __EVENTHANDLERBASE_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 /*@@@**************************************************************************
  ** \file  eventhandler

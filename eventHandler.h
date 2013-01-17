@@ -22,7 +22,7 @@
 #ifndef __EVENTHANDLER_H
 #define __EVENTHANDLER_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 /*@@@**************************************************************************
  ** \file  eventhandler

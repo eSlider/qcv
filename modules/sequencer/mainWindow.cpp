@@ -147,7 +147,7 @@ void CMainWindow::createBaseWidgets()
                                                    NULL );
 
     /// Create clock tree dialog.
-    m_clockTreeDlg_p   = new CClockTreeDlg ( this,
+    m_clockTreeDlg_p   = new CClockTreeDlg ( NULL,
                                              m_rootOp_p -> getClockHandler() -> getRootNode() );
 
     /// Create the 3D viewer

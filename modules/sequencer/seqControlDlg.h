@@ -88,6 +88,9 @@ namespace QCV
         /// Set current frame in sequence.
         void setCurrentFrame( int f_currentFrame_i );
 
+        /// Exit on last frame?
+        bool exitOnLastFrame () const { return m_cbExit_p->checkState() == Qt::Checked; }
+        
     /// Set modes.
     public:
         EFramePositionMode_t getPositionMode( ) { return m_positionMode_e; }        
@@ -172,7 +175,13 @@ namespace QCV
         void loopModeChanged ( bool f_val_f);
         void skipFramesChanged ( int f_skip_i );
         //void randomJump();
-        void exitOnLastFrameChanged ( bool f_val_f );
+        void exitOnLastFrameChanged ( bool f_val_f );        
+
+    /// Protected member
+    protected:
+        
+        /// Inherited from QWidget
+        void closeEvent ( QCloseEvent * f_event_p );
         
     /// Private methods.
     private:

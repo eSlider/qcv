@@ -62,6 +62,9 @@ CSeqControler::CSeqControler( CSeqDeviceControl * const f_device_p )
     connect(m_controlDlg_p, SIGNAL(skipFramesChanged(int )), this, SLOT(skipFramesChanged(int )));
     connect(m_controlDlg_p, SIGNAL(exitOnLastFrameChanged( bool )), this, SLOT(exitOnLastFrameChanged( bool )));
 
+    /// Update exitOnLastFrame state.
+    exitOnLastFrameChanged ( m_controlDlg_p -> exitOnLastFrame() );
+
     if ( m_deviceCtrl_p )
     {
         if ( m_deviceCtrl_p -> getState() == CSeqDeviceControl::S_PLAYING )

@@ -57,7 +57,16 @@ namespace QCV
         {
         }
 
-        ADD_PARAM_ACCESS (int,  numberOfDisparities, NumberOfDisparities );
+        bool setNumberOfDisparities ( int f_num_i )
+        {
+            if ( f_num_i / 16.f != static_cast<float>(f_num_i / 16) )
+                return false;
+            numberOfDisparities = f_num_i;
+            
+            return true;
+        }
+        int getNumberOfDisparities ( ) const { return numberOfDisparities; }
+
         ADD_PARAM_ACCESS (int,  minDisparity,        MinDisparity );
         ADD_PARAM_ACCESS (int,  SADWindowSize,       SADWindowSize );
         ADD_PARAM_ACCESS (int,  preFilterCap,        PreFilterCap );
@@ -70,26 +79,58 @@ namespace QCV
         ADD_PARAM_ACCESS (bool, fullDP,              FullDP );
     };
 
-    class CMyStereoBM: public cv::StereoBM
+    class CMyStereoBMState: public CvStereoBMState
     {
     public:
-        CMyStereoBM() : cv::StereoBM()
+        CMyStereoBMState() : 
+            CvStereoBMState()
         {
+            //*this = *cvCreateStereoBMState(0, 16);
         }
         
-        ADD_PARAM_ACCESS (int,  state->numberOfDisparities,  NumberOfDisparities );
-        ADD_PARAM_ACCESS (int,  state->preFilterType,        PreFilterType );
-        ADD_PARAM_ACCESS (int,  state->preFilterSize,        PreFilterSize );
-        ADD_PARAM_ACCESS (int,  state->preFilterCap,         PreFilterCap );
-        ADD_PARAM_ACCESS (int,  state->uniquenessRatio,      UniquenessRatio );
-        ADD_PARAM_ACCESS (int,  state->SADWindowSize,        SADWindowSize );
-        ADD_PARAM_ACCESS (int,  state->textureThreshold,     TextureThreshold );
+        bool setNumberOfDisparities ( int f_num_i )
+        {
+            if ( f_num_i / 16.f != static_cast<float>(f_num_i / 16) )
+                return false;
 
-        ADD_PARAM_ACCESS (int,  state->speckleWindowSize,    SpeckleWindowSize );
-        ADD_PARAM_ACCESS (int,  state->speckleRange,         SpeckleRange );
-        ADD_PARAM_ACCESS (int,  state->trySmallerWindows,    TrySmallerWindows );
+            numberOfDisparities = f_num_i;
+            
+            return true;
+        }
 
-        ADD_PARAM_ACCESS (int,  state->disp12MaxDiff,        Disp12MaxDiff );
+        int getNumberOfDisparities ( ) const { return numberOfDisparities; }
+
+        //ADD_PARAM_ACCESS (int,  state->numberOfDisparities,  NumberOfDisparities );
+        ADD_PARAM_ACCESS (int,  preFilterType,        PreFilterType );
+        ADD_PARAM_ACCESS (int,  preFilterSize,        PreFilterSize );
+        ADD_PARAM_ACCESS (int,  preFilterCap,         PreFilterCap );
+        ADD_PARAM_ACCESS (int,  uniquenessRatio,      UniquenessRatio );
+        ADD_PARAM_ACCESS (int,  SADWindowSize,        SADWindowSize );
+        ADD_PARAM_ACCESS (int,  textureThreshold,     TextureThreshold );
+
+        ADD_PARAM_ACCESS (int,  speckleWindowSize,    SpeckleWindowSize );
+        ADD_PARAM_ACCESS (int,  speckleRange,         SpeckleRange );
+        ADD_PARAM_ACCESS (int,  trySmallerWindows,    TrySmallerWindows );
+
+        ADD_PARAM_ACCESS (int,  disp12MaxDiff,        Disp12MaxDiff );
+
+        void setParams( cv::StereoBM &fr_sbm)
+        {
+            fr_sbm.init(CV_STEREO_BM_BASIC, numberOfDisparities, SADWindowSize);
+
+            fr_sbm.state->preFilterType     = preFilterType;
+            fr_sbm.state->preFilterSize     = preFilterSize;
+            fr_sbm.state->preFilterCap      = preFilterCap;
+            fr_sbm.state->minDisparity      = minDisparity;
+            fr_sbm.state->numberOfDisparities  = numberOfDisparities;
+            fr_sbm.state->textureThreshold  = textureThreshold;
+            fr_sbm.state->uniquenessRatio   = uniquenessRatio;
+            fr_sbm.state->speckleWindowSize = speckleWindowSize;
+            fr_sbm.state->speckleRange      = speckleRange;
+            fr_sbm.state->trySmallerWindows = trySmallerWindows;
+            fr_sbm.state->disp12MaxDiff     = disp12MaxDiff;
+        }
+        
     };
 
     typedef cv::Mat TOutputType;
@@ -186,8 +227,11 @@ namespace QCV
         ///  SGBM struct
         CMyStereoSGBM               m_sgbm;
         
+        /// BM wrapper
+        cv::StereoBM                m_sbm;
+
         /// BM struct
-        CMyStereoBM                 m_sbm;
+        CMyStereoBMState            m_sbmState;
 
         /// Left image
         cv::Mat                     m_leftImg;
@@ -200,6 +244,9 @@ namespace QCV
 
         /// Float output disparity image
         cv::Mat                     m_dispImgFloat;
+
+        /// Auxiliar image.
+        cv::Mat                     m_auxImg;
 
         /// Disparity color encoding
         CColorEncoding              m_dispCE;

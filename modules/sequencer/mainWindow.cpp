@@ -50,6 +50,8 @@
 #include "glViewer.h"
 #endif
 
+std::string g_QCVAppId_str = "";
+
 CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
                            COperator *         f_rootOp_p,
                            int                 f_sx_i, 
@@ -62,6 +64,8 @@ CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
       m_paramEditorDlg_p (     NULL ),
       m_clockTreeDlg_p (       NULL )
 {
+    g_QCVAppId_str = std::string("QCVApplication/") + m_rootOp_p->getName().c_str();
+    
     //QStringList list = QCoreApplication::arguments ();
     
     assert( m_device_p );
@@ -74,12 +78,10 @@ CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
 
     /// Load number of screens for this app
     QSettings qSettings;
-    int sx_i = qSettings.value ( ( QString("QCVApplication/") + 
-                                   QString(m_rootOp_p->getName().c_str()) + 
-                                   QString("/ScreenXCount") ), "-1").toInt();
-    int sy_i = qSettings.value ( ( QString("QCVApplication/") + 
-                                   QString(m_rootOp_p->getName().c_str()) + 
-                                   QString("/ScreenYCount") ), "-1").toInt();
+    int sx_i = qSettings.value ( QString(g_QCVAppId_str.c_str()) + 
+                                 QString("/ScreenXCount"), "-1").toInt();
+    int sy_i = qSettings.value ( QString(g_QCVAppId_str.c_str()) + 
+                                 QString("/ScreenYCount"), "-1").toInt();
     
     if (sx_i == -1) sx_i = f_sx_i;
     if (sy_i == -1) sy_i = f_sy_i;
@@ -94,11 +96,9 @@ CMainWindow::~CMainWindow( )
 {    
     /// Save number of screens for this app
     QSettings qSettings;
-    qSettings.setValue ( ( QString("QCVApplication/") + 
-                           QString(m_rootOp_p->getName().c_str()) + 
+    qSettings.setValue ( ( QString(g_QCVAppId_str.c_str()) + 
                            QString("/ScreenXCount") ), m_display_p->getScreenCount().x);
-    qSettings.setValue ( ( QString("QCVApplication/") + 
-                           QString(m_rootOp_p->getName().c_str()) + 
+    qSettings.setValue ( ( QString(g_QCVAppId_str.c_str()) + 
                            QString("/ScreenYCount") ), m_display_p->getScreenCount().y);
    
 

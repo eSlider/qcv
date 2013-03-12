@@ -30,9 +30,13 @@
 /* INCLUDES */
 #include "seqControlDlg.h"
 #include <QMessageBox>
+#include <QSettings>
+#include <QCloseEvent>
 #include <stdio.h>
 
 using namespace QCV;
+
+extern std::string g_QCVAppId_str;
 
 CSeqControlDlg::CSeqControlDlg(QWidget *f_parent_p /* = 0 */ )
         : QWidget (                       f_parent_p ),
@@ -65,12 +69,27 @@ CSeqControlDlg::CSeqControlDlg(QWidget *f_parent_p /* = 0 */ )
     /// Allowing signals to be emited in on_m_qsPosition_p_valueChanged ().
     m_sliderPressed_b = false;
 
+    QSettings qSettings;
+    bool exitOnLastFrame_b = qSettings.value ( QString(g_QCVAppId_str.c_str()) + 
+                                               QString("/ExitOnLastFrame"), "0").toBool();
+    
+    m_cbExit_p -> setCheckState (  exitOnLastFrame_b?Qt::Checked:Qt::Unchecked);
+
+    //emit exitOnLastFrameChanged ( f_state_i == Qt::Checked );
+
     updateMode ();
 }
 
-CSeqControlDlg::~CSeqControlDlg( )
+void
+CSeqControlDlg::closeEvent ( QCloseEvent * f_event_p )
 {
+}
 
+CSeqControlDlg::~CSeqControlDlg( )
+{    
+    QSettings qSettings;
+    qSettings.setValue ( QString(g_QCVAppId_str.c_str()) + 
+                         QString("/ExitOnLastFrame"), (m_cbExit_p->checkState()==Qt::Checked)?1:0);
 }
 
 void CSeqControlDlg::setCurrentFrame( const int f_currentFrame_i )

@@ -343,8 +343,9 @@ void
 CCamera::scale ( double f_scale_d )
 {
     //m_focalLength_d *= f_scale_d;
-    m_fu_d          *= f_scale_d;
-    m_fv_d          *= f_scale_d;
+    setFocalLength(m_focalLength_d * f_scale_d );
+    //m_fu_d          *= f_scale_d;
+    //m_fv_d          *= f_scale_d;
     m_u0_d          *= f_scale_d;
     m_v0_d          *= f_scale_d;
 }

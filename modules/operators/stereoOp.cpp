@@ -529,12 +529,12 @@ bool CStereoOp::show()
     CDrawingList *list_p  = getDrawingList ( "Left Image");    
     list_p -> clear();    
     if (list_p -> isVisible() )
-        list_p->addImage ( m_leftImg, 0, 0, getScreenSize().width, getScreenSize().height );
+        list_p->addImage ( m_leftImg ); //, 0, 0, getScreenSize().width, getScreenSize().height );
 
     list_p = getDrawingList ( "Right Image");
     list_p -> clear();    
     if (list_p -> isVisible() )
-        list_p->addImage ( m_rightImg, 0, 0, getScreenSize().width, getScreenSize().height );
+        list_p->addImage ( m_rightImg );
 
     list_p = getDrawingList ( "Colored Disparity Image");
     list_p -> clear();    

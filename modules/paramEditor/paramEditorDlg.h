@@ -52,6 +52,9 @@ class QSplitter;
 class QTreeView;
 class QFrame;
 class QSplitter;
+class CParamIOPFile;
+
+#include "paramIOHandling.h"
 
 namespace QCV
 {
@@ -67,8 +70,9 @@ namespace QCV
         Q_OBJECT
         
         public:
-        CParameterEditorDlg (  CParameterSet *  f_rootNode_p,
-                               QWidget *        f_parent_p );
+        CParameterEditorDlg (  CParameterSet *    f_rootNode_p,
+                               QWidget *          f_parent_p,
+                               CParamIOHandling * f_parser_p = NULL );
         ~CParameterEditorDlg ();
         
     /// Protected slots
@@ -77,6 +81,7 @@ namespace QCV
         void reloadParameterPage ( const QModelIndex & f_index  );
         void save ( );
         void load ( );
+        void toggleVisibility ( );
 
     /// Protected help methods.
     protected:
@@ -100,6 +105,8 @@ namespace QCV
         /// Display tree view for categories.
         QFrame *                          m_qfParamPage_p;
 
+        /// Parser
+        CParamIOHandling *                m_parser_p;
     };
 }
 

@@ -166,7 +166,7 @@ namespace QCV
                                      C3DVector  &f_point ) const;
 
         /// Image position to local position.
-        virtual bool   image2Local ( C3DVector  &f_imgPoint,
+        virtual bool   image2Local ( C3DVector   f_imgPoint,
                                      C3DVector  &f_point ) const;
 
     /// Copy operator.

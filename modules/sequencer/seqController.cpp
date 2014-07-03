@@ -20,7 +20,7 @@
  */
 
 /*@@@**************************************************************************
- * \file   seqControler.cpp
+ * \file   seqController.cpp
  * \author Hernan Badino
  * \notes 
  *******************************************************************************
@@ -30,14 +30,14 @@
 /* INCLUDES */
 #include <QtCore/QObject>
 
-#include "seqControler.h"
+#include "seqController.h"
 #include "seqControlDlg.h"
 #include "seqDeviceControl.h"
 
 using namespace QCV;
 
 /// Constructor
-CSeqControler::CSeqControler( CSeqDeviceControl * const f_device_p )
+CSeqController::CSeqController( CSeqDeviceControl * const f_device_p )
         : m_controlDlg_p (                   NULL ),
           m_deviceCtrl_p (             f_device_p )
 {
@@ -82,14 +82,14 @@ CSeqControler::CSeqControler( CSeqDeviceControl * const f_device_p )
 }
 
 /// Destructor
-CSeqControler::~CSeqControler()
+CSeqController::~CSeqController()
 {
     if (!m_controlDlg_p -> parent())
         delete m_controlDlg_p;
 }
 
 void
-CSeqControler::start()
+CSeqController::start()
 {
     bool result_b;
     
@@ -104,7 +104,7 @@ CSeqControler::start()
 }
 
 void
-CSeqControler::stopClicked()
+CSeqController::stopClicked()
 {
     //bool result_b;
     
@@ -124,7 +124,7 @@ CSeqControler::stopClicked()
 }
 
 void
-CSeqControler::playClicked()
+CSeqController::playClicked()
 {
     bool result_b;
     
@@ -135,7 +135,7 @@ CSeqControler::playClicked()
 }
 
 void
-CSeqControler::playBackwardClicked()
+CSeqController::playBackwardClicked()
 {
     bool result_b;
     
@@ -146,7 +146,7 @@ CSeqControler::playBackwardClicked()
 }
 
 void
-CSeqControler::playCycle()
+CSeqController::playCycle()
 {
     refreshControlDlg();
 
@@ -154,7 +154,7 @@ CSeqControler::playCycle()
 }
 
 void
-CSeqControler::pauseClicked()
+CSeqController::pauseClicked()
 {
     bool result_b;
     
@@ -165,7 +165,7 @@ CSeqControler::pauseClicked()
 }
 
 void
-CSeqControler::previousClicked()
+CSeqController::previousClicked()
 {
     bool result_b;
     
@@ -180,7 +180,7 @@ CSeqControler::previousClicked()
 }
 
 void
-CSeqControler::nextClicked()
+CSeqController::nextClicked()
 {
     bool result_b;
     
@@ -195,7 +195,7 @@ CSeqControler::nextClicked()
 }
 
 void
-CSeqControler::reloadClicked()
+CSeqController::reloadClicked()
 {
     bool result_b;
     
@@ -211,7 +211,7 @@ CSeqControler::reloadClicked()
 
 
 void
-CSeqControler::beginClicked()
+CSeqController::beginClicked()
 {
     bool result_b;
     
@@ -226,7 +226,7 @@ CSeqControler::beginClicked()
 }
 
 void
-CSeqControler::endClicked()
+CSeqController::endClicked()
 {
     bool result_b;
     
@@ -241,7 +241,7 @@ CSeqControler::endClicked()
 }
 
 void
-CSeqControler::goTo ( const int f_framNumber_i )
+CSeqController::goTo ( const int f_framNumber_i )
 {
     bool result_b;
     
@@ -256,7 +256,7 @@ CSeqControler::goTo ( const int f_framNumber_i )
 }
 
 void
-CSeqControler::deviceReset()
+CSeqController::deviceReset()
 {
     m_controlDlg_p -> setActionMode ( CSeqControlDlg::AM_PAUSE );
     refreshControlDlg();
@@ -265,7 +265,7 @@ CSeqControler::deviceReset()
 }
 
 void
-CSeqControler::refreshControlDlg()
+CSeqController::refreshControlDlg()
 {
     const int frames_i    = m_deviceCtrl_p -> getNumberOfFrames();
     const int currFrame_i = m_deviceCtrl_p -> getCurrentFrame();
@@ -282,22 +282,22 @@ CSeqControler::refreshControlDlg()
 }
 
 QWidget * 
-CSeqControler::getDialog() const
+CSeqController::getDialog() const
 { 
     return m_controlDlg_p;
 }
 
-void CSeqControler::loopModeChanged( bool f_val_b )
+void CSeqController::loopModeChanged( bool f_val_b )
 {
     m_deviceCtrl_p -> setLoopMode ( f_val_b );
 }
 
-void CSeqControler::exitOnLastFrameChanged( bool f_val_b )
+void CSeqController::exitOnLastFrameChanged( bool f_val_b )
 {
     m_deviceCtrl_p -> setExitOnLastFrame ( f_val_b );
 }
 
-void CSeqControler::skipFramesChanged( int f_skip_i )
+void CSeqController::skipFramesChanged( int f_skip_i )
 {
     m_deviceCtrl_p -> setFrameSkip ( f_skip_i );
 }

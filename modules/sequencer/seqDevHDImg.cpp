@@ -31,10 +31,10 @@
 #include <QApplication>
 #include <QDir>
 #include <QTimer>
-#include <highgui.h>
+#include <opencv/highgui.h>
 
 #include "seqDevHDImg.h"
-#include "paramIOFile.h"
+#include "paramIOXmlFile.h"
 
 using namespace QCV;
 
@@ -187,7 +187,7 @@ inline bool
 CSeqDevHDImg::loadImageFile( std::string f_filePath_str, 
                              cv::Mat &   fr_image )
 {
-    fr_image = cv::imread ( f_filePath_str );
+    fr_image = cv::imread ( f_filePath_str, -1 );
 
     return ( fr_image.size().width  > 0 && 
              fr_image.size().height > 0 );
@@ -308,7 +308,7 @@ std::vector<QWidget *> CSeqDevHDImg::getDialogs ( ) const
 bool 
 CSeqDevHDImg::loadNewSequence ( const std::string &f_confFilePath_str )
 {
-    CParamIOFile  paraReader;
+    CParamIOXmlFile  paraReader;
     bool ok_b;
 
     ok_b = paraReader.load ( f_confFilePath_str );

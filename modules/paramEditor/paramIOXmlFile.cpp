@@ -19,37 +19,32 @@
  * software, if you do not agree to this license.
  */
 
-
 /*@@@**************************************************************************
-* \file  paramIOFile
 * \author Hernan Badino
-* \notes 
 *******************************************************************************
-*****             (C) Hernan Badino 2012 - All Rights Reserved            *****
-******************************************************************************/
 
 /* INCLUDES */
-#include "paramIOFile.h"
+#include "paramIOXmlFile.h"
 
 #include <QtCore/QXmlStreamReader>
 #include <QtCore/QFile>
 
 using namespace QCV;
 
-CParamIOFile::CParamIOFile( std::string f_filePath_str )
+CParamIOXmlFile::CParamIOXmlFile( std::string f_filePath_str )
         : m_filePath_str (          f_filePath_str )
 {
     if ( not f_filePath_str.empty() )
         load ( m_filePath_str );
 }
 
-CParamIOFile::~CParamIOFile( )
+CParamIOXmlFile::~CParamIOXmlFile( )
 {}
 
 
 /// Load file.
 bool
-CParamIOFile::load ( std::string f_filePath_str )
+CParamIOXmlFile::load ( std::string f_filePath_str )
 {
     QFile qFile (f_filePath_str.c_str());
 
@@ -77,7 +72,7 @@ CParamIOFile::load ( std::string f_filePath_str )
             else
             {
                 printf("The file is not an VICPAR version 1.0 file.\n");
-                qxsReader.raiseError(QObject::tr("The file is not an QCVPAR version 1.0 file."));
+                qxsReader.raiseError(QObject::tr("The file is not an ParamHandlingPAR version 1.0 file."));
                 return false;    
             }
         }
@@ -91,7 +86,7 @@ CParamIOFile::load ( std::string f_filePath_str )
 }
 
 bool 
-CParamIOFile::readVicParXml( QXmlStreamReader & fr_qxsReader )
+CParamIOXmlFile::readVicParXml( QXmlStreamReader & fr_qxsReader )
 {
     while (not fr_qxsReader.atEnd()) 
     {
@@ -117,7 +112,7 @@ CParamIOFile::readVicParXml( QXmlStreamReader & fr_qxsReader )
 }
 
 bool 
-CParamIOFile::readCategory( QXmlStreamReader & fr_qxsReader,
+CParamIOXmlFile::readCategory( QXmlStreamReader & fr_qxsReader,
                             ParamMap_t       & fr_paramMap )
 {
     while (not fr_qxsReader.atEnd()) 
@@ -143,7 +138,7 @@ CParamIOFile::readCategory( QXmlStreamReader & fr_qxsReader,
 }
 
 bool 
-CParamIOFile::readParameter( QXmlStreamReader & fr_qxsReader,
+CParamIOXmlFile::readParameter( QXmlStreamReader & fr_qxsReader,
                              ParamState_t     & fr_state )
 
 {
@@ -169,7 +164,7 @@ CParamIOFile::readParameter( QXmlStreamReader & fr_qxsReader,
 
 /// Save file.
 bool
-CParamIOFile::save ( std::string f_filePath_str )
+CParamIOXmlFile::save ( std::string f_filePath_str ) const
 {
 #if 1
     QFile qfile ( f_filePath_str.c_str() );
@@ -224,7 +219,7 @@ CParamIOFile::save ( std::string f_filePath_str )
 
 /// Read parameter.
 bool 
-CParamIOFile::get ( std::string  f_paramName_str,
+CParamIOXmlFile::get ( std::string  f_paramName_str,
                     std::string  f_category_str,
                     std::string &fr_value_str,
                     std::string &fr_comment_str ) const
@@ -256,7 +251,7 @@ CParamIOFile::get ( std::string  f_paramName_str,
 
 /// Save parameter
 bool
-CParamIOFile::set ( std::string  f_paramName_str,
+CParamIOXmlFile::set ( std::string  f_paramName_str,
                     std::string  f_category_str,
                     std::string  fr_value_str,
                     std::string  fr_comment_str )
@@ -270,7 +265,7 @@ CParamIOFile::set ( std::string  f_paramName_str,
 
 /// Read parameter with in current category.
 bool
-CParamIOFile::get ( std::string  f_paramName_str,
+CParamIOXmlFile::get ( std::string  f_paramName_str,
                     std::string &fr_value_str,
                     std::string &fr_comment_str ) const
 {
@@ -301,7 +296,7 @@ CParamIOFile::get ( std::string  f_paramName_str,
 
 
 bool
-CParamIOFile::get ( std::string  f_paramName_str,
+CParamIOXmlFile::get ( std::string  f_paramName_str,
                     std::string &fr_value_str ) const
 {
     CategoryMap_t::const_iterator itCat = m_map.find ( getCurrentCategory (  ) );
@@ -330,7 +325,7 @@ CParamIOFile::get ( std::string  f_paramName_str,
 
 /// Save parameter with in current category.
 bool
-CParamIOFile::set ( std::string  f_paramName_str,
+CParamIOXmlFile::set ( std::string  f_paramName_str,
                     std::string  fr_value_str,
                     std::string  fr_comment_str )
 {
@@ -344,7 +339,7 @@ CParamIOFile::set ( std::string  f_paramName_str,
 
 /// Set the current category.
 inline bool 
-CParamIOFile::setCurrentCategory ( std::string  f_category_str )
+CParamIOXmlFile::setCurrentCategory ( std::string  f_category_str )
 {
     CParamIOHandling::setCurrentCategory ( f_category_str );
 

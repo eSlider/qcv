@@ -29,11 +29,13 @@ bool callBackMouse    ( CMouseEvent *f_mevent_p );
 
 int main(int f_argc_i, char *f_argv_p[])
 {
-    if (f_argc_i != 3)
-    {
-        printf("Usage %s left_image right_image\n", f_argv_p[0]);
-        exit(1);        
-    }
+   bool verticalStereo_b = (f_argc_i == 4 && std::string(f_argv_p[3]) == "--verticalStereo");
+   
+   if (f_argc_i != 3 && !verticalStereo_b)
+   {
+      printf("Usage %s left_image right_image [--verticalStereo]\n", f_argv_p[0]);
+      exit(1);        
+   }    
     
     QApplication app (f_argc_i, f_argv_p);
     
@@ -51,10 +53,10 @@ int main(int f_argc_i, char *f_argv_p[])
 
     /// Read right image.
     img = cv::imread(f_argv_p[2]);
-    displayImage ( img, "Right Image", true, 1, 0);
+    displayImage ( img, "Right Image", true, !verticalStereo_b, verticalStereo_b);
 
     /// Set screen count.
-    setScreenCount ( cv::Size(2,1));
+    setScreenCount ( cv::Size(!verticalStereo_b+1,verticalStereo_b+1));
     
     /// Set callback functions
     setMouseMovedEventCBF ( &callBackMouse );

@@ -37,8 +37,8 @@
 #include <math.h>
 #include <limits>
 
-#include <cv.h>
-#include <highgui.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 #include "matVector.h"
 #include "operator.h"

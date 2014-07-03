@@ -34,9 +34,9 @@
  *
  * The COperator class provides a base for defining operators in the framework.
  * This class provides virtual functions for handling operations input provided by
- * the user or the device controler. The method cycle() is called every time new
+ * the user or the device controller. The method cycle() is called every time new
  * sequence data is ready for processing. reset() is called when the device
- * controler stops operation (because of user input for example). initialize() is 
+ * controller stops operation (because of user input for example). initialize() is 
  * called when a new sequence data is loaded. exit() is called when the program 
  * exits or the current sequence is closed. Additional functions for handling 
  * mouse and keyboard actions are provided.
@@ -210,13 +210,13 @@ namespace QCV
         /// Set the output of this operator.
         template <class _T>
         void              registerOutput ( const std::string &f_id_str, 
-                                          _T *               f_ptr );
+                                           _T *               f_ptr );
         
         /// Set the output of this operator.
         virtual void      registerOutputs ( const std::map< std::string, CIOBase * > &f_elements );
         
         /// Register the outputs of this opeartor to a second operator.
-        virtual void      registerOutputsTo ( COperator *f_other_p );
+        //virtual void      registerOutputsTo ( COperator *f_other_p ) const;
         
         /// Get output of this operator.
         template <class _T>
@@ -415,7 +415,7 @@ namespace QCV
             registerOutput ( f_id_str, f_ptr, getParentOp() );
     }
 
-/// Get output of this operator (no search in parent)
+/// 
     template <class _T>
     void
     COperator::registerOutput ( const std::string &f_id_str,

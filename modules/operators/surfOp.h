@@ -37,8 +37,8 @@
 #include <math.h>
 #include <limits>
 
-#include <cv.h>
-#include <highgui.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 #if CV_MAJOR_VERSION > 2 || ( CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION >= 4 )
 #include <opencv2/nonfree/features2d.hpp>

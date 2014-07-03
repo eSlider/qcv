@@ -409,14 +409,15 @@ COperator::registerOutputs ( const std::map< std::string, CIOBase * > &f_element
     if (getParentOp())
         getParentOp() -> m_ios.insert( f_elements.begin(), f_elements.end() ) ;
 }
-        
+  
+/*      
 /// Register the outputs of this operator to a second operator.
 void
 COperator::registerOutputsTo ( COperator *f_other_p )
 {
     f_other_p -> m_ios.insert( m_ios.begin(), m_ios.end() ) ;
 }
-
+*/
 
 /// Get output of this operator.
 void

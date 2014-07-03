@@ -80,7 +80,7 @@ namespace QCV
 
     inline
     bool C3DDrawingElementList::write ( FILE*                /* f_file_p */,
-                                        C3DVector            f_offset /* C3DVector(0,0,0) */,
+                                        C3DVector            /* f_offset=C3DVector(0,0,0) */,
                                         const std::string    /* f_prefix_str = "" */ ) const
     {
         //printf("write(...) not implemented for this class.\n");

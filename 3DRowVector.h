@@ -37,7 +37,7 @@
 /* INCLUDES */
 
 /* CONSTANTS */
-#include <cv.h>
+#include <opencv/cv.h>
 
 namespace QCV
 {

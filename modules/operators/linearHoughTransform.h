@@ -37,7 +37,7 @@
  *******************************************************************************/
 
 /* INCLUDES */
-#include <highgui.h>
+#include <opencv/highgui.h>
 #include "standardTypes.h"
 #include "parameterSet.h"
 

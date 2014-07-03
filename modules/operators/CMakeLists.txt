@@ -76,19 +76,25 @@ include(${QT_USE_FILE})
 
 set ( LIBQCVOperators_SRC
      linearHoughTransform.cpp
+     featureStereoOp.cpp
+     gfttFreakOp.cpp
      houghTransformOp.cpp
      imgScalerOp.cpp
      sobelOp.cpp
      stereoOp.cpp
+     stereoTrackerOp.cpp
      surfOp.cpp
 )
 
 set ( LIBQCVOperators_HEADERS 
      linearHoughTransform.h
+     featureStereoOp.h
+     gfttFreakOp.h
      houghTransformOp.h
      imgScalerOp.h
      sobelOp.h
      stereoOp.h
+     stereoTrackerOp.h
      surfOp.h
 )  
 

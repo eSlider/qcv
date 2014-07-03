@@ -496,8 +496,6 @@ void CDisplay::keyPressEvent ( QKeyEvent *   f_event_p )
             
             float offsety_f = ((-yScreen_i) * (int)m_screenSize.height);
         
-            printf("Offsets are %f %f\n", offsetx_f, offsety_f);
-            
             m_zoomTL.x += offsetx_f;
             m_zoomTL.y += offsety_f;
             

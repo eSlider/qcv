@@ -77,7 +77,7 @@ set ( LIBQCVSequencer_SRC
      mainWindow.cpp
      operator.cpp
      seqControlDlg.cpp
-     seqControler.cpp
+     seqController.cpp
      seqDevHDImg.cpp
      seqDevVideoCapture.cpp
 )
@@ -90,7 +90,7 @@ set ( LIBQCVSequencer_HEADERS
      operator.h
      qcvVector.h
      seqControlDlg.h
-     seqControler.h
+     seqController.h
      seqDevHDImg.h
      seqDeviceControl.h
      seqDevVideoCapture.h
@@ -99,7 +99,7 @@ set ( LIBQCVSequencer_HEADERS
 set ( LIBQCVSequencer_MOC_HEADERS 
      mainWindow.h
      seqControlDlg.h
-     seqControler.h
+     seqController.h
      seqDeviceControl.h
      seqDevHDImg.h
      seqDevVideoCapture.h

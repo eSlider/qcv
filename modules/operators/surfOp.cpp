@@ -65,8 +65,6 @@ CSurfOp::registerDrawingLists(  )
 {
     bool showImages_b = (getParentOp() == NULL);
     
-    printf("showImages =%i\n", showImages_b);
-    
     registerDrawingList ( "Input Image",
                           S2D<int> (0, 0),
                           showImages_b);

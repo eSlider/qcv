@@ -40,8 +40,6 @@
 
 /* INCLUDES */
 #include "parameter.h"
-#include "standardTypes.h"
-#include "int2DParam.h"
 
 /* CONSTANTS */
 namespace QCV

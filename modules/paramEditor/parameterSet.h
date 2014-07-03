@@ -59,7 +59,8 @@ namespace QCV
     /// Constructor/Destructor
     public:
         /// Default Constructor.
-        CParameterSet ( CParameterSet *  f_parent_p );
+        CParameterSet ( CParameterSet * const                  f_parent_p, 
+                        const std::string                      f_name_str = "Unnamed" );
 
         /// Virtual destructor.
         virtual ~CParameterSet ( );

@@ -33,7 +33,7 @@
 /* INCLUDES */
 #include <algorithm>
 #include <inttypes.h>
-#include <cv.h>
+#include <opencv/cv.h>
 
 /* CONSTANTS */
 

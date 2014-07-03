@@ -39,7 +39,8 @@
 #include <QGroupBox>
 #include <QFileDialog>
 
-#include "paramIOFile.h"
+#include "paramIOPFile.h"
+#include "paramIOXmlFile.h"
 #include "paramEditorDlg.h"
 #include "paramTreeItemModel.h"
 #include "parameterSet.h"
@@ -53,14 +54,16 @@
 
 using namespace QCV;
 
-CParameterEditorDlg::CParameterEditorDlg  ( CParameterSet *  f_rootNode_p,
-                                            QWidget *        f_parent_p )
+CParameterEditorDlg::CParameterEditorDlg  ( CParameterSet *    f_rootNode_p,
+                                            QWidget *          f_parent_p,
+                                            CParamIOHandling * f_parser_p )
         : QWidget (                      f_parent_p ),
           m_rootNode_p (               f_rootNode_p ),
           m_currentPage_p (                    NULL ),
           m_splitter_p (                       NULL ),
           m_qtvCategory_p (                    NULL ),
-          m_qfParamPage_p (                    NULL )
+          m_qfParamPage_p (                    NULL ),
+          m_parser_p (                   f_parser_p )
 {
     setWindowTitle ( tr("Parameter Editor") );
     setObjectName  ( windowTitle() );
@@ -134,17 +137,41 @@ CParameterEditorDlg::CParameterEditorDlg  ( CParameterSet *  f_rootNode_p,
     connect ( m_qtvCategory_p, SIGNAL( clicked             ( const QModelIndex & )),
               this,            SLOT  ( reloadParameterPage ( const QModelIndex & )) );
 
-    resize( 600, 600 );
-}
+    QSettings settings;
+    restoreGeometry ( settings.value(objectName() + QString("/geometry")).toByteArray() );
+    m_splitter_p -> restoreState( settings.value("ParameterSplitter/position").toByteArray() );
+ 
+ }
 
 CParameterEditorDlg::~CParameterEditorDlg ()
 {
-    QSettings settings;
-    settings.setValue("ParameterSplitter/position", m_splitter_p->saveState());
+   if (isVisible())
+   {
+      QSettings settings;
+      settings.setValue( objectName() + QString("/geometry"), 
+                         saveGeometry() );
+      
+      settings.setValue("ParameterSplitter/position", m_splitter_p->saveState());
+   }
 
-    if ( m_qtvCategory_p -> selectionModel() )
-        delete m_qtvCategory_p -> selectionModel();
+   if ( m_qtvCategory_p -> selectionModel() )
+      delete m_qtvCategory_p -> selectionModel();
 }
+
+void
+CParameterEditorDlg::toggleVisibility (  )
+{
+   if (isVisible())
+   {
+      QSettings settings;
+      settings.setValue( objectName() + QString("/geometry"), 
+                         saveGeometry() );
+      
+      settings.setValue("ParameterSplitter/position", m_splitter_p->saveState());
+   }
+   
+   setVisible(!isVisible());
+}  
 
 void
 CParameterEditorDlg::reloadParameterPage ( const QModelIndex & f_index  )
@@ -324,37 +351,96 @@ CParameterEditorDlg::reloadParameterPage ( const QModelIndex & f_index  )
 
 void CParameterEditorDlg::save ( )
 {
-    QString fileName_str;
+    QString qfileName_str;
     
-    fileName_str = QFileDialog::getSaveFileName( this,
-                                                 tr("Open File"), 
-                                                 QString(),
-                                                 "*.xml" );
-    if (fileName_str.isEmpty()) return;
+    qfileName_str = QFileDialog::getSaveFileName( this,
+                                                  tr("Open File"), 
+                                                  QString(),
+                                                  "XML files (*.xml);; P files (*.p);; Other (*)" );
+    if (qfileName_str.isEmpty()) return;
+    
+    std::string fileName_str = qfileName_str.toStdString();
 
-    printf("Saving parameter file \"%s\"\n", fileName_str.toStdString().c_str());
+    size_t pos_i = fileName_str.find_last_of ( '.' );
+
+    if (pos_i == std::string::npos )
+    {
+       printf("%s:%i Unrecognized file extension for file %s\n", __FILE__, __LINE__, fileName_str.c_str() );    
+       return;  
+    }
+
+    std::string fileExtension_str = fileName_str.substr(pos_i);
     
-    CParamIOFile paramIO;
-    m_rootNode_p -> save ( paramIO );
-    paramIO.save ( fileName_str.toStdString() );
+    if (m_parser_p)
+    {
+       m_rootNode_p -> save ( *m_parser_p );
+       m_parser_p->save ( fileName_str );
+    }
+    else
+    {
+       if (fileExtension_str == ".xml")
+       {
+          CParamIOXmlFile paramIO;
+          m_rootNode_p -> save ( paramIO );
+          paramIO.save ( fileName_str );
+       }
+       else if (fileExtension_str == ".p")
+       {
+          CParamIOPFile paramIO;
+          m_rootNode_p -> save ( paramIO );
+          paramIO.save ( fileName_str );
+       }
+       else
+          printf("%s:%i Unrecognized file extension \"%s\" for file %s\n", __FILE__, __LINE__, fileExtension_str.c_str(), fileName_str.c_str() );
+    }
 }
 
 void CParameterEditorDlg::load ( )
 {
-    QString fileName_str;
+    QString qfileName_str;
     
-    fileName_str = QFileDialog::getOpenFileName( this,
-                                                 tr("Open File"), 
-                                                 QString(),
-                                                 "*.xml" );
-    if (fileName_str.isEmpty()) return;
-    
-    printf("Loading parameter file \"%s\"\n", fileName_str.toStdString().c_str());
+    qfileName_str = QFileDialog::getOpenFileName( this,
+                                                  tr("Open File"), 
+                                                  QString(),
+                                                  "XML files (*.xml);; P files (*.p);; Other (*)" );
+    if (qfileName_str.isEmpty()) return;
 
-    CParamIOFile paramIO;
-    paramIO.load ( fileName_str.toStdString() );
-    m_rootNode_p -> load ( paramIO );
+    std::string fileName_str = qfileName_str.toStdString();
+    
+    size_t pos_i = fileName_str.find_last_of ( '.' );
+
+    if (pos_i == std::string::npos )
+    {
+       printf("%s:%i Unrecognized file extension for file %s\n", __FILE__, __LINE__, fileName_str.c_str() );    
+       return;  
+    }
+
+    std::string fileExtension_str = fileName_str.substr(pos_i);
+    
+    if ( m_parser_p )
+    {
+       m_parser_p -> load ( fileName_str );
+       m_rootNode_p -> load ( *m_parser_p );
+    }
+    else
+    {
+       if (fileExtension_str == ".xml")
+       {
+          CParamIOXmlFile paramIO;
+          paramIO.load ( fileName_str );
+          m_rootNode_p -> load ( paramIO );
+       }
+       else if (fileExtension_str == ".p")       
+       {
+          CParamIOPFile paramIO;
+          paramIO.load ( fileName_str );
+          m_rootNode_p -> load ( paramIO );
+       }
+       else
+          printf("%s:%i Unrecognized file extension \"%s\" for file %s\n", __FILE__, __LINE__, fileExtension_str.c_str(), fileName_str.c_str() );    
+    }
 }
+
 
 void CParameterEditorDlg::parameterPageExited ()
 {

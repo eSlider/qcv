@@ -41,7 +41,7 @@
  */
 
 /* INCLUDES */
-#include <cv.h>
+#include <opencv/cv.h>
 #include "drawingElementList.h"
 #include "colors.h"
 #include "colorEncoding.h"

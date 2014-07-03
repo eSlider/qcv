@@ -428,12 +428,12 @@ CStereoOp::cycle()
             }
             else
             {
-                static int oldScale_i = -1;
+               //static int oldScale_i = -1;
                 m_sbm.state->minDisparity = -1;
 
                 m_sbmState.setParams(m_sbm);
 
-                oldScale_i = m_scale_i;
+                //oldScale_i = m_scale_i;
 
                 // Transform image to CV_8UC1 if not already in that
                 // format. BM works only with in 8 bit grayscale

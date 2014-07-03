@@ -33,7 +33,7 @@
 
 /* INCLUDES */
 #include "parameter.h"
-#include <cv.h>
+#include <opencv/cv.h>
 
 namespace QCV
 {

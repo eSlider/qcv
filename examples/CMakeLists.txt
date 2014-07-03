@@ -9,7 +9,8 @@ add_subdirectory ( imgScaler )
 add_subdirectory ( sobelExample2 )
 add_subdirectory ( surfExample )
 add_subdirectory ( houghTransformExample )
-
+add_subdirectory ( gfttFreakExample )
+add_subdirectory ( stereoTrackerExample )
 
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/imgs ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/imgs COPYONLY)
 

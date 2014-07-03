@@ -293,7 +293,7 @@ CStereoCamera::image2Local ( double     f_u_d,
 
 /// Image position to local position.
 inline bool
-CStereoCamera::image2Local ( C3DVector &f_imgPoint,
+CStereoCamera::image2Local ( C3DVector  f_imgPoint,
                              C3DVector &f_wPoint ) const
 {
     return image2Local ( f_imgPoint.x(),

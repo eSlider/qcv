@@ -25,7 +25,7 @@
 #include "stereoOp.h"
 #include "mainWindow.h"
 #include "seqDevHDImg.h"
-#include "paramIOFile.h"
+#include "paramIOXmlFile.h"
 
 using namespace QCV;
 
@@ -38,7 +38,7 @@ int main(int f_argc_i, char *f_argv_p[])
     CStereoOp *rootOp_p = new CStereoOp( );
 
     /// Load parameters from parameters.xml file 
-    CParamIOFile pio ( "params_stereo.xml" );
+    CParamIOXmlFile pio ( "params_stereo.xml" );
     rootOp_p->getParameterSet() -> load ( pio );
 
     /// Create hard disk device

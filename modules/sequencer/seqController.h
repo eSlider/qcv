@@ -19,15 +19,15 @@
  * software, if you do not agree to this license.
  */
 
-#ifndef __SEQCONTROLER_H
-#define __SEQCONTROLER_H
+#ifndef __SEQCONTROLLER_H
+#define __SEQCONTROLLER_H
 
 /**
  *******************************************************************************
  *
- * @file seqControler.h
+ * @file seqController.h
  *
- * \class CSeqControler
+ * \class CSeqController
  * \author Hernan Badino (hernan.badino@gmail.com)
  *
  * \brief Interface class between the sequence control dialog and a device.
@@ -50,7 +50,7 @@ namespace QCV
     class CSeqControlDlg;
     class CSeqDeviceControl;    
 
-    class CSeqControler: public QObject
+    class CSeqController: public QObject
     {
     /// Do I need to declare Q_OBJECT here?
         Q_OBJECT
@@ -58,10 +58,10 @@ namespace QCV
     /// Constructors, Destructors
     public:
         /// Constructor
-        CSeqControler( CSeqDeviceControl *f_device_p );
+        CSeqController( CSeqDeviceControl *f_device_p );
 
         /// Destructor
-        virtual ~CSeqControler();
+        virtual ~CSeqController();
 
         
     /// Get Methods.
@@ -91,7 +91,7 @@ namespace QCV
         void skipFramesChanged( int f_skip_i );
         //void randomJump();
         void exitOnLastFrameChanged( bool f_val_b );
-        //void startControler();
+        //void startController();
 
     /// Signals
     signals:
@@ -124,4 +124,4 @@ namespace QCV
 }
 
 
-#endif // __SEQCONTROLER_H
+#endif // __SEQCONTROLLER_H

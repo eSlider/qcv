@@ -44,7 +44,7 @@
 #include "drawingElementList.h"
 #include "colors.h"
 
-#include <cv.h>
+#include <opencv/cv.h>
 
 #include <vector>
 

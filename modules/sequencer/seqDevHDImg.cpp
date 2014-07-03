@@ -31,7 +31,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QTimer>
-#include <highgui.h>
+#include <opencv/highgui.h>
 
 #include "seqDevHDImg.h"
 #include "paramIOFile.h"
@@ -187,7 +187,7 @@ inline bool
 CSeqDevHDImg::loadImageFile( std::string f_filePath_str, 
                              cv::Mat &   fr_image )
 {
-    fr_image = cv::imread ( f_filePath_str );
+    fr_image = cv::imread ( f_filePath_str, -1 );
 
     return ( fr_image.size().width  > 0 && 
              fr_image.size().height > 0 );

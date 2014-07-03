@@ -54,7 +54,7 @@ namespace QCV
 /* NAMESPACE PROTOTYPES */
     class CSeqDeviceControl;
     class COperator;
-    class CSeqControler;
+    class CSeqController;
     class CDisplayWidget;
     class CWindowListView;
     class CParameterEditorDlg;
@@ -116,7 +116,7 @@ namespace QCV
         COperator *               m_rootOp_p;
 
         /// Control Window.
-        CSeqControler *           m_controler_p;
+        CSeqController *          m_controller_p;
 
         /// Display widget.
         CDisplayWidget *          m_display_p;
@@ -130,6 +130,8 @@ namespace QCV
         /// 3D Viewer
         CGLViewer *               m_3dViewer_p;
 
+        // Auto play?
+        bool                      m_autoPlay_b;
     };
 }
 

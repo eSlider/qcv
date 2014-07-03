@@ -76,6 +76,9 @@ void CGLViewer::draw()
 
     /// Points
     m_pointList.show();
+
+    /// Points
+    m_lineList.show();
     
     /// Meshes
     m_meshList.show();
@@ -158,12 +161,22 @@ QString CGLViewer::helpString() const
     return text;
 }
 
-void CGLViewer::addPoint ( const C3DVector & f_point,
-                           const SRgb      & f_color,
-                           const float       f_size_f,
-                           const C3DVector & f_normal )
+void CGLViewer::addPoint ( const C3DVector  f_point,
+                           const SRgb       f_color,
+                           const float      f_size_f,
+                           const C3DVector  f_normal )
 {
-    m_pointList.add( f_point, f_color, f_size_f, f_normal );    
+    float pointSize_f = f_size_f<0?m_pointSize_f:f_size_f;  
+    m_pointList.add( f_point, f_color, pointSize_f, f_normal );    
+}
+
+void CGLViewer::addLine  ( const C3DVector  f_point1,
+                           const C3DVector  f_point2,
+                           const SRgb       f_color,
+                           const float      f_lineWidth_f )
+{
+    float lineWidth_f = f_lineWidth_f<0?m_lineWidth_f:f_lineWidth_f;  
+    m_lineList.add( f_point1, f_point2, f_color, lineWidth_f );
 }
 
 void CGLViewer::addMesh ( cv::Mat     f_vectorImg,
@@ -177,5 +190,6 @@ void CGLViewer::addMesh ( cv::Mat     f_vectorImg,
 void CGLViewer::clear ()
 {
     m_pointList.clear();
+    m_lineList.clear();
     m_meshList.clear();
 }

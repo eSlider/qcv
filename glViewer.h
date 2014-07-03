@@ -40,6 +40,7 @@
 
 #include "3DRowVector.h"
 #include "3DPointList.h"
+#include "3DLineList.h"
 #include "3DMeshList.h"
 #include "colors.h"
 
@@ -56,10 +57,16 @@ namespace QCV
         void                   clear ();
 
         /// Add a 3D point.
-        void                   addPoint ( const C3DVector & f_point,
-                                          const SRgb      & f_color  = SRgb ( 255, 255, 255 ),
-                                          const float       f_size_f = 1.f,
-                                          const C3DVector & f_normal = C3DVector (0,0,0) );
+        void                   addPoint ( const C3DVector  f_point,
+                                          const SRgb       f_color  = SRgb ( 255, 255, 255 ),
+                                          const float      f_size_f = -1.f,
+                                          const C3DVector  f_normal = C3DVector (0,0,0) );
+        
+        /// Add a 3D point.
+        void                   addLine  ( const C3DVector   f_point1,
+                                          const C3DVector   f_point2,
+                                          const SRgb        f_color  = SRgb ( 255, 255, 255 ),
+                                          const float       f_lineWidth_f = -1.f );
         
         /// Add a 3D mesh.
         void                   addMesh ( cv::Mat     f_vectorImg,
@@ -110,12 +117,15 @@ namespace QCV
         C3DPointList               m_pointList;
 
         /// 3D mesh list
+        C3DLineList                m_lineList;
+
+        /// 3D mesh list
         C3DMeshList                m_meshList;
 
         /// Background color.
         SRgb                       m_bgColor;
 
-        /// Background color.
+        /// Point size.
         float                      m_pointSize_f;
 
         /// Line width.

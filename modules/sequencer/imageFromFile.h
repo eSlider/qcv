@@ -42,7 +42,7 @@
 #include <vector>
 #include <string>
 
-#include <cv.h>
+#include <opencv/cv.h>
 
 namespace QCV
 {

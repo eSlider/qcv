@@ -39,7 +39,7 @@
 
 #include "qcvVector.h"
 #include "imageFromFile.h"
-#include <cv.h>
+#include <opencv/cv.h>
 
 namespace QCV
 {

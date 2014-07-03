@@ -38,20 +38,20 @@
 #include <stdio.h>
 #include <iostream> 
 
-#include <cv.h>
-#include <highgui.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 namespace QCV
 {
-    CDisplayWidget *      g_disp_p         = NULL;
-    CDrawingListHandler * g_drawHandler_p  = NULL;
-    CNode *               g_rootNode_p     = NULL;
-    CEventHandler *       g_evHandler_p    = NULL;
-    CSimpleWindow *       g_mainWindow_p   = NULL;
-    CClockTreeDlg *       g_clockTree_p    = NULL;
-    CClockHandler *       g_clockHandler_p = NULL;
+   extern CDisplayWidget *      g_disp_p;
+   extern CDrawingListHandler * g_drawHandler_p;
+   extern CNode *               g_rootNode_p;
+   extern CEventHandler *       g_evHandler_p;
+   extern CSimpleWindow *       g_mainWindow_p;
+   extern CClockTreeDlg *       g_clockTree_p;
+   extern CClockHandler *       g_clockHandler_p;
 #if defined HAVE_QGLVIEWER
-    CGLViewer *           g_3dViewer_p     = NULL;
+   extern CGLViewer *           g_3dViewer_p;
 #endif
 
 
@@ -191,7 +191,7 @@ namespace QCV
     CDrawingList *
     getDrawingList( std::string f_title_str )
     {
-        if (!g_drawHandler_p) 
+        if (!g_drawHandler_p || !g_disp_p) 
         {
             //char str[256];
             //sprintf(str, "%s:%d : ", __FILE__, __LINE__ );

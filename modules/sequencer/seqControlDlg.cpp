@@ -81,7 +81,7 @@ CSeqControlDlg::CSeqControlDlg(QWidget *f_parent_p /* = 0 */ )
 }
 
 void
-CSeqControlDlg::closeEvent ( QCloseEvent * f_event_p )
+CSeqControlDlg::closeEvent ( QCloseEvent * /*f_event_p*/ )
 {
 }
 

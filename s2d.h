@@ -23,7 +23,7 @@
 #define __S2D_H
 
 #include <limits>
-#include <cv.h>
+#include <opencv/cv.h>
 
 namespace QCV
 {

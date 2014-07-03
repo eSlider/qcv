@@ -48,7 +48,7 @@
 #include "matVector.h"
 #include "io.h"
 
-#include <highgui.h>
+#include <opencv/highgui.h>
 
 #include <vector>
 #include <map>

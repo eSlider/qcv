@@ -39,7 +39,7 @@
 
 #include "operator.h"
 
-#include "seqControler.h"
+#include "seqController.h"
 #include "seqDeviceControl.h"
 #include "displayWidget.h"
 #include "paramEditorDlg.h"
@@ -59,18 +59,22 @@ CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
     : CSimpleWindow (               ),
       m_device_p (       f_device_p ),
       m_rootOp_p (       f_rootOp_p ),
-      m_controler_p (          NULL ),
+      m_controller_p (          NULL ),
       m_display_p (            NULL ),
       m_paramEditorDlg_p (     NULL ),
-      m_clockTreeDlg_p (       NULL )
+      m_clockTreeDlg_p (       NULL ),
+      m_autoPlay_b (          false )
 {
     g_QCVAppId_str = std::string("QCVApplication/") + m_rootOp_p->getName().c_str();
     
-    //QStringList list = QCoreApplication::arguments ();
-    
-    assert( m_device_p );
-    assert( m_rootOp_p );    
+    QStringList list = QCoreApplication::arguments ();
 
+    for (int i = 1; i < list.size(); ++i)
+    {
+        if ( list.at(i) == QString("--autoplay") )
+            m_autoPlay_b = true;
+    }
+    
     setWindowTitle( tr("QCV Main Window") );
     setObjectName ( windowTitle() );
 
@@ -89,7 +93,7 @@ CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
     m_display_p -> setScreenCount ( S2D<unsigned int>(sx_i, sy_i) );
 
 
-    m_controler_p -> start();    
+    m_controller_p -> start();    
 }
 
 CMainWindow::~CMainWindow( )
@@ -106,10 +110,10 @@ CMainWindow::~CMainWindow( )
     //if ( m_rootOp_p )
     //    delete m_rootOp_p;
 
-    /// Delete controler.
-    if (m_controler_p)
-        delete m_controler_p;
-    m_controler_p = NULL;
+    /// Delete controller.
+    if (m_controller_p)
+        delete m_controller_p;
+    m_controller_p = NULL;
 
     /// Delete display.
     if (m_display_p)
@@ -134,8 +138,8 @@ CMainWindow::~CMainWindow( )
 
 void CMainWindow::createBaseWidgets()
 {
-    /// Create controler.
-    m_controler_p      = new CSeqControler ( m_device_p );
+    /// Create controller.
+    m_controller_p      = new CSeqController ( m_device_p );
 
     /// Create display.
     m_display_p        = new CDisplayWidget ( 0,
@@ -157,7 +161,7 @@ void CMainWindow::createBaseWidgets()
 #endif
 
 
-    CSimpleWindow::insertWindow ( m_controler_p -> getDialog() );
+    CSimpleWindow::insertWindow ( m_controller_p -> getDialog() );
     CSimpleWindow::insertWindow ( m_display_p );
     CSimpleWindow::insertWindow ( m_display_p -> getDialog() );
     CSimpleWindow::insertWindow ( m_paramEditorDlg_p );
@@ -172,11 +176,11 @@ void CMainWindow::createBaseWidgets()
     for (unsigned int i = 0; i < opWidgets.size(); ++i)
         CSimpleWindow::insertWindow ( opWidgets[i] );
 
-    // Connections with Controler.
-    connect( m_controler_p, SIGNAL(cycle()),      this, SLOT(cycle()) );
-    connect( m_controler_p, SIGNAL(stop()),       this, SLOT(stop()));    
-    connect( m_controler_p, SIGNAL(initialize()), this, SLOT(initialize()) );
-    connect( m_controler_p, SIGNAL(reset()),      this, SLOT(stop()) );
+    // Connections with Controller.
+    connect( m_controller_p, SIGNAL(cycle()),      this, SLOT(cycle()) );
+    connect( m_controller_p, SIGNAL(stop()),       this, SLOT(stop()));    
+    connect( m_controller_p, SIGNAL(initialize()), this, SLOT(initialize()) );
+    connect( m_controller_p, SIGNAL(reset()),      this, SLOT(stop()) );
 
     /// Get display object pointer.
     CDisplay *disp_p = m_display_p -> getDisplay();    
@@ -252,14 +256,13 @@ void CMainWindow::initialize()
     m_rootOp_p -> startClock ( "3D Viewer" );
     m_3dViewer_p -> update();
     m_rootOp_p -> stopClock ( "3D Viewer" );
-#endif
-
-    // std::vector<QWidget *> opWidgets = m_rootOp_p -> getWidgets();
-
-    // for (unsigned int i = 0; i < opWidgets.size(); ++i)
-    // {
-    //     CSimpleWindow::insertWindow ( opWidgets[i] );
-    // }
+#endif 
+    
+    
+    if (m_autoPlay_b)
+    {
+        m_controller_p -> playClicked();
+    }
     
     m_rootOp_p -> startClock ( "Clock Update" );
     m_clockTreeDlg_p -> updateTimes();    
@@ -381,16 +384,16 @@ void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )
     {
         if ( m_device_p -> getState() == CSeqDeviceControl::S_PLAYING )
         {
-            m_controler_p -> pauseClicked();
+            m_controller_p -> pauseClicked();
         }
         else
         {
-            m_controler_p -> playClicked();
+            m_controller_p -> playClicked();
         }       
     }
     else if ( keyEvent_p -> key() == Qt::Key_S )
     {
-        m_controler_p -> stopClicked();
+        m_controller_p -> stopClicked();
     }
 
     if ( m_device_p -> getState() != CSeqDeviceControl::S_PLAYING )
@@ -398,16 +401,16 @@ void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )
         if ( keyEvent_p -> key() == Qt::Key_Right ||
              keyEvent_p -> key() == Qt::Key_P )
         {
-            m_controler_p -> nextClicked();
+            m_controller_p -> nextClicked();
         }
         else if ( keyEvent_p -> key() == Qt::Key_Left ||
              keyEvent_p -> key() == Qt::Key_N )
         {
-            m_controler_p -> previousClicked();
+            m_controller_p -> previousClicked();
         }
         else if ( keyEvent_p -> key() == Qt::Key_R )
         {
-            m_controler_p -> reloadClicked();
+            m_controller_p -> reloadClicked();
         }
     }
 

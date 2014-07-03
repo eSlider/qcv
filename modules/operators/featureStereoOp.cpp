@@ -36,7 +36,7 @@ static const float INVALID_DISP=std::numeric_limits<float>::min();
 CFeatureStereoOp::CFeatureStereoOp ( COperator * const f_parent_p, 
                                      const std::string f_name_str  )
    : COperator (                 f_parent_p, f_name_str ),
-     m_compute_b (                                false ),
+     m_compute_b (                                 true ),
      m_idLeftImage_str (                      "Image 0" ),
      m_idRightImage_str (                     "Image 1" ),
      m_featPointVector_str (           "Feature Vector" ),
@@ -69,8 +69,8 @@ CFeatureStereoOp::registerDrawingLists()
                         false);
 
    registerDrawingList ("Right Image Features",
-                        S2D<int> (0, 0),
-                        false);
+                        S2D<int> (1, 0),
+                        true);
 
    registerDrawingList ("Left Image Pyramid",
                         S2D<int> (0, 0),

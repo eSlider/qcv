@@ -88,7 +88,7 @@ CGfttFreakOp::registerDrawingLists(  )
 
     registerDrawingList ( "Matches",
                           S2D<int> (0, 0),
-                          showImages_b);    
+                          true);    
 }
 
 void

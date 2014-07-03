@@ -106,7 +106,8 @@ set ( LIBQCVParamEditor_SRC
         parameterSet.cpp
         paramGroup.cpp
         paramGroupEnd.cpp
-        paramIOFile.cpp
+        paramIOPFile.cpp
+        paramIOXmlFile.cpp
         paramLineSeparator.cpp
         paramTreeItemModel.cpp
         stringOp.cpp
@@ -159,7 +160,8 @@ set ( LIBQCVParamEditor_HEADERS
         parameterSet.h
         paramGroupEnd.h
         paramGroup.h
-        paramIOFile.h
+        paramIOPFile.h
+        paramIOXmlFile.h
         paramIOHandling.h
         paramLineSeparator.h
         paramMacros.h

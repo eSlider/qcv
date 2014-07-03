@@ -35,22 +35,28 @@
 using namespace QCV;
 
 /// Default Constructor.
-CParameterSet::CParameterSet ( CParameterSet * const  f_parent_p )
-        : m_parent_p (              NULL )
+CParameterSet::CParameterSet ( CParameterSet * const                   f_parent_p, 
+                               const std::string                       f_name_str  )
+   : m_parent_p (              NULL ),
+     m_subset (                     ),
+     m_parameter (                  ),
+     m_name_str (        f_name_str )
+
 {
     if ( f_parent_p )
-        f_parent_p -> addSubset ( this );
+       f_parent_p -> addSubset ( this );
 }
 
 /// Virtual destructor.
 CParameterSet::~CParameterSet ( )
 {
-    for (unsigned int i = 0; i < m_subset.size(); ++i)
-    {
-        delete m_subset[i];
-    }
+   // We assume that subsets are deleted by their corresponding creator.
+    // for (unsigned int i = 0; i < m_subset.size(); ++i)
+    // {
+    //     delete m_subset[i];
+    // }
 
-    m_subset.clear();
+    // m_subset.clear();
     
     for (unsigned int i = 0; i < m_parameter.size(); ++i)
     {
@@ -70,7 +76,7 @@ CParameterSet::load ( CParamIOHandling  &fr_io,
     if (f_prefix_str != "" )
     {
         catId_str = f_prefix_str;
-        catId_str += std::string (":");
+        catId_str += std::string (".");
     }
 
     catId_str += m_name_str;
@@ -113,7 +119,7 @@ CParameterSet::save ( CParamIOHandling  &fr_io,
     if (f_prefix_str != "" )
     {
         catId_str = f_prefix_str;
-        catId_str += std::string (":");
+        catId_str += std::string (".");
     }
 
     catId_str += m_name_str;
@@ -129,8 +135,6 @@ CParameterSet::save ( CParamIOHandling  &fr_io,
     {
         if (m_parameter[i] -> shouldBeSaved ( ) )
         {
-            //printf("updating parameter %s from container\n", m_parameter[i]->getName().c_str());
-            
             m_parameter[i] -> updateFromContainer();
             
             if (! fr_io.set ( m_parameter[i] -> getName(),

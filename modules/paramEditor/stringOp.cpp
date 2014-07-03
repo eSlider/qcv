@@ -29,6 +29,7 @@
 
 /* INCLUDES */
 #include "stringOp.h"
+#include <algorithm>
 
 using namespace QCV;
 
@@ -41,6 +42,8 @@ CStringOp::~CStringOp ( )
 bool 
 CStringOp::trimLeft ( std::string &fr_str )
 {
+    if (fr_str.empty()) return false;
+
     unsigned int i;
         
     for ( i = 0; 
@@ -61,6 +64,8 @@ CStringOp::trimLeft ( std::string &fr_str )
 bool 
 CStringOp::trimRight ( std::string &fr_str )
 {
+    if (fr_str.empty()) return false;
+   
     int i;
     
     for ( i = fr_str.length() - 1; 
@@ -87,4 +92,27 @@ CStringOp::trim ( std::string &fr_str )
     res2_b = trimRight ( fr_str );
 
     return res1_b && res2_b;
+}
+
+bool 
+CStringOp::isAlphaNumeric ( const std::string &f_str )
+{
+   return std::count_if(f_str.begin(), f_str.end(), isalnum) == (ssize_t) f_str.size();   
+}
+
+
+bool isValidNameChar( const char c )
+{
+   return  ( (c >= 'a' && c <= 'z') || 
+             (c >= 'A' && c <= 'Z') || 
+             (c >= '0' && c <= '9') || 
+             (c == '_' || c <= '.') || 
+             (c == '_' || c <= '.') );
+}
+
+
+bool 
+CStringOp::isValidName ( const std::string &f_str )
+{
+   return std::count_if(f_str.begin(), f_str.end(), isValidNameChar) == (ssize_t) f_str.size();   
 }

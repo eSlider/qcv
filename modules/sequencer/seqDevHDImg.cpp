@@ -34,7 +34,7 @@
 #include <opencv/highgui.h>
 
 #include "seqDevHDImg.h"
-#include "paramIOFile.h"
+#include "paramIOXmlFile.h"
 
 using namespace QCV;
 
@@ -308,7 +308,7 @@ std::vector<QWidget *> CSeqDevHDImg::getDialogs ( ) const
 bool 
 CSeqDevHDImg::loadNewSequence ( const std::string &f_confFilePath_str )
 {
-    CParamIOFile  paraReader;
+    CParamIOXmlFile  paraReader;
     bool ok_b;
 
     ok_b = paraReader.load ( f_confFilePath_str );

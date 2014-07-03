@@ -55,9 +55,11 @@ namespace QCV
         virtual ~CStringOp ( );
 
     public:
-        static bool trimLeft  ( std::string &str );
-        static bool trimRight ( std::string &str );
-        static bool trim      ( std::string &str );
+        static bool trimLeft        ( std::string &str );
+        static bool trimRight       ( std::string &str );
+        static bool trim            ( std::string &str );
+        static bool isAlphaNumeric  ( const std::string &str );
+        static bool isValidName     ( const std::string &str );
 
         template <class Type>
         static std::string numToString( const Type&             f_value, 

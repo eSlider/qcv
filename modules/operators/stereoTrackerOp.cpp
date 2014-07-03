@@ -40,7 +40,7 @@
 #include "featureStereoOp.h"
 #include "gfttFreakOp.h"
 
-#include "paramIOFile.h"
+#include "paramIOXmlFile.h"
 
 using namespace QCV;
 
@@ -157,7 +157,7 @@ bool CStereoTrackerOp::initialize()
 
     bool fileFound_b = false;
 
-    CParamIOFile paramFile;
+    CParamIOXmlFile paramFile;
 
     printf("Trying to open parameter file from \"%s\"\n",
            filePath0_str.c_str() );

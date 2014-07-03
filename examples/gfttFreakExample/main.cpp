@@ -26,7 +26,7 @@
 #include "mainWindow.h"
 #include "seqDevVideoCapture.h"
 #include "seqDevHDImg.h"
-#include "paramIOFile.h"
+#include "paramIOXmlFile.h"
 
 using namespace QCV;
 
@@ -51,7 +51,7 @@ int main(int f_argc_i, char *f_argv_p[])
     CGfttFreakOp *rootOp_p = new CGfttFreakOp( );
 
     /// Load parameters from parameters.xml file 
-    CParamIOFile pio ( "params_gfttFreak.xml" );
+    CParamIOXmlFile pio ( "params_gfttFreak.xml" );
     rootOp_p->getParameterSet() -> load ( pio );
 
     CSeqDeviceControl * device_p;

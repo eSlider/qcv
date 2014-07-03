@@ -20,13 +20,13 @@
  */
 
 
-#ifndef __PARAMIOFILE_H
-#define __PARAMIOFILE_H
+#ifndef __PARAMIOXMLFILE_H
+#define __PARAMIOXMLFILE_H
 
 /**
  *******************************************************************************
  *
- * @file paramIOFile.h.
+ * @file paramIOXmlFile.h.
  *
  * \class CParamIOFile
  * \author Hernan Badino (hernan.badino@gmail.com)
@@ -40,25 +40,25 @@
 #include"paramIOHandling.h"
 
 #include <QtCore/QXmlStreamReader>
-#include <map>
+#include"my_unordered_map.h"
 
 /* CONSTANTS */
 
 namespace QCV
 {
-    class CParamIOFile : public CParamIOHandling
+    class CParamIOXmlFile : public CParamIOHandling
     {
     /// Constructors / Destructor.
     public:
-        CParamIOFile( std::string f_filePath_str = "" );
-        virtual ~CParamIOFile( );
+        CParamIOXmlFile( std::string f_filePath_str = "" );
+        virtual ~CParamIOXmlFile( );
 
     public:
         /// Load file.
         bool        load ( std::string f_filePath_str );
 
         /// Save file.
-        bool        save ( std::string f_filePath_str = "" );        
+        bool        save ( std::string f_filePath_str = "" ) const;
 
     public:
         /// Read parameter.
@@ -93,15 +93,16 @@ namespace QCV
 
     /// Protected members.
     protected:
-        
+       
+
         struct ParamState_t
         {
             std::string value_str;
             std::string comment_str;
         };
 
-        typedef std::map<std::string, ParamState_t> ParamMap_t;
-        typedef std::map<std::string, ParamMap_t>   CategoryMap_t;
+        typedef my_unordered_map<std::string, ParamState_t> ParamMap_t;
+        typedef my_unordered_map<std::string, ParamMap_t>   CategoryMap_t;
 
     /// Help methods.
     private:
@@ -129,4 +130,4 @@ namespace QCV
 }
 
 
-#endif // __PARAMIOFILE_H
+#endif // __PARAMIOXMLFILE_H

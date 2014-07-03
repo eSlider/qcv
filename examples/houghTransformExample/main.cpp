@@ -26,7 +26,7 @@
 #include "mainWindow.h"
 #include "seqDevVideoCapture.h"
 #include "seqDevHDImg.h"
-#include "paramIOFile.h"
+#include "paramIOXmlFile.h"
 
 using namespace QCV;
 
@@ -51,7 +51,7 @@ int main(int f_argc_i, char *f_argv_p[])
     CHoughTransformOp *rootOp_p = new CHoughTransformOp( );
 
     /// Load parameters from parameters.xml file 
-    CParamIOFile pio ( "params_houghTransform.xml" );
+    CParamIOXmlFile pio ( "params_houghTransform.xml" );
     rootOp_p->getParameterSet() -> load ( pio );
 
     CSeqDeviceControl * device_p;

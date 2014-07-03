@@ -26,7 +26,7 @@
 #include "mainWindow.h"
 #include "seqDevVideoCapture.h"
 #include "seqDevHDImg.h"
-#include "paramIOFile.h"
+#include "paramIOXmlFile.h"
 
 using namespace QCV;
 
@@ -51,7 +51,7 @@ int main(int f_argc_i, char *f_argv_p[])
     CStereoTrackerOp *rootOp_p = new CStereoTrackerOp( );
 
     /// Load parameters from parameters.xml file 
-    CParamIOFile pio ( "params_stereoTracker.xml" );
+    CParamIOXmlFile pio ( "params_stereoTracker.xml" );
     rootOp_p->getParameterSet() -> load ( pio );
 
     CSeqDeviceControl * device_p;

@@ -51,7 +51,7 @@ CParamTreeItemModel::~CParamTreeItemModel ()
     if ( m_rootNode_p )
     {
         m_rootNode_p -> orphanSubsets();
-        delete m_rootNode_p;
+        //delete m_rootNode_p;
     }
 }
 

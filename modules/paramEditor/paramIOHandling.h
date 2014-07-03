@@ -53,6 +53,12 @@ namespace QCV
     /// Read and save
     public:
         
+        /// Load file.
+        virtual bool        load ( std::string f_filePath_str ) = 0;
+
+        /// Save file.
+        virtual bool        save ( std::string f_filePath_str = "" ) const = 0;
+
         /// Read parameter.
         virtual bool get ( std::string  f_paramName_str,
                            std::string  f_category_str,

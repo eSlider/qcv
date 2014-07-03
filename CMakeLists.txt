@@ -79,6 +79,7 @@ include(${QT_USE_FILE})
 ##### SOURCE FILES
 
 set ( LIBQCV_SRC
+     cinterface.cpp
      clock.cpp
      clock.cpp
      clockHandler.cpp
@@ -103,6 +104,7 @@ set ( LIBQCV_SRC
      eventHandler.cpp
      eventHandlerBase.cpp
      helpWidget.cpp
+     imagePyramid.cpp
      lineList.cpp
      simpleWindow.cpp
      node.cpp
@@ -149,6 +151,7 @@ set ( LIBQCV_HEADERS
      events.h
      glheader.h
      helpWidget.h
+     imagePyramid.h
      lineList.h
      linePlotter.h
      linePlotter_inline.h
@@ -187,12 +190,14 @@ if(QGLVIEWER_FOUND)
   list(APPEND LIBQCV_SRC
         glViewer.cpp
 	3DPointList.cpp
+	3DLineList.cpp
 	3DMeshList.cpp )
 
   list ( APPEND LIBQCV_HEADERS
         glViewer.h
 	3DDrawingElementList.h
 	3DPointList.h 
+	3DLineList.h
 	3DMeshList.h )
 
   list ( APPEND LIBQCV_MOC_HEADERS 

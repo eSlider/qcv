@@ -1,20 +1,23 @@
-//
-// Copyright 2012
-//
-// National Robotics Engineering Center, Carnegie Mellon University
-// 10 40th Street, Pittsburgh, PA 15201
-// www.nrec.ri.cmu.edu
-//
-// NREC Confidential and Proprietary
-// Do not distribute without prior written permission
-//
-// This software is licensed under an Internal Use Only license as per
-// section 9.1 in the Master Agreement dated January 1, 2008 between
-// Carnegie Mellon University and Deere & Company, except for items that
-// are under separate licensing agreements between Deere and CMU.
-//
-// This notice must appear in all copies of this file and its derivatives
-//
+/*
+ * Copyright (C) 2012 Hernan Badino <hernan.badino@gmail.com>
+ *
+ * This file is part of QCV
+ *
+ * QCV is under the terms of the GNU Lesser General Public License
+ * version 2.1. See the GNU LGPL version 2.1 for details.
+ * QCV is distributed "AS IS" without ANY WARRANTY, without even the
+ * implied warranty of merchantability or fitness for a particular
+ * purpose. 
+ *
+ * In no event shall the authors or contributors be liable
+ * for any direct, indirect, incidental, special, exemplary, or
+ * consequential damages arising in any way out of the use of this
+ * software.
+ *
+ * By downloading, copying, installing or using the software you agree
+ * to this license. Do not download, install, copy or use the
+ * software, if you do not agree to this license.
+ */
 
 /**
 *******************************************************************************

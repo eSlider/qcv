@@ -58,7 +58,7 @@ CInt2DParameter::~CInt2DParameter()
 std::string
 CInt2DParameter::getStringFromValue ( ) const
 {
-    char str[32];
+    char str[64];
     sprintf(str,
             "%i,%i", 
             m_value.x, 

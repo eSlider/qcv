@@ -89,8 +89,8 @@ set ( LIBQCV_SRC
      clockTreeView.cpp
      colorEncoding.cpp
      colors.cpp
-     displayCEImageList.cpp
      display.cpp
+     displayCEImageList.cpp
      displayImageList.cpp
      displayTreeDlg.cpp
      displayTreeItemModel.cpp
@@ -106,10 +106,11 @@ set ( LIBQCV_SRC
      helpWidget.cpp
      imagePyramid.cpp
      lineList.cpp
-     simpleWindow.cpp
      node.cpp
+     numericalSolver.cpp
      polygonList.cpp
      rectList.cpp
+     simpleWindow.cpp
      textList.cpp
      triangleList.cpp
      windowListItemModel.cpp
@@ -132,8 +133,8 @@ set ( LIBQCV_HEADERS
      clockTreeView.h
      colorEncoding.h
      colors.h
-     displayCEImageList.h
      display.h
+     displayCEImageList.h
      displayImageList.h
      displayState.h
      displayTreeDlg.h
@@ -146,8 +147,8 @@ set ( LIBQCV_HEADERS
      drawingListHandler.h
      drawingListPreview.h
      ellipseList.h
-     eventHandlerBase.h
      eventHandler.h
+     eventHandlerBase.h
      events.h
      glheader.h
      helpWidget.h
@@ -156,6 +157,7 @@ set ( LIBQCV_HEADERS
      linePlotter.h
      linePlotter_inline.h
      node.h
+     numericalSolver.h
      polygonList.h
      rectList.h
      s2d.h

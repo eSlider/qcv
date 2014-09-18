@@ -161,11 +161,11 @@ void CMainWindow::createBaseWidgets()
 #endif
 
 
+    CSimpleWindow::insertWindow ( m_clockTreeDlg_p );
     CSimpleWindow::insertWindow ( m_controller_p -> getDialog() );
     CSimpleWindow::insertWindow ( m_display_p );
     CSimpleWindow::insertWindow ( m_display_p -> getDialog() );
     CSimpleWindow::insertWindow ( m_paramEditorDlg_p );
-    CSimpleWindow::insertWindow ( m_clockTreeDlg_p );
 
 #if defined HAVE_QGLVIEWER
     CSimpleWindow::insertWindow ( m_3dViewer_p );

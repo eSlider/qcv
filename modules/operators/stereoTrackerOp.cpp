@@ -24,7 +24,7 @@
 *
 * @file stereoTrackerOp.cpp
 *
-* \class CStereoTrackerOp
+* \class CStereoTrackerOp 
 * \author Hernan Badino (hernan.badino@gmail.com)
 *
 *
@@ -39,8 +39,11 @@
 #include "drawingList.h"
 #include "featureStereoOp.h"
 #include "gfttFreakOp.h"
+#include "kltTrackerOp.h"
 
 #include "paramIOXmlFile.h"
+
+#include "feature.h"
 
 using namespace QCV;
 
@@ -49,15 +52,28 @@ CStereoTrackerOp::CStereoTrackerOp ( COperator * const f_parent_p,
                      const std::string f_name_str )
     : COperator (             f_parent_p, f_name_str ),
       m_gftt_p (                                NULL ),
+      m_kltTracker_p (                          NULL ),
       m_compute_b (                             true ),
       m_origCamera(                                  ),
       m_camera (                                     ),
-      m_centralPointOffset (                0.f, 0.f )
+      m_centralPointOffset (                0.f, 0.f ),
+      m_resizeToOrigSize_b (                    true ),
+      m_fovScale_f (                             1.f ),
+      m_scaleHorOnly_b (                       false ),
+      m_scaledImage0 (                               ),   
+      m_scaledImage1 (                               ),
+      m_unifiedFeatureVector (                       ),
+      m_cropTopLeft (                         -1, -1 ),
+      m_cropBottomRight (                     -1, -1 )
+      
 {
-    m_gftt_p = new CGfttFreakOp     ( this, "Harris-Freak Tracker" );
-   
+    m_gftt_p       = new CGfttFreakOp     ( this, "Harris-Freak Tracker" );
+    m_kltTracker_p = new CKltTrackerOp    ( this, "KLT Tracker" );
+    m_featStereo_p = new CFeatureStereoOp ( this, "Feature Stereo" );
+
     addChild ( m_gftt_p );
-    addChild ( new CFeatureStereoOp ( this, "Feature Stereo" ) );
+    addChild ( m_kltTracker_p );
+    addChild ( m_featStereo_p );
 
     registerDrawingLists(  );
     registerParameters (  );
@@ -87,6 +103,45 @@ CStereoTrackerOp::registerParameters(  )
                           this,
                           CentralPointOffset,
                           CStereoTrackerOp );
+
+    ADD_FLOAT_PARAMETER ( "FOV scale factor",
+                          "Scale factor to apply to the fov for the left and right images.",
+                          m_fovScale_f,
+                          this,
+                          FovScale,
+                          CStereoTrackerOp );
+
+    ADD_BOOL_PARAMETER ( "Scale Horizontally Only",
+                         "Resize image only in horizontal direction",
+                         m_scaleHorOnly_b,
+                         this,
+                         ScaleHorizontallyOnly,
+                         CStereoTrackerOp );
+
+    ADD_BOOL_PARAMETER ( "Resize to orig size",
+                         "Resize image to original size if fov scale factor <> 1",
+                         m_resizeToOrigSize_b,
+                         this,
+                         ResizeToOrigSize,
+                         CStereoTrackerOp );
+
+    ADD_INT2D_PARAMETER ( "Crop Top-left",
+                          "Top-left image coordinates to define crop area. [px]",
+                          m_cropTopLeft,
+                          "x","y",
+                          this,
+                          CropTopLeft,
+                          CStereoTrackerOp );
+
+    ADD_INT2D_PARAMETER ( "Crop Bottom-right",
+                          "Bottom-right image coordinates to define crop area. [px]",
+                          m_cropBottomRight,
+                          "x","y",
+                          this,
+                          CropBottomRight,
+                          CStereoTrackerOp );
+
+
     END_PARAMETER_GROUP;
 }
 
@@ -102,18 +157,107 @@ CStereoTrackerOp::cycle()
     if ( m_compute_b )
     {
        m_camera = m_origCamera;
-       
+
+       cv::Mat img0 =  getInput<cv::Mat>("Image 0", cv::Mat() );
+       cv::Mat img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
+
+       if (img0.cols > 0 && img1.cols > 0 && m_fovScale_f < 1.f)
+       {
+          float fov_f       = atan(img0.cols/(2*m_origCamera.getFocalLength()));
+          fov_f            *= m_fovScale_f;
+          float newWidth_f  = 2 * m_origCamera.getFocalLength() * tan(fov_f);
+
+          if (fabsf(newWidth_f - img0.cols) > 1.f )
+          {
+             float newHeight_f = m_scaleHorOnly_b?img0.rows:img0.rows * newWidth_f/img0.cols;
+             
+             cv::Rect roi (img0.cols/2.f-newWidth_f/2.f, std::max(img0.rows/2.f-newHeight_f/2.f, 0.f), 
+                           newWidth_f, newHeight_f );
+             
+             if (m_resizeToOrigSize_b && !m_scaleHorOnly_b)
+             {
+                cv::resize(img0(roi), m_scaledImage0, img0.size());
+                cv::resize(img1(roi), m_scaledImage1, img1.size());
+                
+                m_camera.setFocalLength( img0.cols / (tan(fov_f)*2.f) );
+             }
+             else
+             {
+                float scale_f = newWidth_f/img0.cols;
+                m_scaledImage0 = img0(roi).clone();
+                m_scaledImage1 = img1(roi).clone();
+                m_camera.setU0( m_camera.getU0() - roi.x );
+                m_camera.setV0( m_camera.getV0() - roi.y );
+             }
+             
+             registerOutput<cv::Mat>("Image 0", &m_scaledImage0);
+             registerOutput<cv::Mat>("Image 1", &m_scaledImage1);
+
+          }
+       }
+ 
+       if ( m_cropBottomRight.x >= 0 || 
+            m_cropBottomRight.y >= 0 || 
+            m_cropTopLeft.x >= 0 || 
+            m_cropTopLeft.y >= 0 )
+       {
+          cv::Mat img0 =  getInput<cv::Mat>("Image 0", cv::Mat() );
+          cv::Mat img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
+
+          cv::Point2i topleft  ( m_cropTopLeft.x<0?0:std::min( std::max(m_cropTopLeft.x, 0), img0.cols-1),
+                                 m_cropTopLeft.y<0?0:std::min( std::max(m_cropTopLeft.y, 0), img0.rows-1) );
+          cv::Point2i botright ( m_cropBottomRight.x<0?img0.cols:std::min( std::max(m_cropBottomRight.x, 0), img0.cols),
+                                 m_cropBottomRight.y<0?img0.rows:std::min( std::max(m_cropBottomRight.y, 0), img0.rows) );
+          
+          if (topleft.x < botright.x && topleft.y < botright.y )
+          {
+             m_scaledImage2 = img0(cv::Rect(topleft, botright));
+             m_scaledImage3 = img1(cv::Rect(topleft, botright));
+             
+             m_camera.setU0( m_camera.getU0() - topleft.x );
+             m_camera.setV0( m_camera.getV0() - topleft.y );
+             std::cout << ":LKJ:L" << topleft << " " << botright << std::endl;
+
+             registerOutput<cv::Mat>("Image 0", &m_scaledImage2);
+             registerOutput<cv::Mat>("Image 1", &m_scaledImage3);
+          }
+       }
+
        m_camera.setU0( m_camera.getU0() + m_centralPointOffset.x );
        m_camera.setV0( m_camera.getV0() + m_centralPointOffset.y );
-       
        registerOutput<CStereoCamera> ( "Rectified Camera", &m_camera );
 
-       COperator::cycle();
+       COperator::cycle(m_gftt_p);
+       COperator::cycle(m_kltTracker_p);
+
+       /// Join feature vectors
+       const CFeatureVector *featVec1 = m_gftt_p      ->getFeatureVector();
+       const CFeatureVector *featVec2 = m_kltTracker_p->getFeatureVector();
+       
+       m_unifiedFeatureVector.clear();
+       
+       if (featVec1)
+          m_unifiedFeatureVector.insert(m_unifiedFeatureVector.begin()+m_unifiedFeatureVector.size(), 
+                                        featVec1->begin(), featVec1->end() );
+       
+       if (featVec2)
+          m_unifiedFeatureVector.insert(m_unifiedFeatureVector.begin()+m_unifiedFeatureVector.size(), 
+                                        featVec2->begin(), featVec2->end() );
+       
+       registerOutput <CFeatureVector> ( "Unified Feature Vector", 
+                                         &m_unifiedFeatureVector );      
+
+       COperator::cycle(m_featStereo_p);
 
        if ( getParentOp() )
        {
+          
           getParentOp() -> registerOutput <CFeatureVector> ( m_gftt_p->getFeaturePointVectorId(), 
                                                              m_gftt_p->getFeatureVector() );
+
+
+          getParentOp() -> registerOutput <CFeatureVector> ( m_kltTracker_p->getFeaturePointVectorId(), 
+                                                             m_kltTracker_p->getFeatureVector() );          
        }
     }
     

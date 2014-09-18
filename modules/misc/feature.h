@@ -76,8 +76,10 @@ namespace QCV
         void clear()
         {
             state = FS_UNINITIALIZED;
-            flag  = false;
+            idx   = -1;
             u = v = d = -1;
+            t = 0;
+            e = 0.;
         }
 
     public:
@@ -100,7 +102,7 @@ namespace QCV
         size_t         f;
 
         /// General flag used for user's purposes.
-        bool           flag;
+        int            idx;
 
         /// Feature state.
         EFeatureState state;

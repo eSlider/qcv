@@ -99,7 +99,9 @@ bool CSeqDevHDImg::nextFrame()
         if ( !m_loopMode_b )
             m_currentFrame_i  =  m_framesCount_i-1;
         else
+        {
             m_currentFrame_i  =  0;
+        }
     }
     
     // Autoexit

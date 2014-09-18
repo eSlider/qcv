@@ -76,7 +76,7 @@ bool
 C3DLineList::clear ()
 {
    m_3DLine_v.clear();
-   return m_3DLine_v.size();
+   return m_3DLine_v.empty();
 }
 
 // Draw all 3DLines.

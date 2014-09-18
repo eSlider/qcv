@@ -75,14 +75,16 @@ include(${QT_USE_FILE})
 
 set ( LIBQCVMisc_SRC
   camera.cpp
+  #monoMotionEstimation.cpp
   stereoCamera.cpp
   feature.cpp
 )
 
 set ( LIBQCVMisc_HEADERS 
   camera.h
-  stereoCamera.h
   feature.h
+  #monoMotionEstimation.h
+  stereoCamera.h
   rigidMotion.h
 )  
 

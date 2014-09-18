@@ -43,6 +43,8 @@ static const float INVALID_DISP=std::numeric_limits<float>::min();
 CFeatureStereoOp::CFeatureStereoOp ( COperator * const f_parent_p, 
                                      const std::string f_name_str  )
    : COperator (                 f_parent_p, f_name_str ),
+     m_lImg (                                           ),
+     m_rImg (                                           ),
      m_compute_b (                                 true ),
      m_idLeftImage_str (                      "Image 0" ),
      m_idRightImage_str (                     "Image 1" ),
@@ -61,7 +63,9 @@ CFeatureStereoOp::CFeatureStereoOp ( COperator * const f_parent_p,
      m_deltaDisp_i (                                  1 ),
      m_ceDistance ( CColorEncoding::CET_GREEN2RED,
                                    S2D<float>(0.f,40.f) ),
-     m_show3DPoints_b (                           false )
+     m_show3DPoints_b (                           false ),
+     m_preFilter_b (                              false )
+
 {
    registerDrawingLists();
    registerParameters();
@@ -120,6 +124,13 @@ CFeatureStereoOp::registerParameters()
                           m_compute_b,
                           this,
                           Compute, 
+                          CFeatureStereoOp );
+
+      ADD_BOOL_PARAMETER( "Pre-Filter?", 
+                          "Apply mask normalization to input images.",
+                          m_preFilter_b,
+                          this,
+                          PreFilter, 
                           CFeatureStereoOp );
 
       ADD_INT2D_PARAMETER( "Disparity Range", 
@@ -230,21 +241,43 @@ CFeatureStereoOp::cycle()
     
       if ( featureVector_p )
       {
-         cv::Mat imgL = getInput<cv::Mat>( m_idLeftImage_str,  cv::Mat() );
-         cv::Mat imgR = getInput<cv::Mat>( m_idRightImage_str, cv::Mat() );
-         
-        if (imgL.cols > 0 && imgL.rows > 0 && imgL.size() == imgR.size() &&
-             imgL.type() == imgR.type() && imgL.type() == CV_8UC1 )
+         if (m_preFilter_b)
          {
-           m_dispImg = cv::Mat(imgL.size(), CV_32FC1);
+            startClock ("Pre-filtering");            
+            m_lImg = getInput<cv::Mat>( m_idLeftImage_str,  cv::Mat() ).clone();
+            m_rImg = getInput<cv::Mat>( m_idRightImage_str, cv::Mat() ).clone();
+            int ddepth = CV_32F;
+            cv::Mat imgf,imgf2;
+            cv::Mat *imgs_p[2] = {&m_lImg, &m_rImg};
+
+            for (int i = 0; i < 2; ++i)
+            {
+               cv::boxFilter( *imgs_p[i], imgf, ddepth, cv::Size(19,19), cv::Point(-1,-1), true, cv::BORDER_DEFAULT );
+               imgs_p[i]->convertTo ( imgf2, CV_32F, 1., 0);
+               imgf -= imgf2;
+               imgf.convertTo ( *imgs_p[i], CV_8U, 5, 127);
+               stopClock ("Pre-filtering");            
+            }
+         }
+         else
+         {
+            m_lImg = getInput<cv::Mat>( m_idLeftImage_str,  cv::Mat() );
+            m_rImg = getInput<cv::Mat>( m_idRightImage_str, cv::Mat() );
+         }
+
+         
+        if (m_lImg.cols > 0 && m_lImg.rows > 0 && m_lImg.size() == m_rImg.size() &&
+             m_lImg.type() == m_rImg.type() && m_lImg.type() == CV_8UC1 )
+         {
+           m_dispImg = cv::Mat(m_lImg.size(), CV_32FC1);
             
             startClock("Pyramid construction");
             
             setPyramidParams ( m_levels_ui );
         
             /// 1.- Compute Gaussian Pyramids.
-           m_pyrLeft.compute  ( imgL );
-           m_pyrRight.compute ( imgR );
+           m_pyrLeft.compute  ( m_lImg );
+           m_pyrRight.compute ( m_rImg );
         
             stopClock("Pyramid construction");
             
@@ -757,14 +790,12 @@ bool CFeatureStereoOp::show()
    {
       CFeatureVector * featureVector_p = getInput<CFeatureVector> ( m_featPointVector_str );
       
-      cv::Mat imgL = getInput<cv::Mat>( m_idLeftImage_str, cv::Mat() );
-      
       CDrawingList *list_p;    
 
       const float srcWidth_f  = getScreenSize().width;
       const float srcHeight_f = getScreenSize().height;
 
-      if ( imgL.cols > 0 && featureVector_p )
+      if ( m_lImg.cols > 0 && featureVector_p )
       {
          CFeatureVector &vec = *featureVector_p;
 
@@ -781,8 +812,8 @@ bool CFeatureStereoOp::show()
             {
                list_p -> setLineColor ( SRgb(255,255,0 ) );
                 
-               float scaleX_f = srcWidth_f  / imgL.cols;
-               float scaleY_f = srcHeight_f / imgL.rows;
+               float scaleX_f = srcWidth_f  / m_lImg.cols;
+               float scaleY_f = srcHeight_f / m_lImg.rows;
                S2D<float> p0, p1, q1;
                 
                C3DVector p;
@@ -856,9 +887,9 @@ void CFeatureStereoOp::show3D()
 {
    CStereoCamera *     camera_p = getInput<CStereoCamera> ( "Rectified Camera" );
    
-   cv::Mat imgL = getInput<cv::Mat>( m_idLeftImage_str, cv::Mat() );
+   cv::Mat m_lImg = getInput<cv::Mat>( m_idLeftImage_str, cv::Mat() );
 
-   if ( !camera_p || imgL.cols == 0 || imgL.data == 0)
+   if ( !camera_p || m_lImg.cols == 0 || m_lImg.data == 0)
       return;
 
    m_3dViewer_p -> setPointSize(3);
@@ -871,7 +902,7 @@ void CFeatureStereoOp::show3D()
    for (int i = 0; i < h_i; ++i)
    {
       float *      disp_p = &m_dispImg.at<float>(i, 0);
-      uint8_t *    limg_p = &imgL.at<uint8_t>(i, 0);
+      uint8_t *    limg_p = &m_lImg.at<uint8_t>(i, 0);
 	
       for ( int j = 0; j < w_i; ++j, ++disp_p, ++limg_p )
       {

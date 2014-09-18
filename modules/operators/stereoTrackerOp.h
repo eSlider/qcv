@@ -46,6 +46,7 @@
 #include "matVector.h"
 #include "stereoCamera.h"
 
+#include "feature.h"
 /* PROTOTYPES */
 
 /* CONSTANTS */
@@ -53,6 +54,8 @@
 namespace QCV
 {
     class CGfttFreakOp;
+    class CKltTrackerOp;
+    class CFeatureStereoOp;
    
     class CStereoTrackerOp: public COperator
     {
@@ -63,6 +66,15 @@ namespace QCV
     public:
         ADD_PARAM_ACCESS         (bool,        m_compute_b,          Compute );
         ADD_PARAM_ACCESS         (S2D<float>,  m_centralPointOffset, CentralPointOffset );
+        ADD_PARAM_ACCESS_BOUNDED (float,       m_fovScale_f,         FovScale, 0.001f, 1.f );
+        ADD_PARAM_ACCESS         (bool,        m_scaleHorOnly_b,     ScaleHorizontallyOnly );
+        ADD_PARAM_ACCESS         (bool,        m_resizeToOrigSize_b, ResizeToOrigSize );
+
+        ADD_PARAM_ACCESS         (S2D<int>,    m_cropTopLeft,        CropTopLeft );
+        ADD_PARAM_ACCESS         (S2D<int>,    m_cropBottomRight,    CropBottomRight );
+
+
+
     /// Constructor, Desctructors
     public:    
         
@@ -99,6 +111,12 @@ namespace QCV
         /// Good feature to track operator
         CGfttFreakOp *              m_gftt_p;
        
+        /// Good feature to track operator
+        CKltTrackerOp *             m_kltTracker_p;       
+
+        /// Feature stereo operator
+        CFeatureStereoOp *          m_featStereo_p;
+
         /// Compute?
         bool                        m_compute_b;
 
@@ -110,6 +128,37 @@ namespace QCV
 
         /// Central point offset
         S2D<float>                  m_centralPointOffset;
+
+        //// Resize to original image size
+        bool                        m_resizeToOrigSize_b;
+
+        //// FOV scale factor
+        float                       m_fovScale_f;
+
+        //// Scale horizontally only
+        bool                        m_scaleHorOnly_b;
+
+       /// Scaled images
+        cv::Mat                     m_scaledImage0;
+
+        /// Scaled images
+        cv::Mat                     m_scaledImage1;         
+
+       /// Scaled images
+        cv::Mat                     m_scaledImage2;
+
+        /// Scaled images
+        cv::Mat                     m_scaledImage3;         
+
+        /// Unified feature vector
+        CFeatureVector              m_unifiedFeatureVector;
+ 
+        /// Top-left crop coordinate.
+        S2D<int>                    m_cropTopLeft;
+
+        /// Bottom-Right crop coordinate.
+        S2D<int>                    m_cropBottomRight;
+
        
     };
 }

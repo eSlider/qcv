@@ -86,6 +86,24 @@ COperator::cycle()
 }
 
 bool 
+COperator::cycle( COperator *f_child_p )
+{
+    for (uint32_t i = 0; i < m_children_v.size(); ++i)
+    {
+        COperator *child_p = static_cast<COperator *>(m_children_v[i].ptr_p);
+
+        if ( child_p == f_child_p && child_p )
+        {
+            child_p -> startClock ("Cycle");
+            bool res_b = child_p -> cycle();
+            child_p -> stopClock ("Cycle");
+            return res_b;
+        }
+    }
+    return false;
+}
+
+bool 
 COperator::show()
 {
     bool result_b = true;

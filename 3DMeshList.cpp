@@ -108,7 +108,7 @@ C3DMeshList::clear ()
             glDeleteLists( m->displayList_ui, 1 );
     
     m_mesh_v.clear();
-    return m_mesh_v.size();
+    return m_mesh_v.empty();
 }
 
 // Draw all Meshes.

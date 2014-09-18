@@ -199,7 +199,8 @@ namespace QCV
 
     /// Protected classes
     protected:
-        
+       /// Cycle event only for one child
+       virtual bool cycle( COperator * f_child_p);
 
     /// I/O registration.
     public:

@@ -76,7 +76,7 @@ bool
 C3DPointList::clear ()
 {
     m_3DPoint_v.clear();
-    return m_3DPoint_v.size();
+    return m_3DPoint_v.empty();
 }
 
 // Draw all 3DPoints.

@@ -45,6 +45,14 @@ namespace QCV
             x ( f_pos.x  ),
             y ( f_pos.y ) { }
         
+        S2D ( const cv::Point_<float> f_pos ): 
+            x ( f_pos.x  ),
+            y ( f_pos.y ) { }
+        
+        S2D ( const cv::Point_<double> f_pos ): 
+            x ( f_pos.x  ),
+            y ( f_pos.y ) { }
+        
         int operator < ( const S2D<Type> &f_other ) const
         { 
             return ( y < f_other.y || 

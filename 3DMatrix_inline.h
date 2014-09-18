@@ -849,12 +849,30 @@ C3DMatrix::getRotationAngles( double &fr_pitch_d,
 
 }
 
-/* ////////////  Version History ///////////////
- *  $Log: 3DMatrix_inline.h,v $
- *  Revision 1.3  2010/01/18 17:12:29  badino
- *  General updates and added new classes.
- *
- *  Revision 1.2  2009/11/18 15:51:01  badino
- *  badino: documentation added. Some other global changes.
- *
- *//////////////////////////////////////////////
+inline void 
+C3DMatrix::getRotationAxis( C3DVector &fr_rotAxis ) const
+{
+    double angle_d;
+    
+    getRotationAxis(fr_rotAxis, angle_d );
+    
+    fr_rotAxis *= angle_d;
+}
+
+inline void 
+C3DMatrix::getRotationAxis( C3DVector &fr_normRotAxis, 
+                            double    &fr_angle_d ) const
+{    
+    fr_angle_d = acos((trace() - 1.) / 2. );
+
+    if (fabs(fr_angle_d) > 1.e-5)
+    {
+        double norm_d = 2. * sin(fr_angle_d);
+        
+        fr_normRotAxis = C3DVector ( m_elems_p[2*3+1] - m_elems_p[1*3+2], 
+                                     m_elems_p[0*3+2] - m_elems_p[2*3+0], 
+                                     m_elems_p[1*3+0] - m_elems_p[0*3+1] ) / norm_d;
+    }
+    else
+        fr_normRotAxis.clear();
+}

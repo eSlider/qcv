@@ -71,7 +71,8 @@ CGfttFreakOp::CGfttFreakOp ( COperator * const f_parent_p,
       m_useHarris_b (                           true ),
       m_maxDescriptorDistance_f (               1000 ),
       m_correlation_b (                        false ),
-      m_normalizedCorr_b (                     false )
+      m_normalizedCorr_b (                     false ),
+      m_maxFeatPerTile_i (                         2 )
 {
     registerDrawingLists(  );
     registerParameters (  );
@@ -137,6 +138,13 @@ CGfttFreakOp::registerParameters( )
                          m_numFeatures_i,
                          this,
                          NumFeatures,
+                         CGfttFreakOp );
+
+      ADD_INT_PARAMETER( "Max Features Per Tile",
+                         "Maximum Number of Features per tile.",
+                         m_maxFeatPerTile_i,
+                         this,
+                         MaxFeaturesPerTile,
                          CGfttFreakOp );
 
       ADD_FLOAT_PARAMETER( "Squared max distance",
@@ -322,46 +330,39 @@ CGfttFreakOp::cycle()
       }
  
       startClock ("Detector");
-      
-      currFeatures.keypoints_v.clear();
- 
-      const int maxFeatPerBlock_i = 2;
-      const int blocks_i = sqrt(m_numFeatures_i/maxFeatPerBlock_i);
+      {         
+         startClock ("Detector - GFTT");
+         currFeatures.keypoints_v.clear();
 
-      int verTiles_i = int(m_img.rows/(float)blocks_i)*blocks_i;
-      int horTiles_i = int(m_img.cols/(float)blocks_i)*blocks_i;
+         const int maxFeatPerTile_i = std::min(std::max(1, m_maxFeatPerTile_i), m_numFeatures_i);
       
-      for (int i = 0 ; i < verTiles_i; i += m_img.rows / blocks_i )
-      {
-         for (int j = 0 ; j < horTiles_i; j += m_img.cols / blocks_i )
+         const int tiles_i = sqrt(m_numFeatures_i/maxFeatPerTile_i);
+         
+         int verTiles_i = int(m_img.rows/(float)tiles_i)*tiles_i+1;
+         int horTiles_i = int(m_img.cols/(float)tiles_i)*tiles_i+1;
+         
+         cv::GoodFeaturesToTrackDetector gftt (maxFeatPerTile_i,
+                                               m_qualityLevel_d,
+                                               m_minDistance_d, 
+                                               m_blockSize_i, 
+                                               m_useHarris_b);
+         
+         std::vector<cv::KeyPoint> points ( maxFeatPerTile_i*2 );
+         
+         for (int i = 0 ; i < verTiles_i; i += m_img.rows / tiles_i )
          {
-            cv::Rect roi ( std::max(0, j-m_blockSize_i), 
-                           std::max(0, i-m_blockSize_i), 
-                           m_img.cols / blocks_i + m_blockSize_i,
-                           m_img.rows / blocks_i + m_blockSize_i );
-            
-            if (roi.width  + roi.x >= m_img.cols || j == horTiles_i-1) roi.width  = m_img.cols - roi.x - 1;
-            if (roi.height + roi.y >= m_img.rows || i == verTiles_i-1) roi.height = m_img.rows - roi.y - 1;
-
-            std::vector<double> mean(1), stddev(1);
-
-            cv::meanStdDev(m_img(roi), mean, stddev );
-
-            if ( stddev[0] > 1 ) // \todo: make value 1 a parameter.
+            for (int j = 0 ; j < horTiles_i; j += m_img.cols / tiles_i )
             {
-               double quality = m_qualityLevel_d;//+stddev[0]*m_qualityFactor_d; // 0.001/50
+               cv::Rect roi ( std::max(0, j-m_blockSize_i), 
+                              std::max(0, i-m_blockSize_i), 
+                              m_img.cols / tiles_i + m_blockSize_i,
+                              m_img.rows / tiles_i + m_blockSize_i );
                
-               cv::GoodFeaturesToTrackDetector gftt (maxFeatPerBlock_i,
-                                                     quality,
-                                                     m_minDistance_d, 
-                                                     m_blockSize_i, 
-                                                     m_useHarris_b);
+               if (roi.width  + roi.x >= m_img.cols || j == horTiles_i-1) roi.width  = m_img.cols - roi.x - 1;
+               if (roi.height + roi.y >= m_img.rows || i == verTiles_i-1) roi.height = m_img.rows - roi.y - 1;
                
-
-               std::vector<cv::KeyPoint> points;
+               points.clear();
                gftt.detect(m_img(roi), points );
-               
-               //printf("%i points detected\n", points.size());
                
                for (int k = 0; k < points.size(); ++k)
                {
@@ -372,17 +373,19 @@ CGfttFreakOp::cycle()
                currFeatures.keypoints_v.insert( currFeatures.keypoints_v.end(), points.begin(), points.end() );
             }
          }
+         stopClock ("Detector - GFTT");
       }
-   
+      
       // sub-pixel estimation
       if(m_useSubPix_b)
       {
+         startClock ("Detector - Sub-pixel");
          cv::vector<cv::Point2f> points;
          points.clear();
          for(size_t i = 0; i < currFeatures.keypoints_v.size(); i++) 
             points.push_back(currFeatures.keypoints_v[i].pt);
          
-        cv::cornerSubPix (m_img, 
+         cv::cornerSubPix (m_img, 
                            points,
                            cv::Size (m_subPixBlockSize_i, 
                                      m_subPixBlockSize_i), 
@@ -390,11 +393,12 @@ CGfttFreakOp::cycle()
                            cv::TermCriteria ( CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 
                                               m_subPixIterNum_i,
                                               m_subPixEPS_f) );
-        
-        for(size_t i = 0; i < points.size(); i ++) 
-        {
-           currFeatures.keypoints_v[i].pt = points[i];
-        }
+         
+         for(size_t i = 0; i < points.size(); i ++) 
+         {
+            currFeatures.keypoints_v[i].pt = points[i];
+         }
+         stopClock ("Detector - Sub-pixel");
       }
       stopClock ("Detector");
      
@@ -460,7 +464,7 @@ CGfttFreakOp::cycle()
             m_featureVector[i].d     = -1;
             m_featureVector[i].f     = imgNr_u;
             m_featureVector[i].t     = 0;
-            m_featureVector[i].flag  = false;
+            m_featureVector[i].idx   = -1;
 
             // Update mappings
             currFeatures.idx_feature_v[i]     = i;
@@ -480,16 +484,16 @@ CGfttFreakOp::cycle()
                               cv::Scalar(0) );
       
          // use integer value for reducing the processing time of generating masks
-         //int    maxDist_i   = static_cast<int>(m_maxDistance_f);
          size_t prevSize_ui = prevFeatures.keypoints_v.size();
          size_t currSize_ui = currFeatures.keypoints_v.size();	      
 
-         // \todo: do parameter
-         const float m_xyRatio_f = 4;
-      
          SRigidMotion *   motion_p = getInput<SRigidMotion>  ( "Predicted Motion" );
          CStereoCamera *  camera_p = getInput<CStereoCamera> ( "Rectified Camera" );
          
+         // \todo: do parameter
+         float xyRatio_f = camera_p?camera_p->getFu()/camera_p->getFv():1;
+         xyRatio_f *= m_img.cols/(float)m_img.rows;
+
          SRigidMotion motion;
          if (motion_p)
             motion = *motion_p;         
@@ -527,22 +531,12 @@ CGfttFreakOp::cycle()
             for(unsigned j = 0; j < currSize_ui; j++, ++p1, ++k2) 
             {
                int dx=static_cast<int>(prediction.x() - k2->pt.x);
-               int dy=static_cast<int>((prediction.y() - k2->pt.y)*m_xyRatio_f);
+               int dy=static_cast<int>((prediction.y() - k2->pt.y)*xyRatio_f);
                *p1 = (dx*dx+dy*dy < maxDist_i);
             }
          }
          stopClock ("Matcher - Create Mask");
 
-         // Matching from the previous frame to the current frame
-         startClock ("Forward Matching");
-         m_matcher_p->knnMatch( prevFeatures.descriptors, 
-                                currFeatures.descriptors, 
-                                prevFeatures.radius_matches_v,
-                                1,
-                                match_mask);//m_featureMatchTh_f);
-         stopClock ("Forward Matching");
-
-      
          // Matching from the current frame to the previous frame
          startClock ("Backward Matching");
          m_matcher_p->knnMatch( currFeatures.descriptors, 
@@ -552,21 +546,35 @@ CGfttFreakOp::cycle()
                                 match_mask.t());//m_featureMatchTh_f);
          stopClock ("Backward Matching");
       
-         startClock ("Check consistency");      
-         // Check the consistency of the matches.
-         for(size_t i = 0; i < currFeatures.radius_matches_v.size(); i ++) 
+         bool m_bidirectionalRemapper_b = true;
+         if (m_bidirectionalRemapper_b)
          {
-            if(currFeatures.radius_matches_v[i].size() != 0)  
+            // Matching from the previous frame to the current frame
+            startClock ("Forward Matching");
+            m_matcher_p->knnMatch( prevFeatures.descriptors, 
+                                   currFeatures.descriptors, 
+                                   prevFeatures.radius_matches_v,
+                                   1,
+                                   match_mask);//m_featureMatchTh_f);
+            stopClock ("Forward Matching");
+            
+            
+            startClock ("Check consistency");      
+            // Check the consistency of the matches.
+            for(size_t i = 0; i < currFeatures.radius_matches_v.size(); i ++) 
             {
-               if( prevFeatures.radius_matches_v[currFeatures.radius_matches_v[i].at(0).trainIdx].empty() ||
-                   prevFeatures.radius_matches_v[currFeatures.radius_matches_v[i].at(0).trainIdx].at(0).trainIdx != (signed)i) 
+               if(currFeatures.radius_matches_v[i].size() != 0)  
                {
-                  currFeatures.radius_matches_v[i].clear();
+                  if( prevFeatures.radius_matches_v[currFeatures.radius_matches_v[i].at(0).trainIdx].empty() ||
+                      prevFeatures.radius_matches_v[currFeatures.radius_matches_v[i].at(0).trainIdx].at(0).trainIdx != (signed)i) 
+                  {
+                     currFeatures.radius_matches_v[i].clear();
+                  }
+                  
                }
-
             }
+            stopClock ("Check consistency");
          }
-         stopClock ("Check consistency");
          
          stopClock ("Matcher");
          
@@ -603,12 +611,9 @@ CGfttFreakOp::cycle()
                     currFeatures.idx_feature_v[idx_curr]        = idx_featvec;
                     currFeatures.idx_feature_rev_v[idx_featvec] = idx_curr;
                     
-                    //double dx=prevFeatures.keypoints_v[idx_prev].pt.x - currFeatures.keypoints_v[idx_curr].pt.x;
-                    //double dy=prevFeatures.keypoints_v[idx_prev].pt.y - currFeatures.keypoints_v[idx_curr].pt.y;
-
                     /// If associated point is too far, let's stop tracking and
                     /// create a new feature at that position
-                    if ( m_featureVector[idx_featvec].state == SFeature::FS_LOST )// || dx*dx+dy*dy > m_maxDistance_f)
+                    if ( m_featureVector[idx_featvec].state == SFeature::FS_LOST )
                     {
                        associated_b = true;
                        m_featureVector[idx_featvec].state = SFeature::FS_NEW;

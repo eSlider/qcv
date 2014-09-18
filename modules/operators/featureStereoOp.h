@@ -113,6 +113,8 @@ namespace QCV
         ADD_PARAM_ACCESS (float,       m_dispOffset_f,        DispOffset );
 
         ADD_PARAM_ACCESS (bool,        m_show3DPoints_b,      Show3DPoints );
+        ADD_PARAM_ACCESS (bool,        m_preFilter_b,         PreFilter);
+
     /// Protected Data Types
     protected:
 
@@ -134,6 +136,12 @@ namespace QCV
 
     private:
 
+        /// Left image
+        cv::Mat                     m_lImg;
+
+        /// Right image
+        cv::Mat                     m_rImg;
+       
         /// Compute?
         bool                        m_compute_b;
 
@@ -193,6 +201,10 @@ namespace QCV
 
         /// Show 3D points?
 	bool                        m_show3DPoints_b;
+
+        // Pre-filter input images?
+        bool                        m_preFilter_b;
+       
     private:
         /// Data structure to store scores.
         float m_scoresACTUAL_p[FSO_MAX_CORES][2*FSO_MAX_WIDTH];

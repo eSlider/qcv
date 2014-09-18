@@ -227,6 +227,11 @@ namespace QCV
                                          double &fr_yaw_d, 
                                          double &fr_roll_d ); 
 
+        void          getRotationAxis( C3DVector &fr_rotAxis ) const;
+
+        void          getRotationAxis( C3DVector &fr_normRotAxis,
+                                       double    &fr_angle_d ) const;
+
     public:
         /// Matrix Vector multiplication.
         C3DRowVector  multiply   ( const C3DRowVector & f_other ) const;

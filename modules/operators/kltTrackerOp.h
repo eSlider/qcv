@@ -19,8 +19,8 @@
  * software, if you do not agree to this license.
  */
 
-#ifndef __GFTTFREAKOP_H
-#define __GFTTFREAKOP_H
+#ifndef __KLTTRACKER_H
+#define __KLTTRACKER_H
 
 /**
 *******************************************************************************
@@ -57,7 +57,7 @@
 
 namespace QCV
 {
-    class CGfttFreakOp: public COperator
+    class CKltTrackerOp: public COperator
     {
     public:       
           
@@ -67,11 +67,11 @@ namespace QCV
     public:    
         
         /// Constructors.
-        CGfttFreakOp ( COperator * const f_parent_p = NULL,
+        CKltTrackerOp ( COperator * const f_parent_p = NULL,
                        const std::string f_name_str = "GFFT+Freak Operator" );
         
         /// Virtual destructor.
-        virtual ~CGfttFreakOp ();
+        virtual ~CKltTrackerOp ();
 
         /// Cycle event.
         virtual bool cycle( );
@@ -99,22 +99,19 @@ namespace QCV
         ADD_PARAM_ACCESS (bool,         m_compute_b,               Compute );
         ADD_PARAM_ACCESS (int,          m_numFeatures_i,           NumFeatures );
 	ADD_PARAM_ACCESS (int,          m_subPixBlockSize_i,       SubPixBlockSize );
+        ADD_PARAM_ACCESS (bool,         m_checkCollisions_b,       CheckCollisions );
         ADD_PARAM_ACCESS (bool,         m_useSubPix_b,             UseSubPix );
 	ADD_PARAM_ACCESS (int,          m_subPixIterNum_i,         SubPixIterNum );
 	ADD_PARAM_ACCESS (float,        m_subPixEPS_f,             SubPixEPS );
-        ADD_PARAM_ACCESS (float,        m_maxDistance_f,           MaxDist );
-        ADD_PARAM_ACCESS (float,        m_maxDistanceForPred_f,    MaxDistForPrediction );
-	ADD_PARAM_ACCESS (double,       m_qualityLevel_d,          QualityLevel );
-	ADD_PARAM_ACCESS (double,       m_qualityFactor_d,         QualityFactor );
-	ADD_PARAM_ACCESS (double,       m_minDistance_d,           MinDistance );
-	ADD_PARAM_ACCESS (int,          m_blockSize_i,             BlockSize );
-        ADD_PARAM_ACCESS (bool,         m_useHarris_b,             UseHarris );
-        ADD_PARAM_ACCESS (float,        m_maxDescriptorDistance_f, MaxDescriptorDistance );
-	ADD_PARAM_ACCESS (int,          m_maxFeatPerTile_i,        MaxFeaturesPerTile );
+	ADD_PARAM_ACCESS (int,          m_minDistance_i,           MinDistance );
+	ADD_PARAM_ACCESS (int,          m_kernelSize_i,            KernelSize );
+        ADD_PARAM_ACCESS (bool,         m_usePrediction_b,         UsePrediction );
+        ADD_PARAM_ACCESS (float,        m_maxSqDist4Collision_f,   MaxSqDist4Collision );
+        ADD_PARAM_ACCESS (bool,         m_preFilter_b,             PreFilter);
+        ADD_PARAM_ACCESS (float,        m_minEigenvalue_f,         MinEigenvalue );
+        ADD_PARAM_ACCESS (int,          m_pyrLevels_i,             PyramidLevels);      
 
-        ADD_PARAM_ACCESS (bool,         m_correlation_b,           Correlation );
-        ADD_PARAM_ACCESS (bool,         m_normalizedCorr_b,        NormalizedCorr );
-
+       
     /// Parameters
     public:
 
@@ -130,6 +127,8 @@ namespace QCV
 
         void registerParameters(  );
 
+        void selectGoodFeatures();
+       
     /// Protected data types
     protected:
         struct SFeatureData
@@ -153,6 +152,29 @@ namespace QCV
         };
 
     private:
+       struct SEigenvalue
+        {
+           SEigenvalue () {}
+           SEigenvalue ( int f_x_f, int f_y_f, float f_eigenvalue_f )
+              : x ( f_x_f ), y ( f_y_f), eigenvalue ( f_eigenvalue_f ) { }
+           SEigenvalue ( int f_x_f, int f_y_f, float f_eigenvalue_f,
+                         float f_x_32f, float f_y_32f)
+              : x ( f_x_f ), y ( f_y_f), eigenvalue ( f_eigenvalue_f ),
+                x_32f(f_x_32f), y_32f(f_y_32f){ }
+           
+           bool operator < ( const SEigenvalue & f_other ) const
+           {
+              return eigenvalue < f_other.eigenvalue;
+           }            
+           
+           int x, y;
+           float eigenvalue;
+           // 11.21.2012 A.Yamamoto
+           float x_32f, y_32f;
+
+        };
+
+    private:
         
         /// Input image Id.
         std::string                         m_inpImageId_str;
@@ -163,60 +185,69 @@ namespace QCV
         /// Compute
         bool                                m_compute_b;                                            
 
-        /// Number of features to track
-        int                                 m_numFeatures_i;
-
-        /// Input image                     
-        cv::Mat                             m_img;
+        /// Input current image                     
+        cv::Mat                             m_currImg;
 
         /// Input previous image                     
         cv::Mat                             m_prevImg;
 
+        /// Eigenvalue image.
+        cv::Mat                             m_eigenImg;
+       
+        /// Feature Mask to ensure min distance between features
+        cv::Mat                             m_featureMask;
+       
         /// Response color encoding
         CColorEncoding                      m_respCE;
 
-        /// Good features to track
-	cv::GoodFeaturesToTrackDetector *   m_gftt_p;
-
-        /// Freak extractor
-        cv::FREAK *                         m_freak_p;
-
-        /// Matcher
- 	cv::BFMatcher *                     m_matcher_p;
-
-        /// Feature data
-        SFeatureData                        m_featData[2];
+        // Pre-filter input image?
+        bool                                m_preFilter_b;
        
-        /// Counter
-        int                                 m_cnt_i;
+        /// Number of features to track
+        int                                 m_numFeatures_i;
 
-        // /todo: add descriptions
-	// GFTT parameters
-        int                                 m_subPixBlockSize_i; 
+        /// Number of features to track
+        int                                 m_pyrLevels_i;
+
+        /// Min distance between features
+	int                                 m_minDistance_i;
+
+        /// Check feature collisions
+        bool                                m_checkCollisions_b;
+
+        /// Max squared distance to check collisions
+        float                               m_maxSqDist4Collision_f;
+
+        /// Kernel size for tracking
+	int                                 m_kernelSize_i;
+
+        /// Use prediction to track features
+        bool                                m_usePrediction_b;
+
+       /// Min eigenvalue to consider for detection
+        float                               m_minEigenvalue_f;
+
+        /// Apply subpixel estimation to new detections
         bool                                m_useSubPix_b;       
+
+        /// Block size for subpixel estimation
+        int                                 m_subPixBlockSize_i; 
+
+        /// Number of iterations for subpixel estimation
         int                                 m_subPixIterNum_i;   
+
+        /// Epsilon for subpixel estimation
         float                               m_subPixEPS_f;       
-        float                               m_maxDistance_f;     
-        float                               m_maxDistanceForPred_f;     
 
-	double                              m_qualityLevel_d;
-	double                              m_qualityFactor_d;
-	double                              m_minDistance_d;
-	int                                 m_blockSize_i;
-	bool                                m_useHarris_b;
-
+        /// Previous set of tracked features
         CFeatureVector                      m_prevFeatureVector;
+
+        /// Current set of tracked features
         CFeatureVector                      m_featureVector;
 
-       float                                m_maxDescriptorDistance_f;
-
-       
-       bool m_correlation_b;
-       bool m_normalizedCorr_b;
-
-       int m_maxFeatPerTile_i;
-       
+        /// Vector of selected eigenvalues.
+        std::vector< SEigenvalue >           m_eigenvalueVector;       
     };
 }
-#endif // __GFTTFREAKOP_H
+#endif // __KLTTRACKER_H
  

@@ -566,11 +566,13 @@ void CStereoOp::show3D()
     m_3DPointImg = cv::Mat::zeros( m_dispImg.size(), CV_64FC3 );
         
     // Let set just some approximate calibration params
-    CStereoCamera cam;    
-    cam.setBaseline(0.15);
-    cam.setFocalLength(800/m_leftImg.cols*m_dispImg.cols);
-    cam.setU0(m_dispImg.rows/2);
-    cam.setV0(m_dispImg.cols/2);
+    CStereoCamera tcam;    
+    tcam.setBaseline(0.15);
+    tcam.setFocalLength(800/m_leftImg.cols*m_dispImg.cols);
+    tcam.setU0(m_dispImg.rows/2);
+    tcam.setV0(m_dispImg.cols/2);
+
+    CStereoCamera cam = COperator::getInput<CStereoCamera> ( "Rectified Camera", tcam );
         
     if ( m_dispImg.cols != m_leftImg.cols )
     {

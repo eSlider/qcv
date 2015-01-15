@@ -154,6 +154,7 @@ set ( LIBQCVParamEditor_HEADERS
         intEditor.h
         intParamEditor.h
         intParam.h
+	    my_unordered_map.h
         paramBaseConnector.h
         paramEditorDlg.h
         parameter.h

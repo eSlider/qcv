@@ -53,7 +53,7 @@ void CGLViewer::draw()
 
     glScalef( -1, 1, 1);
 
-    camera()->setSceneRadius( 200);//m_sceneRadius_f );
+    camera()->setSceneRadius( m_sceneRadius_f );
 
     // Reset modelview matrix
     QGLViewer::setBackgroundColor( QColor( m_bgColor.r, m_bgColor.g, m_bgColor.b ));

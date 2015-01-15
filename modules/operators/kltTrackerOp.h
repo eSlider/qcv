@@ -89,7 +89,10 @@ namespace QCV
         virtual bool exit();
 
         /// Mouse moved.
-        virtual void mouseMoved (     CMouseEvent * f_event_p );
+        virtual void mouseMoved (  CMouseEvent * f_event_p );
+
+        /// Key pressed.
+        virtual void keyPressed (  CKeyEvent *   f_event_p );
 
     /// Parameters
     public:
@@ -104,13 +107,18 @@ namespace QCV
 	ADD_PARAM_ACCESS (int,          m_subPixIterNum_i,         SubPixIterNum );
 	ADD_PARAM_ACCESS (float,        m_subPixEPS_f,             SubPixEPS );
 	ADD_PARAM_ACCESS (int,          m_minDistance_i,           MinDistance );
+	ADD_PARAM_ACCESS (bool,         m_adaptiveDistance_b,      AdaptiveDistance );
 	ADD_PARAM_ACCESS (int,          m_kernelSize_i,            KernelSize );
         ADD_PARAM_ACCESS (bool,         m_usePrediction_b,         UsePrediction );
         ADD_PARAM_ACCESS (float,        m_maxSqDist4Collision_f,   MaxSqDist4Collision );
         ADD_PARAM_ACCESS (bool,         m_preFilter_b,             PreFilter);
+        ADD_PARAM_ACCESS (int,          m_pFMaskSize_i,            PreFilterMaskSize);
+        ADD_PARAM_ACCESS (float,        m_pFClampScale_f,          PreFilterClampScale);
         ADD_PARAM_ACCESS (float,        m_minEigenvalue_f,         MinEigenvalue );
-        ADD_PARAM_ACCESS (int,          m_pyrLevels_i,             PyramidLevels);      
-
+        ADD_PARAM_ACCESS (int,          m_pyrLevels_i,             PyramidLevels);
+        ADD_PARAM_ACCESS (bool,         m_detectGFTT_b,            DetectGFTT );      
+        ADD_PARAM_ACCESS (double,       m_harrisK_d,               HarrisK );      
+        ADD_PARAM_ACCESS (double,       m_minHarrisResponse_d,     MinHarrisResponse);
        
     /// Parameters
     public:
@@ -118,6 +126,16 @@ namespace QCV
        CFeatureVector * getFeatureVector ()
        {
            return &m_featureVector;
+       }
+
+       cv::Mat &getCurrentImage() 
+       {
+          return m_currImg;
+       }
+
+       cv::Mat &getPreviousImage() 
+       {
+          return m_prevImg;
        }
        
     /// Help methods
@@ -203,6 +221,12 @@ namespace QCV
         // Pre-filter input image?
         bool                                m_preFilter_b;
        
+        // Pre-filter normalization mask size [px]
+        int                                 m_pFMaskSize_i;
+       
+        // Pre-filter clamp scale
+        float                               m_pFClampScale_f;
+
         /// Number of features to track
         int                                 m_numFeatures_i;
 
@@ -211,6 +235,9 @@ namespace QCV
 
         /// Min distance between features
 	int                                 m_minDistance_i;
+
+        /// Adaptive distance
+	bool                                m_adaptiveDistance_b;
 
         /// Check feature collisions
         bool                                m_checkCollisions_b;
@@ -246,7 +273,19 @@ namespace QCV
         CFeatureVector                      m_featureVector;
 
         /// Vector of selected eigenvalues.
-        std::vector< SEigenvalue >           m_eigenvalueVector;       
+        std::vector< SEigenvalue >           m_eigenvalueVector;
+
+       /// Search good fatures to track (thresholding min eigenvalue) or harris detector
+       bool                                  m_detectGFTT_b;
+
+       /// Harris K value
+       double                                m_harrisK_d;
+
+       /// Min harris response to sort values
+       double                                m_minHarrisResponse_d;
+
+       /// For display purposes
+       int                                   m_selectedIdx_i;
     };
 }
 #endif // __KLTTRACKER_H

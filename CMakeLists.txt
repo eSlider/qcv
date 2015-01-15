@@ -62,6 +62,14 @@ if(OPENCV_FOUND)
 endif(OPENCV_FOUND)
 
 ##################################
+# OPENMP
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
+##################################
 # QGLViewer
 
 find_package( QGLViewer  )
@@ -105,6 +113,7 @@ set ( LIBQCV_SRC
      eventHandlerBase.cpp
      helpWidget.cpp
      imagePyramid.cpp
+     imgRemapper.cpp
      lineList.cpp
      node.cpp
      numericalSolver.cpp
@@ -153,9 +162,11 @@ set ( LIBQCV_HEADERS
      glheader.h
      helpWidget.h
      imagePyramid.h
+     imgRemapper.h
      lineList.h
      linePlotter.h
      linePlotter_inline.h
+     medf_inline.h
      node.h
      numericalSolver.h
      polygonList.h

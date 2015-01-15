@@ -138,7 +138,13 @@ namespace QCV
         //// Scale horizontally only
         bool                        m_scaleHorOnly_b;
 
-       /// Scaled images
+        /// Scaled images
+        cv::Mat                     m_grayImage0;
+
+        /// Scaled images
+        cv::Mat                     m_grayImage1;         
+
+        /// Scaled images
         cv::Mat                     m_scaledImage0;
 
         /// Scaled images

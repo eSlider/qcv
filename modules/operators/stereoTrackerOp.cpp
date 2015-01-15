@@ -60,8 +60,12 @@ CStereoTrackerOp::CStereoTrackerOp ( COperator * const f_parent_p,
       m_resizeToOrigSize_b (                    true ),
       m_fovScale_f (                             1.f ),
       m_scaleHorOnly_b (                       false ),
-      m_scaledImage0 (                               ),   
+      m_grayImage0 (                                 ),
+      m_grayImage1 (                                 ),
+      m_scaledImage0 (                               ),
       m_scaledImage1 (                               ),
+      m_scaledImage2 (                               ),
+      m_scaledImage3 (                               ),
       m_unifiedFeatureVector (                       ),
       m_cropTopLeft (                         -1, -1 ),
       m_cropBottomRight (                     -1, -1 )
@@ -161,6 +165,22 @@ CStereoTrackerOp::cycle()
        cv::Mat img0 =  getInput<cv::Mat>("Image 0", cv::Mat() );
        cv::Mat img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
 
+       /// Convert to gray scale if in RGB format.
+       if ( img0.type() == CV_8UC3 )
+       {
+          cvtColor(img0, m_scaledImage0, CV_BGR2GRAY);
+          registerOutput<cv::Mat>("Image 0", &m_scaledImage0);
+       }
+
+       /// Convert to gray scale if in RGB format.
+       if ( img1.type() == CV_8UC3 )
+       {
+          cvtColor(img1, m_scaledImage1, CV_BGR2GRAY);
+          registerOutput<cv::Mat>("Image 1", &m_scaledImage1);
+       }
+
+       img0 =  getInput<cv::Mat>("Image 0", cv::Mat() );
+       img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
        if (img0.cols > 0 && img1.cols > 0 && m_fovScale_f < 1.f)
        {
           float fov_f       = atan(img0.cols/(2*m_origCamera.getFocalLength()));
@@ -184,8 +204,8 @@ CStereoTrackerOp::cycle()
              else
              {
                 float scale_f = newWidth_f/img0.cols;
-                m_scaledImage0 = img0(roi).clone();
-                m_scaledImage1 = img1(roi).clone();
+                img0(roi).copyTo(m_scaledImage0);
+                img1(roi).copyTo(m_scaledImage1);
                 m_camera.setU0( m_camera.getU0() - roi.x );
                 m_camera.setV0( m_camera.getV0() - roi.y );
              }
@@ -245,7 +265,7 @@ CStereoTrackerOp::cycle()
                                         featVec2->begin(), featVec2->end() );
        
        registerOutput <CFeatureVector> ( "Unified Feature Vector", 
-                                         &m_unifiedFeatureVector );      
+                                         &m_unifiedFeatureVector );
 
        COperator::cycle(m_featStereo_p);
 
@@ -257,7 +277,16 @@ CStereoTrackerOp::cycle()
 
 
           getParentOp() -> registerOutput <CFeatureVector> ( m_kltTracker_p->getFeaturePointVectorId(), 
-                                                             m_kltTracker_p->getFeatureVector() );          
+                                                             m_kltTracker_p->getFeatureVector() );      
+
+          
+          std::string str = "KltTrackerOp Previous Image";
+          getParentOp() -> registerOutput <cv::Mat> ( str,
+                                                      &m_kltTracker_p->getPreviousImage() );      
+          
+          str = "KltTrackerOp Current Image";
+          getParentOp() -> registerOutput <cv::Mat> ( str,
+                                                      &m_kltTracker_p->getCurrentImage() );
        }
     }
     

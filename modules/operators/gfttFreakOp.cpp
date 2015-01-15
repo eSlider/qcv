@@ -256,7 +256,7 @@ CGfttFreakOp::~CGfttFreakOp ()
 bool
 CGfttFreakOp::cycle()
 {   
-   m_prevImg = m_img.clone();
+   m_img.copyTo(m_prevImg);
 
    if ( m_compute_b )
       m_img = getInput<cv::Mat>(m_inpImageId_str, cv::Mat() ); 
@@ -308,7 +308,7 @@ CGfttFreakOp::cycle()
                   if (m_normalizedCorr_b)
                      cv::normalize(m_prevImg(roi), img, 0, 255, cv::NORM_MINMAX, CV_8UC1);
                   else
-                     img = m_prevImg(roi).clone();
+                     m_prevImg(roi).copyTo(img);
                   
                   memcpy(&modDescriptors.at<uint8_t>(i, 0),
                          img.data,
@@ -437,7 +437,7 @@ CGfttFreakOp::cycle()
                if (m_normalizedCorr_b)
                   cv::normalize(m_img(roi), img, 0, 255, cv::NORM_MINMAX, CV_8UC1);
                else
-                  img = m_img(roi).clone();
+                  m_img(roi).copyTo(img);
 
                memcpy(&currFeatures.descriptors.at<uint8_t>(i, 0),
                       img.data,
@@ -498,7 +498,7 @@ CGfttFreakOp::cycle()
          if (motion_p)
             motion = *motion_p;         
 
-#if defined ( _OPENMP )
+#if 0 && defined ( _OPENMP )
          const unsigned int numThreads_ui = omp_get_max_threads();
 #pragma omp parallel for num_threads(numThreads_ui) schedule(dynamic)
 #endif
@@ -537,6 +537,16 @@ CGfttFreakOp::cycle()
          }
          stopClock ("Matcher - Create Mask");
 
+         // Matching from the previous frame to the current frame
+         startClock ("Forward Matching");
+         m_matcher_p->knnMatch( prevFeatures.descriptors, 
+                                currFeatures.descriptors, 
+                                prevFeatures.radius_matches_v,
+                                1,
+                                match_mask);//m_featureMatchTh_f);
+         stopClock ("Forward Matching");
+
+      
          // Matching from the current frame to the previous frame
          startClock ("Backward Matching");
          m_matcher_p->knnMatch( currFeatures.descriptors, 
@@ -546,35 +556,21 @@ CGfttFreakOp::cycle()
                                 match_mask.t());//m_featureMatchTh_f);
          stopClock ("Backward Matching");
       
-         bool m_bidirectionalRemapper_b = true;
-         if (m_bidirectionalRemapper_b)
+         startClock ("Check consistency");      
+         // Check the consistency of the matches.
+         for(size_t i = 0; i < currFeatures.radius_matches_v.size(); i ++) 
          {
-            // Matching from the previous frame to the current frame
-            startClock ("Forward Matching");
-            m_matcher_p->knnMatch( prevFeatures.descriptors, 
-                                   currFeatures.descriptors, 
-                                   prevFeatures.radius_matches_v,
-                                   1,
-                                   match_mask);//m_featureMatchTh_f);
-            stopClock ("Forward Matching");
-            
-            
-            startClock ("Check consistency");      
-            // Check the consistency of the matches.
-            for(size_t i = 0; i < currFeatures.radius_matches_v.size(); i ++) 
+            if(currFeatures.radius_matches_v[i].size() != 0)  
             {
-               if(currFeatures.radius_matches_v[i].size() != 0)  
+               if( prevFeatures.radius_matches_v[currFeatures.radius_matches_v[i].at(0).trainIdx].empty() ||
+                   prevFeatures.radius_matches_v[currFeatures.radius_matches_v[i].at(0).trainIdx].at(0).trainIdx != (signed)i) 
                {
-                  if( prevFeatures.radius_matches_v[currFeatures.radius_matches_v[i].at(0).trainIdx].empty() ||
-                      prevFeatures.radius_matches_v[currFeatures.radius_matches_v[i].at(0).trainIdx].at(0).trainIdx != (signed)i) 
-                  {
-                     currFeatures.radius_matches_v[i].clear();
-                  }
-                  
+                  currFeatures.radius_matches_v[i].clear();
                }
+
             }
-            stopClock ("Check consistency");
          }
+         stopClock ("Check consistency");
          
          stopClock ("Matcher");
          

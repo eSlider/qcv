@@ -352,7 +352,7 @@ CLinearHoughTransform::compute ( )
     bool onlyApplyGauss_b = true;
     
     if (onlyApplyGauss_b)
-        m_accumImg = m_auxImg.clone();
+       m_auxImg.copyTo(m_accumImg);
     else
     {
         int w_i = m_accumImg.size().width;
@@ -704,8 +704,8 @@ CLinearHoughTransform::copyFrom ( const CLinearHoughTransform & other )
     m_scale = other.m_scale;    
     allocateAccumulator();
 
-    m_accumImg = other.m_accumImg.clone();
-    m_auxImg   = other.m_auxImg.clone();
+    other.m_accumImg.copyTo(m_accumImg);
+    other.m_auxImg.copyTo(m_auxImg);
 
     return true;
 }

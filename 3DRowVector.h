@@ -128,10 +128,14 @@ namespace QCV
 
         void     set (double f_x_d, double f_y_d, double f_z_d) { m_x_d = f_x_d; m_y_d = f_y_d; m_z_d = f_z_d; }
 
-        void     setX( double f_val_d ) { m_x_d = f_val_d; }
-        void     setY( double f_val_d ) { m_y_d = f_val_d; }
-        void     setZ( double f_val_d ) { m_z_d = f_val_d; }
+        bool    setX( double f_val_d ) { m_x_d = f_val_d; return true; }
+        bool    setY( double f_val_d ) { m_y_d = f_val_d; return true; }
+        bool    setZ( double f_val_d ) { m_z_d = f_val_d; return true; }
 
+        double  getX( ) const { return m_x_d; }
+        double  getY( ) const { return m_y_d; }
+        double  getZ( ) const { return m_z_d; }
+ 
         double   x() const { return m_x_d; }
         double   y() const { return m_y_d; }
         double   z() const { return m_z_d; }        

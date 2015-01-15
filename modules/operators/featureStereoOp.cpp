@@ -244,8 +244,8 @@ CFeatureStereoOp::cycle()
          if (m_preFilter_b)
          {
             startClock ("Pre-filtering");            
-            m_lImg = getInput<cv::Mat>( m_idLeftImage_str,  cv::Mat() ).clone();
-            m_rImg = getInput<cv::Mat>( m_idRightImage_str, cv::Mat() ).clone();
+            getInput<cv::Mat>( m_idLeftImage_str,  cv::Mat() ).copyTo(m_lImg);
+            getInput<cv::Mat>( m_idRightImage_str, cv::Mat() ).copyTo(m_rImg);
             int ddepth = CV_32F;
             cv::Mat imgf,imgf2;
             cv::Mat *imgs_p[2] = {&m_lImg, &m_rImg};

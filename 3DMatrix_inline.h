@@ -581,8 +581,10 @@ inline void
 C3DMatrix::rotateAxis ( C3DRowVector f_axis )
 {
     double angle_d = f_axis.magnitude();
-    f_axis /= angle_d;
 
+    if ( fabs(angle_d) > 1.e-9) 
+       f_axis /= angle_d;
+    
     return rotateAxis ( f_axis, angle_d );
 }
 

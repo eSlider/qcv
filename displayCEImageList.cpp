@@ -80,7 +80,7 @@ CDisplayColorEncImageList::add (  cv::Mat *           f_image_p,
     else
     {
         newImage.image_p = new cv::Mat;
-        *newImage.image_p = f_image_p->clone();
+        f_image_p->copyTo(*newImage.image_p);
     }
 
     //if (res_b)

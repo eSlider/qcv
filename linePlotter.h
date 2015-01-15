@@ -76,6 +76,11 @@ namespace QCV
                     int           f_w_i,
                     int           f_h_i );
 
+        void plot ( CDrawingList *f_list_p,
+                    int           f_x_i,
+                    int           f_y_i,
+                    int           f_w_i,
+                    int           f_h_i );
     private:
         /// Data 
         std::vector<_Type>        m_data;

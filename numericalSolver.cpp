@@ -3,6 +3,12 @@
 
 #include "numericalSolver.h"
 
+//// OpenMP includes.
+#if defined ( _OPENMP )
+#undef _OPENMP
+//#include <omp.h>
+#endif
+
 namespace NumericalSolver
 {
    double 
@@ -23,14 +29,25 @@ namespace NumericalSolver
          f_hesseMatrix_p[f_m_i*i+i] = 1;
 
 
-      double *params_p = new double[f_m_i];
+#if defined ( _OPENMP )
+      const unsigned int numThreads_ui = omp_get_max_threads();
+#else
+      const unsigned int numThreads_ui = 1;
+#endif
 
-// #if defined ( _OPENMP )
-//       const unsigned int numThreads_ui = omp_get_max_threads();
-// #pragma omp parallel for num_threads(numThreads_ui) schedule(dynamic)
-// #endif
+      double *paramsData_p = new double[f_m_i*numThreads_ui];
+
+#if defined ( _OPENMP )
+#pragma omp parallel for num_threads(numThreads_ui) schedule(dynamic)
+#endif
       for (int i = 0; i < f_n_i; i++)
       { 
+#if defined ( _OPENMP )
+         int threadNum_i = omp_get_thread_num();
+         double * const params_p = paramsData_p + f_m_i * threadNum_i;
+#else
+         double * const params_p = paramsData_p;
+#endif
          double fval[3];
          double tempg1, tempg2;
 
@@ -69,7 +86,7 @@ namespace NumericalSolver
          }
       }
 
-      delete [] params_p;
+      delete [] paramsData_p;
       
       return valAtMin_d;
    }

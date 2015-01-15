@@ -51,11 +51,14 @@ CKltTrackerOp::CKltTrackerOp ( COperator * const f_parent_p,
       m_compute_b (                             true ),
       m_respCE (   CColorEncoding::CET_BLUE2GREEN2RED,
                                S2D<float> ( 0, 200 ) ),
-      m_preFilter_b (                         false ),
+      m_preFilter_b (                          false ),
+      m_pFMaskSize_i (                            27 ),
+      m_pFClampScale_f (                        10.f ),
 
       m_numFeatures_i (                         4096 ),
       m_pyrLevels_i (                              8 ),
       m_minDistance_i (                            4 ),
+      m_adaptiveDistance_b (                   false ),
       m_checkCollisions_b (                     true ),
       m_maxSqDist4Collision_f (                  9.f ),
       m_kernelSize_i (                             3 ),
@@ -65,7 +68,12 @@ CKltTrackerOp::CKltTrackerOp ( COperator * const f_parent_p,
       m_useSubPix_b (                           true ),
       m_subPixBlockSize_i (                        3 ), 
       m_subPixIterNum_i (                        100 ),
-      m_subPixEPS_f (                          0.001 )
+      m_subPixEPS_f (                          0.001 ),
+      m_detectGFTT_b (                          true ),
+      m_harrisK_d (                             0.04 ),
+      m_minHarrisResponse_d (                  0.001 ),
+      m_selectedIdx_i (                           -1 )
+
 {
     registerDrawingLists(  );
     registerParameters (  );
@@ -91,6 +99,10 @@ CKltTrackerOp::registerDrawingLists(  )
     registerDrawingList ( "Matches",
                           S2D<int> (0, 0),
                           true);    
+
+    registerDrawingList ( "Feature Mask",
+                          S2D<int> (0, 0),
+                          showImages_b);
 }
 
 void
@@ -117,6 +129,20 @@ CKltTrackerOp::registerParameters( )
                           this,
                           PreFilter, 
                           CKltTrackerOp );
+
+      ADD_INT_PARAMETER( "Pre-Filter Mask Size", 
+                         "Mask size for box-filter normalization [px]",
+                         m_pFMaskSize_i,
+                         this,
+                         PreFilterMaskSize, 
+                         CKltTrackerOp );
+
+      ADD_FLOAT_PARAMETER( "Pre-Filter Clamp Scale", 
+                           "Pre-filter clamp scale",
+                           m_pFClampScale_f,
+                           this,
+                           PreFilterClampScale, 
+                           CKltTrackerOp );
     END_PARAMETER_GROUP;     
      
     BEGIN_PARAMETER_GROUP("Computation", false, SRgb(220,0,0));
@@ -180,13 +206,41 @@ CKltTrackerOp::registerParameters( )
                          this,
                          MinDistance,
                          CKltTrackerOp );
+
+      ADD_BOOL_PARAMETER( "Adaptive Distance",
+                          "Min distance between detected features.",
+                          m_adaptiveDistance_b,
+                          this,
+                          AdaptiveDistance,
+                          CKltTrackerOp );
       
+      ADD_BOOL_PARAMETER( "Detect GFTT",
+                           "If true, detects thresholding min eigenvalue. Otherwise Harris.",
+                           m_detectGFTT_b,
+                           this,
+                           DetectGFTT,
+                           CKltTrackerOp );      
+
+      ADD_DOUBLE_PARAMETER( "Harris K",
+                            "K parameter value for Harris corner detector.",
+                            m_harrisK_d,
+                            this,
+                            HarrisK,
+                            CKltTrackerOp );      
+
       ADD_FLOAT_PARAMETER( "Min Eigenvalue",
                            "Min eigenvalue to consider for detection.",
                            m_minEigenvalue_f,
                            this,
                            MinEigenvalue,
                            CKltTrackerOp );      
+
+      ADD_DOUBLE_PARAMETER( "Min Harris Response",
+                            "Min Harris response to sort values.",
+                            m_minHarrisResponse_d,
+                            this,
+                            MinHarrisResponse,
+                            CKltTrackerOp );      
 
       ADD_BOOL_PARAMETER( "Apply SPE after GFTT",
                           "Use Sub Pixel Estimation after GoodFeaturesToTrack",
@@ -227,6 +281,8 @@ CKltTrackerOp::registerParameters( )
 
       addDrawingListParameter ( "Matches" );
 
+      addDrawingListParameter ( "Feature Mask" );
+
       addColorEncodingParameter (  m_respCE,
                                    getParameterSet(),
                                    "Vector Length",
@@ -243,7 +299,8 @@ CKltTrackerOp::~CKltTrackerOp ()
 /// Cycle event.
 bool CKltTrackerOp::cycle()
 {   
-   m_prevImg = m_currImg.clone();
+   if (m_currImg.cols > 0)
+      m_currImg.copyTo(m_prevImg);
 
    cv::Mat img;
 
@@ -264,11 +321,11 @@ bool CKltTrackerOp::cycle()
          cv::boxFilter( img, imgf, ddepth, cv::Size(19,19), cv::Point(-1,-1), true, cv::BORDER_DEFAULT );
          img.convertTo ( imgf2, CV_32F, 1., 0);
          imgf -= imgf2;
-         imgf.convertTo ( m_currImg, CV_8U, 5, 127);
+         imgf.convertTo ( m_currImg, CV_8U, m_pFClampScale_f, 127);
          stopClock ("Pre-filtering");            
       }
       else
-         m_currImg = img.clone();
+         img.copyTo(m_currImg);
 
       startClock ("Copy Feature Vector");
 
@@ -308,11 +365,11 @@ bool CKltTrackerOp::cycle()
                            
                            if ( m_featureVector[i].e < m_featureVector[j].e )
                            {
-                              m_featureVector[i].state = SFeature::FS_UNINITIALIZED;
+                              m_featureVector[i].clear();
                            }
                            else
                            {
-                              m_featureVector[j].state = SFeature::FS_UNINITIALIZED;
+                              m_featureVector[i].clear();
                            }                                    
                            break;
                         }
@@ -333,6 +390,7 @@ bool CKltTrackerOp::cycle()
 
          bool predict_b = m_usePrediction_b && camera_p && motion_p;
          
+         //std::vector<cv::Point2f> featpred; // FOR PAPER
          for (size_t i = 0; i < m_numFeatures_i; ++i)
          {
             if ( m_featureVector[i].state == SFeature::FS_TRACKED || 
@@ -343,8 +401,6 @@ bool CKltTrackerOp::cycle()
                
                if ( m_featureVector[i].d > 0 && predict_b )
                {
-                  printf("Predicting image position for feature %i with disparity %f\n",
-                         i, m_featureVector[i].d);
                   C3DVector prediction ( m_featureVector[i].u,
                                          m_featureVector[i].v,
                                          m_featureVector[i].d );
@@ -361,7 +417,7 @@ bool CKltTrackerOp::cycle()
                      }
                   }
                }
-               
+               //featpred.push_back (curr); // FOR PAPER
                featcurr_ocv.push_back ( curr );
                mapping_v.push_back(i);
             }
@@ -394,6 +450,14 @@ bool CKltTrackerOp::cycle()
             int j = mapping_v[i];
             if (status_ocv[i] )
             {
+/* // FOR PAPER
+               C3DVector d1(featcurr_ocv[i].x-featpred[i].x, 
+                            featcurr_ocv[i].y-featpred[i].y,0.);
+               C3DVector d2(featcurr_ocv[i].x-featprev_ocv[i].x, 
+                            featcurr_ocv[i].y-featprev_ocv[i].y,0.);
+               if (predict_b)
+                  printf("Measurement  for %i is %f %f preddist %f prevdist %f \n", i, featcurr_ocv[i].x, featcurr_ocv[i].y, d1.magnitude(), d2.magnitude() );
+*/
                int j = mapping_v[i];
                m_featureVector[j].u      = featcurr_ocv[i].x;
                m_featureVector[j].v      = featcurr_ocv[i].y;
@@ -413,6 +477,8 @@ bool CKltTrackerOp::cycle()
       selectGoodFeatures();
       stopClock ("Select Good Features");
       
+      registerOutput<cv::Mat>("KltTrackerOp Previous Image", &m_prevImg );      
+      registerOutput<cv::Mat>("KltTrackerOp Current Image",  &m_currImg );
       registerOutput<CFeatureVector>(m_featPointVector_str, &m_featureVector );      
    }
    
@@ -422,16 +488,7 @@ bool CKltTrackerOp::cycle()
 /// Select good features to track.
 void
 CKltTrackerOp::selectGoodFeatures()
-{     
-   startClock ("Select Good Features - cvcornerMinEigenVal");
-
-   cv::cornerMinEigenVal( m_currImg,
-                          m_eigenImg,
-                          m_kernelSize_i,
-                          m_kernelSize_i);
-        
-   stopClock ("Select Good Features - cvcornerMinEigenVal");
-        
+{       
    startClock ("Select Good Features - Occupancy Mask Update");
    /// First pass: update occupancy mask.
    m_featureMask = cv::Mat(m_currImg.size(), CV_8U, cv::Scalar(0));
@@ -440,15 +497,24 @@ CKltTrackerOp::selectGoodFeatures()
    {
       if ( m_featureVector[i].state == SFeature::FS_TRACKED || 
            m_featureVector[i].state == SFeature::FS_NEW )
-      {    
+      {
+         C3DVector p (m_featureVector[i].u - m_currImg.cols/2.,
+                      m_featureVector[i].v - m_currImg.rows/2., 0.);
+
+         int minDist_i;
+         if  ( m_adaptiveDistance_b )
+            minDist_i = std::min(std::max(1, int(m_minDistance_i * p.magnitude()/(m_currImg.cols/2.))), m_minDistance_i);
+         else
+            minDist_i = m_minDistance_i;
+         
          int fx = int(m_featureVector[i].u + .5);
          int fy = int(m_featureVector[i].v + .5);
                 
          /// Mark region in mask image.
-         int minK = std::max(fy - m_minDistance_i, 0);
-         int maxK = std::min(fy + m_minDistance_i, m_featureMask.rows-1);
-         int minL = std::max(fx - m_minDistance_i, 0);
-         int maxL = std::min(fx + m_minDistance_i, m_featureMask.cols-1);
+         int minK = std::max(fy - minDist_i, 0);
+         int maxK = std::min(fy + minDist_i, m_featureMask.rows-1);
+         int minL = std::max(fx - minDist_i, 0);
+         int maxL = std::min(fx + minDist_i, m_featureMask.cols-1);
                 
          for (int k = minK; k<=maxK; ++k)
          {
@@ -461,9 +527,31 @@ CKltTrackerOp::selectGoodFeatures()
 
    stopClock ("Select Good Features - Occupancy Mask Update");
         
+   startClock ("Select Good Features - Build corner reponse image");
+
+   if (m_detectGFTT_b)
+   {
+      cv::cornerMinEigenVal( m_currImg,
+                             m_eigenImg,
+                             m_kernelSize_i,
+                             m_kernelSize_i);
+   }
+   else
+   {
+      cv::cornerHarris( m_currImg,
+                        m_eigenImg,
+                        m_kernelSize_i,
+                        3,
+                        m_harrisK_d);
+   }
+      
+   stopClock ("Select Good Features - Build corner reponse image");
+
    startClock ("Select Good Features - Sort Eigenvalues");
    /// Order eigenvalues now.
    m_eigenvalueVector.clear();
+
+   float threshold_f = m_detectGFTT_b?m_minEigenvalue_f:m_minHarrisResponse_d;
 
    for (int i = 2; i < (int)m_eigenImg.rows - 2; ++i)
    {
@@ -472,7 +560,7 @@ CKltTrackerOp::selectGoodFeatures()
            
       for ( int j = 2; j < (int)m_eigenImg.cols - 2; ++j, ++eigenvalue_p, ++mask_p )
       {
-         if ( *eigenvalue_p > m_minEigenvalue_f &&
+         if ( *eigenvalue_p > threshold_f &&
               ! (*mask_p) )
          { 
             m_eigenvalueVector.push_back ( SEigenvalue( j, i, *eigenvalue_p ) );                    
@@ -492,6 +580,9 @@ CKltTrackerOp::selectGoodFeatures()
    const size_t imgNr_u = getInput<int> ("Frame Number", 0 );     
 
    /// Second pass: fill empty vector spaces with new features.
+   std::vector<cv::Point2f> addedPts_v;
+   std::vector<size_t>      addedIdx_v;
+   
    int i;
    for (i = 0; i < m_numFeatures_i; ++i)
    {
@@ -517,11 +608,20 @@ CKltTrackerOp::selectGoodFeatures()
 
          if ( !mask_i )
          {
+            C3DVector p (eigenvalue.x - m_currImg.cols/2.,
+                         eigenvalue.y - m_currImg.rows/2., 0.);
+            
+            int minDist_i;
+            if  ( m_adaptiveDistance_b )
+               minDist_i = std::min(std::max(1, int(m_minDistance_i * p.magnitude()/(m_currImg.cols/2.))), m_minDistance_i);
+            else
+               minDist_i = m_minDistance_i;
+
             /// Mark region in mask image.
-            int minK = std::max(eigenvalue.y - m_minDistance_i, 0);
-            int maxK = std::min(eigenvalue.y + m_minDistance_i, (int)m_featureMask.rows-1);
-            int minL = std::max(eigenvalue.x - m_minDistance_i, 0);
-            int maxL = std::min(eigenvalue.x + m_minDistance_i, (int)m_featureMask.cols-1);
+            int minK = std::max(eigenvalue.y - minDist_i, 0);
+            int maxK = std::min(eigenvalue.y + minDist_i, (int)m_featureMask.rows-1);
+            int minL = std::max(eigenvalue.x - minDist_i, 0);
+            int maxL = std::min(eigenvalue.x + minDist_i, (int)m_featureMask.cols-1);
                     
             for (int k = minK; k<=maxK; ++k)
             {
@@ -538,6 +638,9 @@ CKltTrackerOp::selectGoodFeatures()
             m_featureVector[i].f     = imgNr_u;
             m_featureVector[i].t     = 0;
             m_featureVector[i].state = SFeature::FS_NEW;
+
+            addedPts_v.push_back(cv::Point2f(eigenvalue.x,eigenvalue.y));
+            addedIdx_v.push_back (i);
          }
          else
          {
@@ -546,7 +649,28 @@ CKltTrackerOp::selectGoodFeatures()
          }
       }
    }
-
+   
+   // sub-pixel estimation
+   if(m_useSubPix_b)
+   {
+      startClock ("Select Good Features - Sub-pixel");
+      cv::cornerSubPix (m_currImg, 
+                        addedPts_v,
+                        cv::Size (m_subPixBlockSize_i, 
+                                  m_subPixBlockSize_i), 
+                        cv::Size (-1, -1), 
+                        cv::TermCriteria ( CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 
+                                           m_subPixIterNum_i,
+                                           m_subPixEPS_f) );
+      
+      for(size_t i = 0; i < addedPts_v.size(); ++i) 
+      {
+         m_featureVector[addedIdx_v[i]].u = addedPts_v[i].x;
+         m_featureVector[addedIdx_v[i]].v = addedPts_v[i].y;
+      }
+      stopClock ("Select Good Features - Sub-pixel");
+   }
+   
    // Mark the rest of the vector that could not be filled
    // with new features with uninitialized states.
    for (; i < m_numFeatures_i; ++i)
@@ -572,22 +696,20 @@ bool CKltTrackerOp::show()
       list_p->addImage ( m_currImg, 0, 0, m_currImg.cols, m_currImg.rows);   
    }
 
-   list_p = getDrawingList ("Previous Image");
-   list_p -> clear();
-
-   if ( list_p -> isVisible())
-   {
-      list_p->addImage ( m_prevImg, 0, 0, m_prevImg.cols, m_prevImg.rows);   
-   }
+   CDrawingList *list2_p = getDrawingList ("Previous Image");
+   list2_p -> clear();
 
    list_p = getDrawingList ("Matches");
    list_p -> clear();
 
    if ( list_p -> isVisible())
    {
-      list_p->addImage ( m_currImg, 0, 0, m_currImg.cols, m_currImg.rows);   
       for(size_t i = 0; i < m_featureVector.size(); i++) 
       {
+         if ( m_selectedIdx_i == i && 
+              ( m_featureVector[i].state != SFeature::FS_TRACKED ) )
+            m_selectedIdx_i = -1;
+
          if (m_featureVector[i].state == SFeature::FS_TRACKED)
          {
             double dx = m_featureVector[i].u - m_prevFeatureVector[i].u;
@@ -595,23 +717,53 @@ bool CKltTrackerOp::show()
             
             double sqDist_d = dx*dx+dy*dy;
             
+            if (i == m_selectedIdx_i)
+            {
+               list_p -> setLineWidth (1);
+               list_p -> setLineColor (SRgb(255,255,255));
+               list_p -> addCross ( m_featureVector[i].u, 
+                                    m_featureVector[i].v,
+                                    m_kernelSize_i/2. );
+               list_p -> setLineWidth (5);
+            }
+            else
+            {
+               list_p -> setLineWidth (2);
+            }
+            
             SRgb color;
             m_respCE.colorFromValue ( sqrt(sqDist_d),
                                       color );
             
             list_p -> setLineColor (color);
             list_p -> setFillColor (SRgba(color,120));
-            list_p -> setLineWidth (2);
+         
+         
+            list_p -> addCircle ( m_featureVector[i].u, 
+                                  m_featureVector[i].v,
+                                  m_kernelSize_i/2. );
 
-            list_p -> addFilledCircle ( m_featureVector[i].u, 
-                                        m_featureVector[i].v,
-                                        4 );
-            
             list_p -> addLine( m_featureVector[i].u, 
                                m_featureVector[i].v,
                                m_prevFeatureVector[i].u, 
                                m_prevFeatureVector[i].v );
+
+            if (list2_p->isVisible())
+            {
+               list2_p -> setLineColor (color);
+               list2_p -> setFillColor (SRgba(color,120));
+               list2_p -> setLineWidth (2);
+               list2_p -> addCircle ( m_prevFeatureVector[i].u, 
+                                      m_prevFeatureVector[i].v,
+                                      m_kernelSize_i/2. );
+               list2_p -> addLine( m_featureVector[i].u, 
+                                   m_featureVector[i].v,
+                                   m_prevFeatureVector[i].u, 
+                                   m_prevFeatureVector[i].v );
+            }
+            
          }
+/*
          else if (m_featureVector[i].state == SFeature::FS_NEW)
          {
             SRgb color = SRgb(255,0,0);
@@ -632,9 +784,37 @@ bool CKltTrackerOp::show()
                                   m_featureVector[i].v,
                                   1 );
          }
+*/
       }
+      list_p->addImage ( m_currImg, 0, 0, m_currImg.cols, m_currImg.rows);
+      list_p->setLineColor ( SRgb(255,0,0));   
+      list_p -> setLineWidth(10);
+      list_p->setLineColor ( SRgb(0,0,0));   
+      list_p->addText("Current Image", 20, 420, 20, false);
+      list_p->setLineColor ( SRgb(255,0,0));   
+      list_p->addText("Current Image", 21, 421, 20, false);
    }
    
+
+   if ( list2_p -> isVisible())
+   {
+      list2_p->addImage ( m_prevImg, 0, 0, m_prevImg.cols, m_prevImg.rows);   
+      list2_p -> setLineWidth(10);
+      list2_p->setLineColor ( SRgb(0,0,0));   
+      list2_p->addText("Previous Image", 20, 420, 20, false);
+      list2_p->setLineColor ( SRgb(255,0,0));   
+      list2_p->addText("Previous Image", 21, 421, 20, false);
+   }
+
+   list_p = getDrawingList ("Feature Mask");
+   list_p -> clear();
+
+   if ( list_p -> isVisible())
+   {
+      list_p->addImage ( m_featureMask, 0, 0, m_currImg.cols, m_currImg.rows);   
+   }
+
+
    return COperator::show();
 }
 
@@ -672,7 +852,62 @@ bool CKltTrackerOp::exit()
 }
 
 void 
-CKltTrackerOp::mouseMoved ( CMouseEvent * /*f_event_p */ )
+CKltTrackerOp::keyPressed ( CKeyEvent * f_event_p )
 {
+   if (f_event_p->qtKeyEvent_p -> key() == Qt::Key_U)
+   {
+      m_selectedIdx_i = -1;
+      show();
+      updateDisplay();
+   }
+   return COperator::keyPressed ( f_event_p );    
+}
+
+void 
+CKltTrackerOp::mouseMoved ( CMouseEvent * f_event_p )
+{
+   if ( m_currImg.cols <= 0) return COperator::mouseMoved ( f_event_p );
+
+   const double dispWidth_d  = getScreenSize().width;
+   const double dispHeight_d = getScreenSize().height;
+   
+   const CDrawingList *  drawList_p   = getDrawingList ("Matches");
+   
+   bool mouseOnDL_b   = ( f_event_p -> displayScreen == drawList_p->getPosition() && 
+                          drawList_p -> isVisible() );
+   
+   if ( mouseOnDL_b )
+   {
+        double imgPosU_d = f_event_p -> posInScreen.x;
+        double imgPosV_d = f_event_p -> posInScreen.y;
+
+        if ( (f_event_p -> qtMouseEvent_p -> buttons() & Qt::LeftButton) )
+        {
+           double minDist_d = 1.e6;
+
+           m_selectedIdx_i = -1;
+
+           for(size_t i = 0; i < m_featureVector.size(); i++) 
+           {
+              if ( m_featureVector[i].state == SFeature::FS_TRACKED || 
+                   m_featureVector[i].state == SFeature::FS_NEW )
+              {
+                 double dx = m_featureVector[i].u - imgPosU_d;
+                 double dy = m_featureVector[i].v - imgPosV_d;
+
+                 double dist_d = sqrt(dx*dx+dy*dy);
+                 
+                 if (dist_d < 16 && dist_d < minDist_d)
+                 {
+                    minDist_d = dist_d;
+                    m_selectedIdx_i = i;
+                 }
+              }
+           }
+        }
+        show();
+        updateDisplay();
+   }
+   return COperator::mouseMoved ( f_event_p );
 }
 

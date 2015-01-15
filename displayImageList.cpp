@@ -219,7 +219,7 @@ bool CDisplayImageList::add ( cv::Mat             f_image,
     SDisplayImage * newImage_p = new SDisplayImage;
 
     if ( f_makeCopy_b )
-        newImage_p->image = f_image.clone();
+       f_image.copyTo(newImage_p->image);
     else
         newImage_p->image = f_image;
 

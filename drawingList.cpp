@@ -597,6 +597,22 @@ CDrawingList::addFilledTriangle ( const S2D<float> f_vertex1,
 
 /// Add cross.
 bool
+CDrawingList::addCross ( const float f_u1_f, const float f_v1_f, float f_radius_f )
+{
+
+    bool ok_b = m_lines.add ( f_u1_f-f_radius_f, f_v1_f-f_radius_f, f_u1_f+f_radius_f, f_v1_f+f_radius_f,
+                              m_lineColor,
+                              m_lineWidth_f );
+
+    ok_b &= m_lines.add ( f_u1_f-f_radius_f, f_v1_f+f_radius_f, f_u1_f+f_radius_f, f_v1_f-f_radius_f,
+                          m_lineColor,
+                          m_lineWidth_f );
+
+    return ok_b;
+}
+
+/// Add cross.
+bool
 CDrawingList::addCross ( const float f_u1_f, const float f_v1_f,
                          const float f_u2_f, const float f_v2_f )
 {
@@ -615,7 +631,7 @@ CDrawingList::addCross ( const float f_u1_f, const float f_v1_f,
 /// Add cross.
 bool
 CDrawingList::addCross ( const S2D<float> f_tl, 
-                             const S2D<float> f_br )
+                         const S2D<float> f_br )
 {
     return addCross ( f_tl.x, f_tl.y, 
                       f_br.x, f_br.y );

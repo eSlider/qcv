@@ -263,6 +263,10 @@ namespace QCV
                                        const float f_u2_f, const float f_v2_f );
 
         /// Add cross.
+        virtual bool        addCross ( const float f_u1_f, const float f_v1_f,
+                                       const float f_radius_f );
+
+        /// Add cross.
         virtual bool        addCross ( const S2D<float> f_tl, 
                                        const S2D<float> f_br );
 

@@ -93,7 +93,7 @@ bool CSeqDevVideoCapture::nextFrame()
     if ( frame.size().width < 0 ) return false;
 
     m_imageData_v.resize(1);
-    m_imageData_v[0].image = frame.clone();
+    frame.copyTo(m_imageData_v[0].image);
 
     /// Get time stamp.
     m_imageData_v[0].timeStamp_d = m_capture_p->get ( CV_CAP_PROP_POS_MSEC );

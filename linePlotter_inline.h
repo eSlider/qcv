@@ -118,13 +118,31 @@ CLinePlotter<_Type>::plot ( CDrawingList *f_list_p,
                             int           f_w_i,
                             int           f_h_i )
 {
+   plot ( f_list_p,
+          0,
+          0,
+          f_w_i,
+          f_h_i );
+}
+
+template <class _Type>
+inline void 
+CLinePlotter<_Type>::plot ( CDrawingList *f_list_p,
+                            int           f_x_i,
+                            int           f_y_i,
+                            int           f_w_i,
+                            int           f_h_i )
+{
     std::vector<_Type> & data = *m_data_p;
     
     if (data.size() == 0)  return;
     
+    SRgba plcolor   = f_list_p->getLineColor();
+    float plwidth_f = f_list_p->getLineWidth();
+    
     f_list_p->setLineColor ( 255, 255, 255 );    
     f_list_p->setLineWidth ( 2 );
-    f_list_p->addRectangle ( 0, 0, f_w_i, f_h_i);
+    f_list_p->addRectangle ( f_x_i, f_y_i, f_x_i+f_w_i, f_y_i+f_h_i);
 
     /// Search for maximum
 
@@ -169,6 +187,7 @@ CLinePlotter<_Type>::plot ( CDrawingList *f_list_p,
     float cX_f, cY_f;
 
     f_list_p->setLineWidth ( 1 );
+    f_list_p->setLineColor ( plcolor );    
 
     for (int i = 0; i < (int)data.size(); ++i)
     {
@@ -176,8 +195,8 @@ CLinePlotter<_Type>::plot ( CDrawingList *f_list_p,
 
         //printf("data[%i] = %f, val = %f\n", i, (float)data[i], (float)val_f);
 
-        cX_f =  ox_f + i * dx_f;
-        cY_f =  oy_f + ((float)val_f-(float)minVal) * dy_f;
+        cX_f =  f_x_i + ox_f + i * dx_f;
+        cY_f =  f_y_i + oy_f + ((float)val_f-(float)minVal) * dy_f;
 
         if ( val_f >= minVal && val_f <= maxVal )
             f_list_p->addSquare ( cX_f, cY_f,
@@ -192,12 +211,13 @@ CLinePlotter<_Type>::plot ( CDrawingList *f_list_p,
         pY_f = cY_f;
     }
 
+    f_list_p->setLineColor ( 255, 255, 255 );    
     /// Show grid now.
 
     float pow_i = (int)(log(range)/2.30258509299);
     float gMax_f = powf(10, (pow_i-1));
 
-    if ( range / gMax_f > 50 )
+    if ( range / gMax_f > 10 )
         gMax_f*=10;
 
     int   num_i = (int)((float)range / gMax_f + 0.5f);
@@ -220,17 +240,19 @@ CLinePlotter<_Type>::plot ( CDrawingList *f_list_p,
         else
             f_list_p->setLineWidth ( 2 );
 
-        f_list_p->addLine ( ox_f,       y_f,
-                            ox_f + w_f, y_f );
+        f_list_p->addLine ( f_x_i + ox_f,       f_y_i + y_f,
+                            f_x_i + ox_f + w_f, f_y_i + y_f );
 
 
         sprintf(str, "%.2f", minVal + i * gMax_f );
 
-        f_list_p-> addText ( str, 2, y_f - 4 , 8, false );
+        f_list_p-> addText ( str, f_x_i + 2, f_y_i + y_f - 4 , 8, false );
 
-        f_list_p->addLine ( ox_f,       y_f,
-                            ox_f + w_f, y_f );
+        f_list_p->addLine ( f_x_i + ox_f,       f_y_i + y_f,
+                            f_x_i + ox_f + w_f, f_y_i + y_f );
 
     }
+    f_list_p->setLineColor ( plcolor );    
+    f_list_p->setLineWidth ( plwidth_f );
 }
 

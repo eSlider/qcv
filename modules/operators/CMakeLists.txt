@@ -78,7 +78,6 @@ set ( LIBQCVOperators_SRC
      dynProgOp.cpp
      featureStereoOp.cpp
      gfttFreakOp.cpp
-     histogramOp.cpp
      houghTransformOp.cpp
      imgScalerOp.cpp
      kltTrackerOp.cpp
@@ -89,6 +88,7 @@ set ( LIBQCVOperators_SRC
      stereoTrackerOp.cpp
      surfOp.cpp
 
+     #histogramOp.cpp
      #groundTransEstimation.cpp
      #egoMotionOp.cpp
      #monoEgoMotionOp.cpp
@@ -101,7 +101,6 @@ set ( LIBQCVOperators_HEADERS
      dynProgOp.h
      featureStereoOp.h
      gfttFreakOp.h
-     histogramOp.cpp
      houghTransformOp.h
      imgScalerOp.h
      kltTrackerOp.h
@@ -112,6 +111,7 @@ set ( LIBQCVOperators_HEADERS
      stereoTrackerOp.h
      surfOp.h
 
+     #histogramOp.cpp
      #groundTransEstimation.h
      #egoMotionOp.h
      #monoEgoMotionOp.h

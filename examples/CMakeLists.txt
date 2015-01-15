@@ -11,8 +11,10 @@ add_subdirectory ( surfExample )
 add_subdirectory ( houghTransformExample )
 add_subdirectory ( gfttFreakExample )
 add_subdirectory ( stereoTrackerExample )
-#add_subdirectory ( voExample )
 
+#add_subdirectory ( histogram )
+#add_subdirectory ( voExample )
+#add_subdirectory ( nriProject )
 
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/imgs ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/imgs COPYONLY)
 

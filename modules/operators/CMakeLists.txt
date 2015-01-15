@@ -76,7 +76,6 @@ include(${QT_USE_FILE})
 
 set ( LIBQCVOperators_SRC
      dynProgOp.cpp
-     egoMotionOp.cpp
      featureStereoOp.cpp
      gfttFreakOp.cpp
      groundTransEstimation.cpp
@@ -91,6 +90,7 @@ set ( LIBQCVOperators_SRC
      stereoTrackerOp.cpp
      surfOp.cpp
 
+     #egoMotionOp.cpp
      #monoEgoMotionOp.cpp
      #voOp.cpp
      #nriOp.cpp
@@ -99,7 +99,6 @@ set ( LIBQCVOperators_SRC
 
 set ( LIBQCVOperators_HEADERS 
      dynProgOp.h
-     egoMotionOp.h
      featureStereoOp.h
      gfttFreakOp.h
      groundTransEstimation.h
@@ -114,6 +113,7 @@ set ( LIBQCVOperators_HEADERS
      stereoTrackerOp.h
      surfOp.h
 
+     #egoMotionOp.h
      #monoEgoMotionOp.h
      #voOp.h
      #nriOp.h

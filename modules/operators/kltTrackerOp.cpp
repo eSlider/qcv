@@ -53,7 +53,7 @@ CKltTrackerOp::CKltTrackerOp ( COperator * const f_parent_p,
                                S2D<float> ( 0, 200 ) ),
       m_preFilter_b (                          false ),
       m_pFMaskSize_i (                            27 ),
-      m_pFClampScale_f (                        10.f ),
+      m_pFClampScale_f (                         5.f ),
 
       m_numFeatures_i (                         4096 ),
       m_pyrLevels_i (                              8 ),
@@ -369,7 +369,7 @@ bool CKltTrackerOp::cycle()
                            }
                            else
                            {
-                              m_featureVector[i].clear();
+                              m_featureVector[j].clear();
                            }                                    
                            break;
                         }
@@ -390,7 +390,6 @@ bool CKltTrackerOp::cycle()
 
          bool predict_b = m_usePrediction_b && camera_p && motion_p;
          
-         //std::vector<cv::Point2f> featpred; // FOR PAPER
          for (size_t i = 0; i < m_numFeatures_i; ++i)
          {
             if ( m_featureVector[i].state == SFeature::FS_TRACKED || 
@@ -417,7 +416,6 @@ bool CKltTrackerOp::cycle()
                      }
                   }
                }
-               //featpred.push_back (curr); // FOR PAPER
                featcurr_ocv.push_back ( curr );
                mapping_v.push_back(i);
             }
@@ -450,14 +448,6 @@ bool CKltTrackerOp::cycle()
             int j = mapping_v[i];
             if (status_ocv[i] )
             {
-/* // FOR PAPER
-               C3DVector d1(featcurr_ocv[i].x-featpred[i].x, 
-                            featcurr_ocv[i].y-featpred[i].y,0.);
-               C3DVector d2(featcurr_ocv[i].x-featprev_ocv[i].x, 
-                            featcurr_ocv[i].y-featprev_ocv[i].y,0.);
-               if (predict_b)
-                  printf("Measurement  for %i is %f %f preddist %f prevdist %f \n", i, featcurr_ocv[i].x, featcurr_ocv[i].y, d1.magnitude(), d2.magnitude() );
-*/
                int j = mapping_v[i];
                m_featureVector[j].u      = featcurr_ocv[i].x;
                m_featureVector[j].v      = featcurr_ocv[i].y;

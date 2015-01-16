@@ -40,6 +40,10 @@
 #include "stereoCamera.h"
 #include "rigidMotion.h"
 
+#if defined ( _OPENMP )
+#include <omp.h>
+#endif
+
 using namespace QCV;
 
 /// Constructors.
@@ -498,7 +502,7 @@ CGfttFreakOp::cycle()
          if (motion_p)
             motion = *motion_p;         
 
-#if 0 && defined ( _OPENMP )
+#if defined ( _OPENMP )
          const unsigned int numThreads_ui = omp_get_max_threads();
 #pragma omp parallel for num_threads(numThreads_ui) schedule(dynamic)
 #endif

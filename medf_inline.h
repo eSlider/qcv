@@ -1,9 +1,11 @@
 /*
  * Copyright (C) 2012 Hernan Badino <hernan.badino@gmail.com>
  *
- * QCVExt is under the terms of the GNU Lesser General Public License
+ * This file is part of QCV
+ *
+ * QCV is under the terms of the GNU Lesser General Public License
  * version 2.1. See the GNU LGPL version 2.1 for details.
- * QCVExt is distributed "AS IS" without ANY WARRANTY, without even the
+ * QCV is distributed "AS IS" without ANY WARRANTY, without even the
  * implied warranty of merchantability or fitness for a particular
  * purpose. 
  *
@@ -16,6 +18,7 @@
  * to this license. Do not download, install, copy or use the
  * software, if you do not agree to this license.
  */
+
 
 /*
  *  This Quickselect routine is based on the algorithm described in

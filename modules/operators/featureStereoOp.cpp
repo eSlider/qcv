@@ -26,7 +26,10 @@
 #include "drawingList.h"
 #include "feature.h"
 #include "stereoCamera.h"
+
+#if defined HAVE_QGLVIEWER
 #include "glViewer.h"
+#endif
 
 /// Dependeing on the parameters might be better not to use OPENMP here.
 /// When using large masks, it is better to use openmp. 
@@ -885,6 +888,8 @@ bool CFeatureStereoOp::show()
 
 void CFeatureStereoOp::show3D()
 {
+#if defined HAVE_QGLVIEWER
+
    CStereoCamera *     camera_p = getInput<CStereoCamera> ( "Rectified Camera" );
    
    cv::Mat m_lImg = getInput<cv::Mat>( m_idLeftImage_str, cv::Mat() );
@@ -915,6 +920,7 @@ void CFeatureStereoOp::show3D()
          }
       }
    }        
+#endif
 }
 
 

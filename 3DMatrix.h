@@ -39,8 +39,8 @@
 #include <stdlib.h>
 //#include <algorithm>
 
-class C3DRowVector;
-//#include "3DRowVector.h"
+#include "3DRowVector.h"
+#include "3DMatrix.h"
 
 /* CONSTANTS */
 

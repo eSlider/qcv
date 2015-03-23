@@ -709,6 +709,7 @@ CDrawingList::addDrawingList ( const CDrawingList &f_other )
     m_triangles.add       ( f_other.m_triangles );
     m_ellipses.add        ( f_other.m_ellipses );
     m_strings.add         ( f_other.m_strings );
+    m_polygons.add        ( f_other.m_polygons );
 
     return true;    
 }
@@ -722,7 +723,10 @@ CDrawingList::getElementsCount() const
              m_rectangles.getSize () + 
              m_triangles.getSize () + 
              m_ellipses.getSize () + 
-             m_strings.getSize () );
+             m_strings.getSize () +
+	     m_polygons.getSize() 
+
+	     );
 }
 
 void

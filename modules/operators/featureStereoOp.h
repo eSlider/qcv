@@ -135,75 +135,92 @@ namespace QCV
        //void generate3DPointList( const CStereoFeaturePointVector *f_vec );
 
     private:
+       enum ERejectionCause
+       {
+          ERC_NONE = 0,
+          ERC_LIMIT,
+          ERC_ATBORDER,
+          ERC_INVALIDDISP,
+          ERC_LOWVARIANCE,
+          ERC_LARGEZSSD,
+          ERC_LARGESSD,
+          ERC_OTHER
+       };
+       
+          
+    private:
 
         /// Left image
-        cv::Mat                     m_lImg;
+        cv::Mat                      m_lImg;
 
         /// Right image
-        cv::Mat                     m_rImg;
+        cv::Mat                      m_rImg;
        
         /// Compute?
-        bool                        m_compute_b;
+        bool                         m_compute_b;
 
         /// Left image Id
-        std::string                 m_idLeftImage_str;
+        std::string                  m_idLeftImage_str;
         
         /// Right image Id
-        std::string                 m_idRightImage_str;
+        std::string                  m_idRightImage_str;
         
         /// Feature Vector Input String
-        std::string                 m_featPointVector_str;
+        std::string                  m_featPointVector_str;
 
         /// Disparity range.
-        S2D<int>                    m_dispRange;
+        S2D<int>                     m_dispRange;
 
         /// Set the correlation mask size.
-        S2D<int>                    m_maskSize;
+        S2D<int>                     m_maskSize;
 
         /// Check the variances of the patches?
-        bool                        m_checkVars_b;
+        bool                         m_checkVars_b;
 
         /// Min allowed variance for left and right windows [px^2].
-        float                       m_minVar_f;
+        float                        m_minVar_f;
 
         /// Max allowed zero-mean sum of square difference [px^2].
-        float                       m_maxZssd_f;
+        float                        m_maxZssd_f;
 
         /// Max allowed zero-mean sum of square difference [px^2].
-        float                       m_maxSsd_f;        
+        float                        m_maxSsd_f;        
         
         /// Disparity offset.
-        float                       m_dispOffset_f;
+        float                        m_dispOffset_f;
 
         /// Left image pyramid.
-        CImagePyramid               m_pyrLeft;
+        CImagePyramid                m_pyrLeft;
 
         /// Right image pyramid.
-        CImagePyramid               m_pyrRight;
+        CImagePyramid                m_pyrRight;
         
         /// Disparity image pyramid.
-        CImagePyramid               m_pyrDisp;
+        CImagePyramid                m_pyrDisp;
 
         /// Levels
-        unsigned int                m_levels_ui;
+        unsigned int                 m_levels_ui;
 
         /// Correction
-        int                         m_deltaDisp_i;
+        int                          m_deltaDisp_i;
 
         /// Float disparity image
-         cv::Mat                    m_dispImg;
+         cv::Mat                     m_dispImg;
 
         /// Color encoding mode.
-        CColorEncoding              m_ceDistance;
+        CColorEncoding               m_ceDistance;
 
 	/// List of 3D points
-	C3DPointDataVector          m_3dPoints;
+	C3DPointDataVector           m_3dPoints;
 
         /// Show 3D points?
-	bool                        m_show3DPoints_b;
+	bool                         m_show3DPoints_b;
 
-        // Pre-filter input images?
-        bool                        m_preFilter_b;
+        /// Pre-filter input images?
+        bool                         m_preFilter_b;
+
+        /// Rejection cause
+        std::vector<ERejectionCause> m_rejCause_v;
        
     private:
         /// Data structure to store scores.

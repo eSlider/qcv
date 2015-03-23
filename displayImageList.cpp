@@ -193,11 +193,17 @@ CDisplayImageList::~CDisplayImageList()
 bool 
 CDisplayImageList::add ( const CDisplayImageList & f_otherList )
 {
+    if ( g_QGLContext_p )
+        g_QGLContext_p->makeCurrent();
+
     m_image_v.insert( m_image_v.begin(), 
                       f_otherList.m_image_v.begin(),
                       f_otherList.m_image_v.end() );
-    return true;
-    
+
+    for (size_t i = 0; i < f_otherList.m_image_v.size(); ++i)
+      m_image_v[i].ownResources_b = false;
+
+    return true;    
 }
 
 // Draw all lines.
@@ -211,35 +217,36 @@ bool CDisplayImageList::add ( cv::Mat             f_image,
                               const float         f_alpha_f,
                               const bool          f_makeCopy_b )
 {
-
     if ( g_QGLContext_p )
         g_QGLContext_p->makeCurrent();
 
     //bool res_b;
-    SDisplayImage * newImage_p = new SDisplayImage;
+    SDisplayImage newImage;
 
     if ( f_makeCopy_b )
-       f_image.copyTo(newImage_p->image);
+       f_image.copyTo(newImage.image);
     else
-        newImage_p->image = f_image;
+        newImage.image = f_image;
 
     //if (res_b)
     {
-        newImage_p->u_f         = f_u_f;
-        newImage_p->v_f         = f_v_f;
-        newImage_p->width_f     = f_dispWidth_f;
-        newImage_p->height_f    = f_dispHeight_f;
-        newImage_p->alpha_f     = f_alpha_f;
-        newImage_p->scale_f     = f_scale_f;
-        newImage_p->bias_f      = f_bias_f;
+        newImage.u_f         = f_u_f;
+        newImage.v_f         = f_v_f;
+        newImage.width_f     = f_dispWidth_f;
+        newImage.height_f    = f_dispHeight_f;
+        newImage.alpha_f     = f_alpha_f;
+        newImage.scale_f     = f_scale_f;
+        newImage.bias_f      = f_bias_f;
 
-        m_image_v.push_back(newImage_p);
-        
         // Generate texture.
-        glGenTextures(1, &newImage_p->textureId_ui);
+        glGenTextures(1, &newImage.textureId_ui);
+        
+	newImage.ownResources_b = true;	
+
+        m_image_v.push_back(newImage);        
 
         //first call transferes the texture to hw
-        glBindTexture( GL_TEXTURE_RECTANGLE_NV, newImage_p->textureId_ui );
+        glBindTexture( GL_TEXTURE_RECTANGLE_NV, newImage.textureId_ui );
         
         glPixelStorei( GL_UNPACK_ALIGNMENT, 1);    
 
@@ -252,23 +259,39 @@ bool CDisplayImageList::add ( cv::Mat             f_image,
         glTexParameteri( GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-        glPixelTransferf ( GL_RED_SCALE,   newImage_p->scale_f );
-        glPixelTransferf ( GL_RED_BIAS,    newImage_p->bias_f  );        
-        glPixelTransferf ( GL_GREEN_SCALE, newImage_p->scale_f );
-        glPixelTransferf ( GL_GREEN_BIAS,  newImage_p->bias_f  );        
-        glPixelTransferf ( GL_BLUE_SCALE,  newImage_p->scale_f );
-        glPixelTransferf ( GL_BLUE_BIAS,   newImage_p->bias_f  );
+        glPixelTransferf ( GL_RED_SCALE,   newImage.scale_f );
+        glPixelTransferf ( GL_RED_BIAS,    newImage.bias_f  );        
+        glPixelTransferf ( GL_GREEN_SCALE, newImage.scale_f );
+        glPixelTransferf ( GL_GREEN_BIAS,  newImage.bias_f  );        
+        glPixelTransferf ( GL_BLUE_SCALE,  newImage.scale_f );
+        glPixelTransferf ( GL_BLUE_BIAS,   newImage.bias_f  );
+
+        int realWidth_i  = newImage.image.step/newImage.image.elemSize();
+        int realHeight_i = newImage.image.step/newImage.image.elemSize();
+        int offX_i       = realWidth_i - newImage.image.cols;
+        int offY_i       = realHeight_i - newImage.image.rows;
 
         glTexImage2D( GL_TEXTURE_RECTANGLE_NV,
-                      0,                                     // base level (only 0 allowed for GL_TEXTURE_RECTANGLE_NV).
-                      cv2GLFormat(newImage_p->image),        // internal format.
-                      newImage_p->image.size().width,
-                      newImage_p->image.size().height,
-                      0,                                     // border.
-                      cv2GLFormat2(newImage_p->image),        // 
-                      cv2GLDType(newImage_p->image.type()),  // 
-                      newImage_p->image.data );              // data.
-    }
+                      0,                                        // base level (only 0 allowed for GL_TEXTURE_RECTANGLE_NV).
+                      cv2GLFormat(newImage.image),           // internal format.
+                      realWidth_i,
+                      newImage.image.size().height,
+                      0,                                        // border.
+                      cv2GLFormat2(newImage.image),          // 
+                      cv2GLDType(newImage.image.type()),     // 
+                      newImage.image.ptr<unsigned char>(0) );  // data. 
+
+        glBindTexture(GL_TEXTURE_2D, newImage.textureId_ui);
+        glTexSubImage2D( GL_TEXTURE_RECTANGLE_NV,
+                         0,
+                         offX_i,
+                         offY_i,
+                         realWidth_i,
+                         newImage.image.rows,
+                         cv2GLFormat2(newImage.image),
+                         cv2GLDType(newImage.image.type()),
+                         newImage.image.ptr<unsigned char>(0) );
+   }
 
     return true; //res_b;
 }
@@ -278,8 +301,10 @@ bool CDisplayImageList::clear ()
 {
     for (unsigned int i = 0; i < m_image_v.size(); ++i)
     {
-        glDeleteTextures( 1, &m_image_v[i]->textureId_ui );
-        delete m_image_v[i];
+      if (m_image_v[i].ownResources_b)
+      {
+         glDeleteTextures( 1, &m_image_v[i].textureId_ui );
+      }
     }
     
     m_image_v.clear();
@@ -297,24 +322,24 @@ bool CDisplayImageList::show () const
          i != last; ++i )
     {
         glBindTexture( GL_TEXTURE_RECTANGLE_NV,
-                       (*i)->textureId_ui );
+                       i->textureId_ui );
         
-        float endX_f = (*i)->u_f + (*i)->width_f;
-        float endY_f = (*i)->v_f + (*i)->height_f;
+        float endX_f = i->u_f + i->width_f;
+        float endY_f = i->v_f + i->height_f;
         
         glBegin(GL_QUADS);
         
         glTexCoord2f(0, 0);
-        glVertex2f((*i)->u_f, (*i)->v_f);
+        glVertex2f(i->u_f, i->v_f);
         
-        glTexCoord2f((*i)->image.size().width, 0);
-        glVertex2f(endX_f, (*i)->v_f);
+        glTexCoord2f(i->image.size().width, 0);
+        glVertex2f(endX_f, i->v_f);
 
-        glTexCoord2f((*i)->image.size().width, (*i)->image.size().height);
+        glTexCoord2f(i->image.size().width, i->image.size().height);
         glVertex2f(endX_f, endY_f);
 
-        glTexCoord2f(0, (*i)->image.size().height);
-        glVertex2f((*i)->u_f, endY_f);
+        glTexCoord2f(0, i->image.size().height);
+        glVertex2f(i->u_f, endY_f);
 
         glEnd();        
     }

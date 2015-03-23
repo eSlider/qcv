@@ -81,7 +81,7 @@ add_definitions(${QT_DEFINITIONS})
 add_executable ( anaglyphStereo ${LIBCHECKSTEREOPAIR_SRC} )
 
 target_link_libraries(anaglyphStereo ${QT_LIBRARIES} 
-                                       ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY}
+                                       ${OPENGL_LIBRARIES} ${GLUT_LIBRARY}
                                        ${QCV_LIB} 
 				       ${CMAKE_THREAD_LIBS_INIT} 
 				       ${OpenCV_LIBS})

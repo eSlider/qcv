@@ -40,7 +40,7 @@
 
 using namespace QCV;
 
-static const float INVALID_DISP=std::numeric_limits<float>::min();
+static const float INVALID_DISP=-std::numeric_limits<float>::max();
 
 /// Constructors.
 CFeatureStereoOp::CFeatureStereoOp ( COperator * const f_parent_p, 
@@ -216,7 +216,7 @@ CFeatureStereoOp::registerParameters()
       
       addColorEncodingParameter (  m_ceDistance,
                                    getParameterSet(),
-                                   "Disparity",
+                                   "CE Disparity",
                                    "Color encoding for the disparity features" );
 
       ADD_BOOL_PARAMETER ( "Show 3D Points",
@@ -244,6 +244,9 @@ CFeatureStereoOp::cycle()
     
       if ( featureVector_p )
       {
+         m_rejCause_v.clear();
+         m_rejCause_v.resize( featureVector_p->size(), ERC_NONE );
+
          if (m_preFilter_b)
          {
             startClock ("Pre-filtering");            
@@ -259,8 +262,8 @@ CFeatureStereoOp::cycle()
                imgs_p[i]->convertTo ( imgf2, CV_32F, 1., 0);
                imgf -= imgf2;
                imgf.convertTo ( *imgs_p[i], CV_8U, 5, 127);
-               stopClock ("Pre-filtering");            
             }
+            stopClock ("Pre-filtering");            
          }
          else
          {
@@ -471,7 +474,8 @@ CFeatureStereoOp::computeFirstCorrelation( int f_fromLevel_i )
                         if ( uRlimit.min < 0 ||
                              uRlimit.max >= imgSize.width )
                         {
-                           ::exit(1);
+                           printf("%s:%i Invalid right limits\n", __FILE__, __LINE__);
+                           continue;
                         }                            
                             
                         float sumL_f    = 0.f;
@@ -510,7 +514,7 @@ CFeatureStereoOp::computeFirstCorrelation( int f_fromLevel_i )
 
                         /// Store scoreZssd in vector
                         scores_p[d] = scoreZssd_f;
-                            
+
                         if (scoreZssd_f < minZssdScore_f)
                         {
                            minZssdScore_f = scoreZssd_f;
@@ -529,7 +533,7 @@ CFeatureStereoOp::computeFirstCorrelation( int f_fromLevel_i )
                           minZssdScore_f < m_maxZssd_f && 
                           ssdScore_f     < m_maxSsd_f   &&
                           ( !m_checkVars_b || 
-                            ( m_checkVars_b && maskVar_f > m_minVar_f ) ) )
+                            ( maskVar_f > m_minVar_f ) ) )
                      {
                         vec[f].d = bestDisp_i;
 
@@ -551,18 +555,35 @@ CFeatureStereoOp::computeFirstCorrelation( int f_fromLevel_i )
                      }
                      else
                      {
+                        if (!(bestDisp_i     > dlimit.min - (1-subPixel_i) &&
+                              bestDisp_i     < dlimit.max + (1-subPixel_i)) )
+                           m_rejCause_v[f] = ERC_LIMIT;
+                        else if (!(minZssdScore_f < m_maxZssd_f))
+                           m_rejCause_v[f] = ERC_LARGEZSSD;
+                        else if (!(ssdScore_f < m_maxSsd_f))
+                           m_rejCause_v[f] = ERC_LARGESSD;
+                        else 
+                           m_rejCause_v[f] = ERC_LOWVARIANCE;
+
                         vec[f].d = INVALID_DISP;
                      }
                   }
                   else
                   {
+                     m_rejCause_v[f] = ERC_OTHER;
                      vec[f].d = INVALID_DISP;
                   }
                }
+               else // Correlation not possible because feature is at border of image
+               {
+                  vec[f].d = INVALID_DISP;
+                  m_rejCause_v[f] = ERC_ATBORDER;
+               }                
             }
             else // Correlation not possible because feature is at border of image
             {
                vec[f].d  = INVALID_DISP;
+               m_rejCause_v[f] = ERC_ATBORDER;
             }                
          }                       
          else // Correlation has already been computed.
@@ -572,6 +593,7 @@ CFeatureStereoOp::computeFirstCorrelation( int f_fromLevel_i )
       }
       else // Outside bounds.
       {
+         m_rejCause_v[f] = ERC_OTHER;
          vec[f].d  = INVALID_DISP;
       }                
    }
@@ -626,7 +648,7 @@ CFeatureStereoOp::transferLevel( int f_level_i )
       S2D<int> featPos ( vec[f].u / scale_i + .5, 
                          vec[f].v / scale_i + .5 );
 
-      if ( vec[f].d != INVALID_DISP )
+      if ( vec[f].d >= 0 )
       {
          if ( featPos.x >= 0 && featPos.y >= 0 &&
               featPos.x < imgSize.width && featPos.y < imgSize.height )
@@ -636,7 +658,7 @@ CFeatureStereoOp::transferLevel( int f_level_i )
                /// Row limits.
                S2D<int> vlimit ( featPos.y - hMask.height, 
                                  featPos.y + hMask.height );
-            
+               
                if ( vlimit.min >= 0 && vlimit.max < imgSize.height )
                {
                   S2D<int> uLlimit ( featPos.x - hMask.width, 
@@ -646,27 +668,28 @@ CFeatureStereoOp::transferLevel( int f_level_i )
                   {
                      int subPixel_i = ( f_level_i == 0)?1:0;
 
-                     /// Disparity limit.
-                     S2D<int> rlimit ( std::max(featPos.x - ((int)vec[f].d)*2 - m_deltaDisp_i - subPixel_i, hMask.width), 
+                     /// Hard-encode left limit to 1
+                     const int leftDeltaDisp_i = 1;
+                     
+                     S2D<int> rlimit ( std::max(featPos.x - ((int)vec[f].d)*2 - leftDeltaDisp_i - subPixel_i, hMask.width), 
                                        std::min(featPos.x - ((int)vec[f].d)*2 + m_deltaDisp_i + subPixel_i, imgSize.width - 1 - hMask.width ) );
-                            
-                     if (rlimit.min < rlimit.max)
-                     {
 
+                     if (rlimit.max - rlimit.min > 1)
+                     {
                         S2D<int> dlimit ( featPos.x - rlimit.max,
                                           featPos.x - rlimit.min );
-                                
+
                         float minZssdScore_f = std::numeric_limits<float>::max();
                         float ssdScore_f     = std::numeric_limits<float>::max();
                         int   bestDisp_i     = INVALID_DISP;
                         float maskVar_f      = std::numeric_limits<float>::max();
                         
-                        for (int colrPos = rlimit.min; colrPos <= rlimit.max; ++colrPos)
+                        for (int colrPos_i = rlimit.min; colrPos_i <= rlimit.max; ++colrPos_i)
                         {
-                           int d = featPos.x - colrPos;
+                           int d = featPos.x - colrPos_i;
                            /// Column limits for current disparity.
-                           S2D<int> uRlimit ( colrPos - hMask.width, 
-                                              colrPos + hMask.width );
+                           S2D<int> uRlimit ( colrPos_i - hMask.width, 
+                                              colrPos_i + hMask.width );
                             
                            if ( uRlimit.min < 0 ||
                                 uRlimit.max >= imgSize.width )
@@ -718,7 +741,12 @@ CFeatureStereoOp::transferLevel( int f_level_i )
                               bestDisp_i     = d;
                               maskVar_f      = varR_f;
                            }
-                        }                       
+
+                           // If already evaluated at least 3 positions and 
+                           // local minima found not at right border, then break.
+                           if ( colrPos_i >= rlimit.min+2 && bestDisp_i != d)
+                              break;
+                        }
 
                         minZssdScore_f /= maskSize_i;
                         ssdScore_f     /= maskSize_i;                               
@@ -728,7 +756,7 @@ CFeatureStereoOp::transferLevel( int f_level_i )
                              minZssdScore_f < m_maxZssd_f  && 
                              ssdScore_f     < m_maxSsd_f   && 
                              ( !m_checkVars_b || 
-                               ( m_checkVars_b && maskVar_f > m_minVar_f ) ) )
+                               ( maskVar_f > m_minVar_f ) ) )
                         {
                            vec[f].d = bestDisp_i;
 
@@ -746,28 +774,46 @@ CFeatureStereoOp::transferLevel( int f_level_i )
                                  vec[f].d += correction_f + m_dispOffset_f;
                               }
                               else
-                                 vec[f].d = -1;
-
-                              if (vec[f].d < 0.5) vec[f].d = -1;
+                              {
+                                 m_rejCause_v[f] = ERC_OTHER;
+                                 vec[f].d = INVALID_DISP;
+                              }                              
                            }
 
-                           disp.at<float>(featPos.y,featPos.x) = vec[f].d;
-                                    
+                           disp.at<float>(featPos.y,featPos.x) = vec[f].d;     
                         }
                         else
                         {
-                           vec[f].d = -1;
+
+                         vec[f].d = INVALID_DISP;
+                           if (!( bestDisp_i     > dlimit.min - (1-subPixel_i) &&
+                                  bestDisp_i     < dlimit.max + (1-subPixel_i)) )
+                              m_rejCause_v[f] = ERC_LIMIT;
+                           else if (!(minZssdScore_f < m_maxZssd_f))
+                              m_rejCause_v[f] = ERC_LARGEZSSD;
+                           else if (!(ssdScore_f < m_maxSsd_f))
+                              m_rejCause_v[f] = ERC_LARGESSD;
+                           else 
+                              m_rejCause_v[f] = ERC_LOWVARIANCE;
                         }
                      }
+                     else
+                     {   
+                        m_rejCause_v[f] = ERC_INVALIDDISP;
+                        vec[f].d = INVALID_DISP;
+                     }  
+
                   }
                   else // Correlation not possible because feature is at border of image
                   {
-                     vec[f].d = -1;
+                     m_rejCause_v[f] = ERC_ATBORDER;
+                     vec[f].d = INVALID_DISP;
                   }                
                }
                else // Correlation not possible because feature is at border of image
                {
-                  vec[f].d = -1;
+                  vec[f].d = INVALID_DISP;
+                  m_rejCause_v[f] = ERC_ATBORDER;
                }                
             }                       
             else // Correlation has already been computed.
@@ -777,7 +823,8 @@ CFeatureStereoOp::transferLevel( int f_level_i )
          }
          else // Outside bounds.
          {
-            vec[f].d  = -1;
+            m_rejCause_v[f] = ERC_OTHER;
+            vec[f].d  = INVALID_DISP;
          }                
       }
    }
@@ -802,10 +849,13 @@ bool CFeatureStereoOp::show()
       {
          CFeatureVector &vec = *featureVector_p;
 
+         if (m_rejCause_v.size() < vec.size())
+            m_rejCause_v.resize( vec.size(), ERC_NONE );
+
          for (int im = 0; im < 2; ++im)
          {
             if (im == 0 )
-               list_p = getDrawingList ("Left Image Features");   
+               list_p = getDrawingList ("Left Image Features");
             else
                list_p = getDrawingList ("Right Image Features");   
 
@@ -813,6 +863,10 @@ bool CFeatureStereoOp::show()
             
             if ( list_p->isVisible() )
             {
+               CDrawingList *imgdl = getInput<CDrawingList>((im == 0?m_idLeftImage_str:m_idRightImage_str) + " Drawing List");
+               if (imgdl)
+                  list_p->addDrawingList( *imgdl );
+
                list_p -> setLineColor ( SRgb(255,255,0 ) );
                 
                float scaleX_f = srcWidth_f  / m_lImg.cols;
@@ -825,22 +879,38 @@ bool CFeatureStereoOp::show()
                SRgb color;
                for (int i = 0; i < (int)vec.size(); ++i)
                {
-                  if ( vec[i].d > 0.5 )
+                  S2D<float> pr ( vec[i].u * scaleX_f,
+                                  vec[i].v * scaleY_f );
+                  
+                  if (im == 1)
+                     pr.x = pr.x - scaleX_f * vec[i].d;
+                  
+                  if ( vec[i].d >= 0 )
                   {
-                     S2D<float> pr ( vec[i].u * scaleX_f,
-                                     vec[i].v *  scaleY_f );
-
-                     if (im == 1)
-                        pr.x = pr.x - scaleX_f * vec[i].d;
-
                      m_ceDistance.colorFromValue ( vec[i].d,
                                                    color );
 
+                     list_p -> setLineWidth ( 1 );
                      list_p -> setLineColor ( color );
                      list_p -> setFillColor ( SRgba(color, 120 ) );
-
                      list_p -> addFilledSquare ( pr, featureSize_f );
                   }
+                  else
+                  {
+                     color = ( (m_rejCause_v[i] == ERC_NONE       )?SRgb(255,255,255): // White
+                               (m_rejCause_v[i] == ERC_LIMIT      )?SRgb(255,000,000): // Red
+                               (m_rejCause_v[i] == ERC_ATBORDER   )?SRgb(000,000,255): // Blue
+                               (m_rejCause_v[i] == ERC_INVALIDDISP)?SRgb(000,255,000): // Green
+                               (m_rejCause_v[i] == ERC_LOWVARIANCE)?SRgb(255,000,255): // Magenta/Pink
+                               (m_rejCause_v[i] == ERC_LARGEZSSD  )?SRgb(255,255,000): // Yellow
+                               (m_rejCause_v[i] == ERC_LARGESSD   )?SRgb(000,255,255): // Cyan
+                               SRgb(000,000,000));
+
+                     list_p -> setLineWidth ( 2 );
+                     list_p -> setLineColor ( color );
+                     list_p -> addCross ( pr.x, pr.y, featureSize_f );
+                  }
+                     
                }
             }
          }

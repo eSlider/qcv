@@ -31,9 +31,14 @@ using namespace QCV;
 
 int main(int f_argc_i, char *f_argv_p[])
 {
+    std::string seqFile_str = "sequence.xml";
+
     /// Create app
     QApplication app (f_argc_i, f_argv_p);
 
+    if (f_argc_i > 1)
+       seqFile_str = f_argv_p[1];
+    
     /// Create root operator
     CStereoOp *rootOp_p = new CStereoOp( );
 
@@ -43,7 +48,7 @@ int main(int f_argc_i, char *f_argv_p[])
 
     /// Create hard disk device
     CSeqDevHDImg device;
-    device.loadNewSequence ( "sequence.xml" );
+    device.loadNewSequence ( seqFile_str );
 
     /// Create the main window passing the connector. 2x2 default screen count.
     CMainWindow *mwind = new CMainWindow ( &device, 

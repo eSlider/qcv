@@ -109,6 +109,8 @@ namespace QCV
 	ADD_PARAM_ACCESS (int,          m_minDistance_i,           MinDistance );
 	ADD_PARAM_ACCESS (bool,         m_adaptiveDistance_b,      AdaptiveDistance );
 	ADD_PARAM_ACCESS (int,          m_kernelSize_i,            KernelSize );
+        ADD_PARAM_ACCESS (float,        m_pyrLKEpsilon_f,          PyrLKEpsilon );      
+        ADD_PARAM_ACCESS (int,          m_pyrLKMaxCount_i,         PyrLKMaxCount );
         ADD_PARAM_ACCESS (bool,         m_usePrediction_b,         UsePrediction );
         ADD_PARAM_ACCESS (float,        m_maxSqDist4Collision_f,   MaxSqDist4Collision );
         ADD_PARAM_ACCESS (bool,         m_preFilter_b,             PreFilter);
@@ -247,6 +249,12 @@ namespace QCV
 
         /// Kernel size for tracking
 	int                                 m_kernelSize_i;
+        
+        /// Epsilon for pyramidal LK algorithm
+        float                               m_pyrLKEpsilon_f;
+
+        /// Max iterations for KL algorithm
+        int                                 m_pyrLKMaxCount_i; 
 
         /// Use prediction to track features
         bool                                m_usePrediction_b;

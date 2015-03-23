@@ -11,6 +11,7 @@ find_path(QGLVIEWER_INCLUDE_DIR
          $ENV{QGLVIEWERROOT}
          /usr/include
          /usr/local/include
+         $ENV{HOME}/local/include
          )
 
 if(QGLVIEWER_INCLUDE_DIR)

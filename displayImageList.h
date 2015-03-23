@@ -121,12 +121,15 @@ namespace QCV
 
             /// Texture id
             unsigned int   textureId_ui;
+
+            /// Own resources?
+	    bool           ownResources_b;
         } SDisplayImage;
 
     /// Private Members
     private:
         
-        typedef std::vector<SDisplayImage *>  DisplayImageList_t;
+        typedef std::vector<SDisplayImage>  DisplayImageList_t;
         
         /// Vector of images.
         DisplayImageList_t     m_image_v;        

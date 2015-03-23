@@ -19,17 +19,17 @@
  * software, if you do not agree to this license.
  */
 
-#ifndef __STEREOTRACKER_H
-#define __STEREOTRACKER_H
+#ifndef __MONOTRACKER_H
+#define __MONOTRACKER_H
 
 /**
 *******************************************************************************
 *
-* @file stereotracker.h
+* @file monoTrackerOp.h
 *
-* \class CStereoTracker
+* \class CMonoTracker
 * \author Hernan Badino (hernan.badino@gmail.com)
-* \brief Class for resizing images.
+* \brief Class for computing feature tracking information.
 *
 *******************************************************************************/
 
@@ -44,7 +44,7 @@
 #include "operator.h"
 #include "colorEncoding.h"
 #include "matVector.h"
-#include "stereoCamera.h"
+#include "camera.h"
 
 #include "feature.h"
 /* PROTOTYPES */
@@ -55,9 +55,8 @@ namespace QCV
 {
     class CGfttFreakOp;
     class CKltTrackerOp;
-    class CFeatureStereoOp;
    
-    class CStereoTrackerOp: public COperator
+    class CMonoTrackerOp: public COperator
     {
     /// Constructor, Desctructors
     public:    
@@ -73,17 +72,17 @@ namespace QCV
         ADD_PARAM_ACCESS         (S2D<int>,    m_cropTopLeft,        CropTopLeft );
         ADD_PARAM_ACCESS         (S2D<int>,    m_cropBottomRight,    CropBottomRight );
 
-        ADD_PARAM_ACCESS         (bool,        m_registerDL_b,       RegisterDrawingLists );
-       
+
+
     /// Constructor, Desctructors
     public:    
         
         /// Constructors.
-        CStereoTrackerOp ( COperator * const f_parent_p = NULL,
-                   const std::string f_name_str = "Stereo Tracker" );
+        CMonoTrackerOp ( COperator * const f_parent_p = NULL,
+                   const std::string f_name_str = "Mono Tracker" );
         
         /// Virtual destructor.
-        virtual ~CStereoTrackerOp ();
+        virtual ~CMonoTrackerOp ();
 
         /// Cycle event.
         virtual bool cycle( );
@@ -114,17 +113,14 @@ namespace QCV
         /// Good feature to track operator
         CKltTrackerOp *             m_kltTracker_p;       
 
-        /// Feature stereo operator
-        CFeatureStereoOp *          m_featStereo_p;
-
         /// Compute?
         bool                        m_compute_b;
 
-        /// Stereo Camera
-        CStereoCamera               m_origCamera;
+        /// Mono Camera
+        CCamera                     m_origCamera;
 
-        /// Stereo Camera
-        CStereoCamera               m_camera;
+        /// Mono Camera
+        CCamera                     m_camera;
 
         /// Central point offset
         S2D<float>                  m_centralPointOffset;
@@ -165,9 +161,8 @@ namespace QCV
         /// Bottom-Right crop coordinate.
         S2D<int>                    m_cropBottomRight;
 
-        /// Register drawing lists?
-        bool                        m_registerDL_b;
+       
     };
 }
-#endif // __STEREOTRACKER_H
+#endif // __MONOTRACKER_H
  

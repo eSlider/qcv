@@ -79,8 +79,8 @@ add_definitions(${QT_DEFINITIONS})
 add_executable ( helloWorld ${LIBCHECKSTEREOPAIR_SRC} )
 
 target_link_libraries(helloWorld ${QT_LIBRARIES} 
-                                 ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY}
                                  ${QCV_LIB} 
+				 ${OPENGL_LIBRARIES} ${GLUT_LIBRARY}
                                  ${CMAKE_THREAD_LIBS_INIT} 
 				 ${OpenCV_LIBS})
 

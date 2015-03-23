@@ -221,12 +221,15 @@ void CDisplayWidget::createForm()
     m_qsbNumHorScreens_p->setGeometry(QRect(0, 0, 41, 21));
     m_qsbNumHorScreens_p->setMinimum(1);
     m_qsbNumHorScreens_p->setMaximum(9);
+    m_qsbNumHorScreens_p->setValue(3);
+    
 
     m_qsbNumVertScreens_p = new QSpinBox(m_qfNumScreens_p);
     m_qsbNumVertScreens_p->setGeometry(QRect(60, 0, 41, 21));
     m_qsbNumVertScreens_p->setMinimum(1);
     m_qsbNumVertScreens_p->setMaximum(9);
-    
+    m_qsbNumVertScreens_p->setValue(3);
+
     /// Add to the layout of the top controls.
     layoutTopCtrls_p->addWidget(m_qfNumScreens_p, 0, 1, 1, 1);
     

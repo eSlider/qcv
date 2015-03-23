@@ -88,7 +88,7 @@ add_definitions(${QT_DEFINITIONS})
 add_executable ( stereoExample ${LIBCHECKSTEREOPAIR_SRC} )
 
 target_link_libraries(stereoExample ${QT_LIBRARIES} 
-                             ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY}
+                             ${OPENGL_LIBRARIES} ${GLUT_LIBRARY}
                              ${QCVOperators_LIB} 
                              ${QCVMisc_LIB} 
                              ${QCVParamEditor_LIB} 

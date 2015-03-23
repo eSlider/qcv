@@ -39,7 +39,7 @@ CGLViewer::CGLViewer()
 
           m_gridLength_f (         100.f ),
           m_gridWidth_f (          100.f ),
-          m_sceneRadius_f (         15.f )
+          m_sceneRadius_f (        100.f )
 {
     setWindowTitle("3D GL Viewer");
     setObjectName ( windowTitle() );
@@ -53,6 +53,8 @@ void CGLViewer::draw()
 
     glScalef( -1, 1, 1);
 
+    camera()->setZClippingCoefficient(100);
+    
     camera()->setSceneRadius( m_sceneRadius_f );
 
     // Reset modelview matrix

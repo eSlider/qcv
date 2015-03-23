@@ -88,7 +88,7 @@ add_definitions(${QT_DEFINITIONS})
 add_executable ( sobelExample2 ${LIBCHECKIMGSCALERPAIR_SRC} )
 
 target_link_libraries(sobelExample2 ${QT_LIBRARIES} 
-                             ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY}
+                             ${OPENGL_LIBRARIES} ${GLUT_LIBRARY}
                              ${QCVOperators_LIB} 
                              ${QCVMisc_LIB} 
                              ${QCVParamEditor_LIB} 

@@ -53,7 +53,7 @@ CKltTrackerOp::CKltTrackerOp ( COperator * const f_parent_p,
                                S2D<float> ( 0, 200 ) ),
       m_preFilter_b (                          false ),
       m_pFMaskSize_i (                            27 ),
-      m_pFClampScale_f (                         5.f ),
+      m_pFClampScale_f (                        10.f ),
 
       m_numFeatures_i (                         4096 ),
       m_pyrLevels_i (                              8 ),
@@ -62,6 +62,8 @@ CKltTrackerOp::CKltTrackerOp ( COperator * const f_parent_p,
       m_checkCollisions_b (                     true ),
       m_maxSqDist4Collision_f (                  9.f ),
       m_kernelSize_i (                             3 ),
+      m_pyrLKEpsilon_f (                          1. ),
+      m_pyrLKMaxCount_i (                        100 ),
       m_usePrediction_b (                       true ),
 
       m_minEigenvalue_f (                     1e-05f ),
@@ -189,6 +191,20 @@ CKltTrackerOp::registerParameters( )
                          this,
                          KernelSize,
                          CKltTrackerOp );
+
+     ADD_FLOAT_PARAMETER( "Pyr LK Epsilon",
+                          "Epsilon for iterative LK algorithm",
+                          m_pyrLKEpsilon_f,
+                          this,
+                          PyrLKEpsilon,
+                          CKltTrackerOp );
+
+     ADD_INT_PARAMETER( "Pyr LK Max Count",
+                        "Max number of iteratinos for LK algorithm",
+                        m_pyrLKMaxCount_i,
+                        this,
+                        PyrLKMaxCount,
+                        CKltTrackerOp );
 
       ADD_BOOL_PARAMETER( "Use Prediction",
                           "Use prediction from ego-motion to estimate future feature position",
@@ -359,20 +375,18 @@ bool CKltTrackerOp::cycle()
                         
                         if ( sqDiff_f <= m_maxSqDist4Collision_f )
                         {
-                           /// Eliminate the younger feature.
-                           //if ( m_featureVector[i].t < m_featureVector[j].t )
-                           /// Eliminate the feature with the weakest texture
-                           
-                           if ( m_featureVector[i].e < m_featureVector[j].e )
-                           {
-                              m_featureVector[i].clear();
-                           }
-                           else
-                           {
-                              m_featureVector[j].clear();
-                           }                                    
-                           break;
-                        }
+			  m_featureVector[i].clear();
+                          
+                          const bool removeByAge_b = true;
+                          
+                          if ( (removeByAge_b && m_featureVector[i].t < m_featureVector[j].t) ||
+                               (!removeByAge_b && m_featureVector[i].e < m_featureVector[j].e ) )
+                             m_featureVector[i].clear();
+                          else
+                             m_featureVector[j].clear();
+
+                          break;
+                       }
                      }
                   }
                }
@@ -390,6 +404,7 @@ bool CKltTrackerOp::cycle()
 
          bool predict_b = m_usePrediction_b && camera_p && motion_p;
          
+         std::vector<cv::Point2f> featpred; // FOR PAPER
          for (size_t i = 0; i < m_numFeatures_i; ++i)
          {
             if ( m_featureVector[i].state == SFeature::FS_TRACKED || 
@@ -416,6 +431,7 @@ bool CKltTrackerOp::cycle()
                      }
                   }
                }
+               featpred.push_back (curr); // FOR PAPER
                featcurr_ocv.push_back ( curr );
                mapping_v.push_back(i);
             }
@@ -430,8 +446,8 @@ bool CKltTrackerOp::cycle()
          cv::Size winsize_ocv;
          winsize_ocv.width     = m_kernelSize_i;
          winsize_ocv.height    = m_kernelSize_i;
-         criteria_ocv.epsilon  = 1; // \todo:make parameter
-         criteria_ocv.maxCount = 100;// \todo:make parameter
+         criteria_ocv.epsilon  = m_pyrLKEpsilon_f;
+         criteria_ocv.maxCount = m_pyrLKMaxCount_i; 
          criteria_ocv.type = (CV_TERMCRIT_EPS | CV_TERMCRIT_ITER);
 
          int flags = (m_usePrediction_b)?cv::OPTFLOW_USE_INITIAL_FLOW:0;
@@ -448,6 +464,14 @@ bool CKltTrackerOp::cycle()
             int j = mapping_v[i];
             if (status_ocv[i] )
             {
+ // FOR PAPER
+               C3DVector d1(featcurr_ocv[i].x-featpred[i].x, 
+                            featcurr_ocv[i].y-featpred[i].y,0.);
+               C3DVector d2(featcurr_ocv[i].x-featprev_ocv[i].x, 
+                            featcurr_ocv[i].y-featprev_ocv[i].y,0.);
+               //if (predict_b)
+               //   printf("Measurement  for %i is %f %f preddist %f prevdist %f \n", i, featcurr_ocv[i].x, featcurr_ocv[i].y, d1.magnitude(), d2.magnitude() );
+
                int j = mapping_v[i];
                m_featureVector[j].u      = featcurr_ocv[i].x;
                m_featureVector[j].v      = featcurr_ocv[i].y;
@@ -641,7 +665,7 @@ CKltTrackerOp::selectGoodFeatures()
    }
    
    // sub-pixel estimation
-   if(m_useSubPix_b)
+   if(m_useSubPix_b && !addedPts_v.empty())
    {
       startClock ("Select Good Features - Sub-pixel");
       cv::cornerSubPix (m_currImg, 
@@ -678,6 +702,8 @@ CKltTrackerOp::selectGoodFeatures()
 /// Show event.
 bool CKltTrackerOp::show()
 {
+   const bool annotate_b = false;
+   
    CDrawingList * list_p = getDrawingList ("Current Image");
    list_p -> clear();
 
@@ -729,7 +755,7 @@ bool CKltTrackerOp::show()
             list_p -> setFillColor (SRgba(color,120));
          
          
-            list_p -> addCircle ( m_featureVector[i].u, 
+            list_p -> addSquare ( m_featureVector[i].u, 
                                   m_featureVector[i].v,
                                   m_kernelSize_i/2. );
 
@@ -743,7 +769,7 @@ bool CKltTrackerOp::show()
                list2_p -> setLineColor (color);
                list2_p -> setFillColor (SRgba(color,120));
                list2_p -> setLineWidth (2);
-               list2_p -> addCircle ( m_prevFeatureVector[i].u, 
+               list2_p -> addSquare ( m_prevFeatureVector[i].u, 
                                       m_prevFeatureVector[i].v,
                                       m_kernelSize_i/2. );
                list2_p -> addLine( m_featureVector[i].u, 
@@ -753,47 +779,31 @@ bool CKltTrackerOp::show()
             }
             
          }
-/*
-         else if (m_featureVector[i].state == SFeature::FS_NEW)
-         {
-            SRgb color = SRgb(255,0,0);
-            list_p -> setLineColor (color);
-            list_p -> setLineWidth (1);
-            
-            list_p -> addCircle ( m_featureVector[i].u, 
-                                  m_featureVector[i].v,
-                                  1 );
-         }
-         else if (m_featureVector[i].state == SFeature::FS_LOST )
-         {
-            SRgb color = SRgb(0,255,255);
-            list_p -> setLineColor (color);
-            list_p -> setLineWidth (1);
-            
-            list_p -> addCircle ( m_featureVector[i].u, 
-                                  m_featureVector[i].v,
-                                  1 );
-         }
-*/
       }
-      list_p->addImage ( m_currImg, 0, 0, m_currImg.cols, m_currImg.rows);
+
       list_p->setLineColor ( SRgb(255,0,0));   
-      list_p -> setLineWidth(10);
-      list_p->setLineColor ( SRgb(0,0,0));   
-      list_p->addText("Current Image", 20, 420, 20, false);
-      list_p->setLineColor ( SRgb(255,0,0));   
-      list_p->addText("Current Image", 21, 421, 20, false);
+      if (annotate_b)
+      {  
+         list_p -> setLineWidth(10);
+         list_p->setLineColor ( SRgb(0,0,0));   
+         list_p->addText("Current Image", 20, 420, 20, false);
+         list_p->setLineColor ( SRgb(255,0,0));   
+         list_p->addText("Current Image", 21, 421, 20, false);
+      }
    }
    
 
    if ( list2_p -> isVisible())
    {
       list2_p->addImage ( m_prevImg, 0, 0, m_prevImg.cols, m_prevImg.rows);   
-      list2_p -> setLineWidth(10);
-      list2_p->setLineColor ( SRgb(0,0,0));   
-      list2_p->addText("Previous Image", 20, 420, 20, false);
-      list2_p->setLineColor ( SRgb(255,0,0));   
-      list2_p->addText("Previous Image", 21, 421, 20, false);
+      if (annotate_b)
+      {  
+         list2_p -> setLineWidth(10);
+         list2_p->setLineColor ( SRgb(0,0,0));   
+         list2_p->addText("Previous Image", 20, 420, 20, false);
+         list2_p->setLineColor ( SRgb(255,0,0));   
+         list2_p->addText("Previous Image", 21, 421, 20, false);
+      }
    }
 
    list_p = getDrawingList ("Feature Mask");

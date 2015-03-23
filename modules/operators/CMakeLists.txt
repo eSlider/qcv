@@ -80,21 +80,15 @@ set ( LIBQCVOperators_SRC
      gfttFreakOp.cpp
      houghTransformOp.cpp
      imgScalerOp.cpp
+     gtMapOp.cpp
      kltTrackerOp.cpp
      linearHoughTransform.cpp
+     monoTrackerOp.cpp
      roadPlaneDetectionOp.cpp
      sobelOp.cpp
      stereoOp.cpp
      stereoTrackerOp.cpp
      surfOp.cpp
-
-     #histogramOp.cpp
-     #groundTransEstimation.cpp
-     #egoMotionOp.cpp
-     #monoEgoMotionOp.cpp
-     #voOp.cpp
-     #nriOp.cpp
-     #denseStereoIntegrator.cpp
 )
 
 set ( LIBQCVOperators_HEADERS 
@@ -102,22 +96,16 @@ set ( LIBQCVOperators_HEADERS
      featureStereoOp.h
      gfttFreakOp.h
      houghTransformOp.h
+     gtMapOp.h
      imgScalerOp.h
      kltTrackerOp.h
      linearHoughTransform.h
+     monoTrackerOp.h
      roadPlaneDetectionOp.h
      sobelOp.h
      stereoOp.h
      stereoTrackerOp.h
      surfOp.h
-
-     #histogramOp.cpp
-     #groundTransEstimation.h
-     #egoMotionOp.h
-     #monoEgoMotionOp.h
-     #voOp.h
-     #nriOp.h
-     #denseStereoIntegrator.h
 )  
 
 set ( LIBQCVOperators_MOC_HEADERS  "" )

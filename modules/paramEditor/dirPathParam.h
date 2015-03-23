@@ -45,7 +45,7 @@ namespace QCV
         /// Constructors/Destructor
         CDirPathParameter (  std::string               f_name_str = "",
                              std::string               f_comment_str = "",
-                             std::string               f_value_str = false,
+                             std::string               f_value_str = "",
                              CParameterBaseConnector * f_connector_p = NULL );
         
     public:

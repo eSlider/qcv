@@ -381,7 +381,7 @@ CGfttFreakOp::cycle()
       }
       
       // sub-pixel estimation
-      if(m_useSubPix_b)
+      if(m_useSubPix_b && !currFeatures.keypoints_v.empty())
       {
          startClock ("Detector - Sub-pixel");
          cv::vector<cv::Point2f> points;
@@ -702,9 +702,14 @@ bool CGfttFreakOp::show()
    CDrawingList * list_p = getDrawingList ("Matches");
    list_p -> clear();
 
+   CDrawingList *imgdl = getInput<CDrawingList>(m_inpImageId_str + " Drawing List");
    if ( list_p -> isVisible())
    {
-      list_p->addImage ( m_img, 0, 0, m_img.cols, m_img.rows);   
+      if (imgdl)
+         list_p->addDrawingList( *imgdl );
+      else
+         list_p->addImage ( m_img, 0, 0, m_img.cols, m_img.rows);   
+
       for(size_t i = 0; i < m_featureVector.size(); i++) 
       {
          if (m_featureVector[i].state == SFeature::FS_TRACKED)
@@ -722,7 +727,7 @@ bool CGfttFreakOp::show()
             list_p -> setFillColor (SRgba(color,120));
             list_p -> setLineWidth (2);
 
-            list_p -> addFilledCircle ( m_featureVector[i].u, 
+            list_p -> addFilledSquare ( m_featureVector[i].u, 
                                         m_featureVector[i].v,
                                         4 );
             
@@ -737,7 +742,7 @@ bool CGfttFreakOp::show()
             list_p -> setLineColor (color);
             list_p -> setLineWidth (1);
             
-            list_p -> addCircle ( m_featureVector[i].u, 
+            list_p -> addSquare ( m_featureVector[i].u, 
                                   m_featureVector[i].v,
                                   1 );
          }
@@ -747,7 +752,7 @@ bool CGfttFreakOp::show()
             list_p -> setLineColor (color);
             list_p -> setLineWidth (1);
             
-            list_p -> addCircle ( m_featureVector[i].u, 
+            list_p -> addSquare ( m_featureVector[i].u, 
                                   m_featureVector[i].v,
                                   1 );
          }
@@ -761,7 +766,11 @@ bool CGfttFreakOp::show()
 
     if ( list_p->isVisible() )
     {
-       list_p->addImage ( m_img, 0, 0, m_img.cols, m_img.rows);   
+      if (imgdl)
+         list_p->addDrawingList( *imgdl );
+      else
+         list_p->addImage ( m_img, 0, 0, m_img.cols, m_img.rows);   
+
        for (unsigned int i = 0; i < currFeatures.keypoints_v.size(); ++i)
        {
           SRgb color;
@@ -773,7 +782,7 @@ bool CGfttFreakOp::show()
           list_p->setLineColor ( color );
           list_p->setFillColor ( SRgba(color, 30 ) );
           
-          list_p->addFilledCircle ( currFeatures.keypoints_v[i].pt.x, 
+          list_p->addFilledSquare ( currFeatures.keypoints_v[i].pt.x, 
                                     currFeatures.keypoints_v[i].pt.y, 
                                     currFeatures.keypoints_v[i].size/2 );
           
@@ -890,7 +899,7 @@ CGfttFreakOp::mouseMoved ( CMouseEvent * f_event_p )
         list2_p->setLineColor ( color );
         list2_p->setFillColor ( SRgba(color, 30 ) );
             
-        list2_p->addFilledCircle ( currFeatures.keypoints_v[idx_i].pt.x, 
+        list2_p->addFilledSquare ( currFeatures.keypoints_v[idx_i].pt.x, 
                                   currFeatures.keypoints_v[idx_i].pt.y, 
                                   currFeatures.keypoints_v[idx_i].size/2 );
         

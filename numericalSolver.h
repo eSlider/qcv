@@ -19,8 +19,13 @@
  * software, if you do not agree to this license.
  */
 
+namespace QCV
+{
+   
 namespace NumericalSolver
 {
+   
+   template <typename TCostFunction>
    double 
    computeGradientAndHesseMatrix( double * const       f_state_p,
                                   double * const       f_gradient_p,
@@ -28,8 +33,9 @@ namespace NumericalSolver
                                   const double * const f_steps_p,
                                   const int            f_n_i,
                                   const int            f_m_i,
-                                  double              (*compMahalanobis_p)( const double *, int ) );
+                                  TCostFunction       &f_costFunction );
    
+   template <typename TCostFunction>
    double 
    solveByNewton ( double * const       f_state_p,
                    double * const       f_gradient_p,
@@ -39,6 +45,11 @@ namespace NumericalSolver
                    const int            f_m_i,
                    const int            f_maxIters_i,
                    const double         f_resTolerance_d,
-                   double              (*compMahalanobis_p)( const double *, int ) );
+                   TCostFunction       &f_costFunction );
+
+
 }
 
+#include "numericalSolver_inline.h"
+
+}

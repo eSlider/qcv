@@ -24,7 +24,7 @@
 *
 * @file stereoTrackerOp.cpp
 *
-* \class CStereoTrackerOp 
+* \class CMonoTrackerOp 
 * \author Hernan Badino (hernan.badino@gmail.com)
 *
 *
@@ -33,11 +33,10 @@
 /* INCLUDES */
 #include <limits>
 
-#include "stereoTrackerOp.h"
+#include "monoTrackerOp.h"
 
 #include "paramMacros.h"
 #include "drawingList.h"
-#include "featureStereoOp.h"
 #include "gfttFreakOp.h"
 #include "kltTrackerOp.h"
 
@@ -48,7 +47,7 @@
 using namespace QCV;
 
 /// Constructors.
-CStereoTrackerOp::CStereoTrackerOp ( COperator * const f_parent_p,
+CMonoTrackerOp::CMonoTrackerOp ( COperator * const f_parent_p,
                      const std::string f_name_str )
     : COperator (             f_parent_p, f_name_str ),
       m_gftt_p (                                NULL ),
@@ -68,36 +67,26 @@ CStereoTrackerOp::CStereoTrackerOp ( COperator * const f_parent_p,
       m_scaledImage3 (                               ),
       m_unifiedFeatureVector (                       ),
       m_cropTopLeft (                         -1, -1 ),
-      m_cropBottomRight (                     -1, -1 ),
-      m_registerDL_b (                          true )
+      m_cropBottomRight (                     -1, -1 )
       
 {
     m_gftt_p       = new CGfttFreakOp     ( this, "Harris-Freak Tracker" );
     m_kltTracker_p = new CKltTrackerOp    ( this, "KLT Tracker" );
-    m_featStereo_p = new CFeatureStereoOp ( this, "Feature Stereo" );
 
     addChild ( m_gftt_p );
     addChild ( m_kltTracker_p );
-    addChild ( m_featStereo_p );
 
     registerDrawingLists(  );
     registerParameters (  );
 }
 
 void
-CStereoTrackerOp::registerDrawingLists(  )
+CMonoTrackerOp::registerDrawingLists(  )
 {
-   registerDrawingList ("Image 0",
-                        S2D<int> (0, 0),
-                        false);
-
-   registerDrawingList ("Image 1",
-                        S2D<int> (0, 0),
-                        false);
 }
 
 void
-CStereoTrackerOp::registerParameters(  )
+CMonoTrackerOp::registerParameters(  )
 {
 
     BEGIN_PARAMETER_GROUP("Computation", false, SRgb(220,0,0));
@@ -106,7 +95,7 @@ CStereoTrackerOp::registerParameters(  )
                          m_compute_b,
                          this,
                          Compute,
-                         CStereoTrackerOp );
+                         CMonoTrackerOp );
 
     ADD_FLT2D_PARAMETER ( "Central point offset",
                           "Camera central point offset [px]",
@@ -114,28 +103,28 @@ CStereoTrackerOp::registerParameters(  )
                           "u", "v",
                           this,
                           CentralPointOffset,
-                          CStereoTrackerOp );
+                          CMonoTrackerOp );
 
     ADD_FLOAT_PARAMETER ( "FOV scale factor",
                           "Scale factor to apply to the fov for the left and right images.",
                           m_fovScale_f,
                           this,
                           FovScale,
-                          CStereoTrackerOp );
+                          CMonoTrackerOp );
 
     ADD_BOOL_PARAMETER ( "Scale Horizontally Only",
                          "Resize image only in horizontal direction",
                          m_scaleHorOnly_b,
                          this,
                          ScaleHorizontallyOnly,
-                         CStereoTrackerOp );
+                         CMonoTrackerOp );
 
     ADD_BOOL_PARAMETER ( "Resize to orig size",
                          "Resize image to original size if fov scale factor <> 1",
                          m_resizeToOrigSize_b,
                          this,
                          ResizeToOrigSize,
-                         CStereoTrackerOp );
+                         CMonoTrackerOp );
 
     ADD_INT2D_PARAMETER ( "Crop Top-left",
                           "Top-left image coordinates to define crop area. [px]",
@@ -143,7 +132,7 @@ CStereoTrackerOp::registerParameters(  )
                           "x","y",
                           this,
                           CropTopLeft,
-                          CStereoTrackerOp );
+                          CMonoTrackerOp );
 
     ADD_INT2D_PARAMETER ( "Crop Bottom-right",
                           "Bottom-right image coordinates to define crop area. [px]",
@@ -151,32 +140,20 @@ CStereoTrackerOp::registerParameters(  )
                           "x","y",
                           this,
                           CropBottomRight,
-                          CStereoTrackerOp );
+                          CMonoTrackerOp );
 
 
-    END_PARAMETER_GROUP;
-
-    BEGIN_PARAMETER_GROUP("Display", false, SRgb(220,0,0));
-      ADD_BOOL_PARAMETER ( "Register Drawing Lists",
-                           "Register the drawing lists as output of the operator so that other operators can reuse the texture information",
-                           m_registerDL_b,
-                           this,
-                           RegisterDrawingLists,
-                           CStereoTrackerOp );
-
-      addDrawingListParameter ( "Image 0" );
-      addDrawingListParameter ( "Image 1" );      
     END_PARAMETER_GROUP;
 }
 
 /// Virtual destructor.
-CStereoTrackerOp::~CStereoTrackerOp ()
+CMonoTrackerOp::~CMonoTrackerOp ()
 {
 }
 
 /// Cycle event.
 bool
-CStereoTrackerOp::cycle()
+CMonoTrackerOp::cycle()
 {
     if ( m_compute_b )
     {
@@ -256,6 +233,7 @@ CStereoTrackerOp::cycle()
              
              m_camera.setU0( m_camera.getU0() - topleft.x );
              m_camera.setV0( m_camera.getV0() - topleft.y );
+             std::cout << ":LKJ:L" << topleft << " " << botright << std::endl;
 
              registerOutput<cv::Mat>("Image 0", &m_scaledImage2);
              registerOutput<cv::Mat>("Image 1", &m_scaledImage3);
@@ -264,7 +242,7 @@ CStereoTrackerOp::cycle()
 
        m_camera.setU0( m_camera.getU0() + m_centralPointOffset.x );
        m_camera.setV0( m_camera.getV0() + m_centralPointOffset.y );
-       registerOutput<CStereoCamera> ( "Rectified Camera", &m_camera );
+       registerOutput<CCamera> ( "Rectified Camera", &m_camera );
 
        COperator::cycle(m_gftt_p);
        COperator::cycle(m_kltTracker_p);
@@ -285,8 +263,6 @@ CStereoTrackerOp::cycle()
        
        registerOutput <CFeatureVector> ( "Unified Feature Vector", 
                                          &m_unifiedFeatureVector );
-
-       COperator::cycle(m_featStereo_p);
 
        if ( getParentOp() )
        {
@@ -313,43 +289,25 @@ CStereoTrackerOp::cycle()
 }
     
 /// Show event.
-bool CStereoTrackerOp::show()
+bool CMonoTrackerOp::show()
 {
-   
-   CDrawingList *list_p;
+   cv::Mat img =  getInput<cv::Mat>("Image 0", cv::Mat() );
 
-   cv::Mat img0 =  getInput<cv::Mat>("Image 0", cv::Mat() );
-   list_p = getDrawingList("Image 0");
-   list_p->clear();
-
-   if ( list_p->isVisible() || m_registerDL_b )
-   {
-      list_p->addImage(img0);
-      registerOutput<CDrawingList>("Image 0 Drawing List", list_p);
-   }
-   
-
-   cv::Mat img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
-   list_p = getDrawingList("Image 1");
-   list_p->clear();
-
-   if ( list_p->isVisible() || m_registerDL_b )
-   {
-      list_p->addImage(img1);
-      registerOutput<CDrawingList>("Image 1 Drawing List", list_p);
-   }
-   
    /// Set the screen size if this is the parent operator.
-   if ( img1.size().width > 0 )
+   if ( img.size().width > 0 &&
+        !getParentOp() )
    {
-      setScreenSize ( img1.size() );
+      setScreenSize ( img.size() );
    }
 
-   return COperator::show();
+   if (m_compute_b )
+      return COperator::show();
+
+   return true;
 }
 
 /// Init event.
-bool CStereoTrackerOp::initialize()
+bool CMonoTrackerOp::initialize()
 {
     std::string  filePath0_str = getInput<std::string> ("Image 0 Path", "");
 
@@ -394,18 +352,18 @@ bool CStereoTrackerOp::initialize()
        printf("%s:%i camera.xml file could not be found\n", __FILE__, __LINE__ );
     }
 
-    registerOutput<CStereoCamera> ( "Rectified Camera", &m_origCamera );
+    registerOutput<CCamera> ( "Rectified Camera", &m_origCamera );
 
     return COperator::initialize();
 }
 
 /// Reset event.
-bool CStereoTrackerOp::reset()
+bool CMonoTrackerOp::reset()
 {
     return COperator::reset();
 }
 
-bool CStereoTrackerOp::exit()
+bool CMonoTrackerOp::exit()
 {
     return COperator::exit();
 }

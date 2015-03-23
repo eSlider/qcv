@@ -170,6 +170,7 @@ set ( LIBQCV_HEADERS
      node.h
      numericalSolver.h
      polygonList.h
+     pose2ScreenMapper.h
      rectList.h
      s2d.h
      simpleWindow.h

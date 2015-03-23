@@ -89,7 +89,7 @@ add_definitions(${QT_DEFINITIONS})
 add_executable ( gfttFreakExample ${LIBCHECKIMGSCALERPAIR_SRC} )
 
 target_link_libraries(gfttFreakExample ${QT_LIBRARIES} 
-                             ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY}
+                             ${OPENGL_LIBRARIES} ${GLUT_LIBRARY}
                              ${QCVOperators_LIB} 
                              ${QCVMisc_LIB} 
                              ${QCVParamEditor_LIB} 

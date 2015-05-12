@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vicpar>
+<vicpar version="1.0">
+  <category name="Image Sequence">
+    <parameter name="Relative Directory 0">
+      <value>/home/hbadino/datasets/NewTsukubaStereoDataset/illumination/flashlight/left/</value>
+      <comment>Some comment</comment>
+    </parameter>
+    <parameter name="Filter Image 0">
+      <value>*.png</value>
+      <comment>Some comment</comment>
+    </parameter>
+    <parameter name="Relative Directory 1">
+      <value>/home/hbadino/datasets/NewTsukubaStereoDataset/illumination/flashlight/right/</value>
+      <comment>Some comment</comment>
+    </parameter>
+    <parameter name="Filter Image 1">
+      <value>*.png</value>
+      <comment>Some comment</comment>
+    </parameter>
+  </category>
+</xml>

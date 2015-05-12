@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vicpar>
+<vicpar version="1.0">
+  <category name="Rectified Camera">
+    <parameter name="Focal Length">
+      <value>389.956085</value>
+      <comment>Focal length in horizontal pixels.</comment>
+    </parameter>
+    <parameter name="Pixel Width">
+      <value>1.0</value>
+      <comment>Pixel width in horizontal pixels.</comment>
+    </parameter>
+    <parameter name="Pixel Height">
+      <value>1.0</value>
+      <comment>Pixel height in horizontal pixels.</comment>
+    </parameter>
+    <parameter name="Center X">
+      <value>254.903519</value>
+      <comment>X coordinate of central pixel in the image.</comment>
+    </parameter>
+    <parameter name="Center Y">
+      <value>201.899490</value>
+      <comment>Y coordinate of central pixel in the image.</comment>
+    </parameter>
+    <parameter name="Baseline">
+      <value>0.120005</value>
+      <comment>Base line in meters.</comment>
+    </parameter> 
+    <parameter name="Translation Y">
+      <value>1.078</value>
+    </parameter>
+    <parameter name="Rotation X">
+      <value>0.25</value>
+    </parameter>
+  </category>
+</vicpar>

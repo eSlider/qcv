@@ -70,7 +70,7 @@ namespace QCV
         virtual bool    setBaseline( double f_baseline_d );
         virtual double  getBaseline() const;
 
-    /// Get/Set methods specialization from parent.
+   /// Get/Set methods specialization from parent.
     public:
         void scale          ( double f_scale_d );
         bool setFocalLength ( double f_f_d );

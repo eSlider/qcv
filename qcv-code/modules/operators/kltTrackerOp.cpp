@@ -399,14 +399,27 @@ bool CKltTrackerOp::cycle()
          std::vector<cv::Point2f> featcurr_ocv;
          std::vector<size_t>      mapping_v;
 
-         SRigidMotion *   motion_p = getInput<SRigidMotion>  ( "Predicted Motion" );
-         CStereoCamera *  camera_p = getInput<CStereoCamera> ( "Rectified Camera" );
+         SRigidMotion *   motion_p     = getInput<SRigidMotion>  ( "Predicted Motion" );
+         CStereoCamera *  stCamera_p   = getInput<CStereoCamera> ( "Rectified Camera" );
+         CCamera *        monoCamera_p = NULL;
 
-         bool predict_b = m_usePrediction_b && camera_p && motion_p;
+         if (!stCamera_p)
+            monoCamera_p = getInput<CCamera> ( "Rectified Camera" );
+
+         bool predict_b = m_usePrediction_b && (stCamera_p || monoCamera_p) && motion_p;
          
          std::vector<cv::Point2f> featpred; // FOR PAPER
          for (size_t i = 0; i < m_numFeatures_i; ++i)
          {
+            CStereoCamera cam;
+            if (monoCamera_p)
+            {
+               ((CCamera)cam) = *monoCamera_p;
+               cam.setBaseline(1);
+            }
+            else
+               cam = *stCamera_p;
+            
             if ( m_featureVector[i].state == SFeature::FS_TRACKED || 
                  m_featureVector[i].state == SFeature::FS_NEW )
             {
@@ -420,11 +433,11 @@ bool CKltTrackerOp::cycle()
                                          m_featureVector[i].d );
 
                   C3DVector p;
-                  if ( camera_p->image2Local ( prediction,
+                  if ( cam.image2Local ( prediction,
                                                p ) )
                   {
                      C3DVector p2 = motion_p->rotation * p + motion_p->translation;
-                     if ( camera_p->local2Image ( p2, p ) )
+                     if ( cam.local2Image ( p2, p ) )
                      {
                         prediction = p;
                         curr = cv::Point2f(p.x(), p.y());

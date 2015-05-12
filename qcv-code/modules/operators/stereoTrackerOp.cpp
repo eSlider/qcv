@@ -186,14 +186,14 @@ CStereoTrackerOp::cycle()
        cv::Mat img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
 
        /// Convert to gray scale if in RGB format.
-       if ( img0.type() == CV_8UC3 )
+       if ( img0.type() != CV_8UC1 )
        {
           cvtColor(img0, m_scaledImage0, CV_BGR2GRAY);
           registerOutput<cv::Mat>("Image 0", &m_scaledImage0);
        }
 
        /// Convert to gray scale if in RGB format.
-       if ( img1.type() == CV_8UC3 )
+       if ( img1.type() != CV_8UC1 )
        {
           cvtColor(img1, m_scaledImage1, CV_BGR2GRAY);
           registerOutput<cv::Mat>("Image 1", &m_scaledImage1);

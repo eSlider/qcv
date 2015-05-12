@@ -22,7 +22,7 @@
 /**
 *******************************************************************************
 *
-* @file stereoTrackerOp.cpp
+* @file monoTrackerOp.cpp
 *
 * \class CMonoTrackerOp 
 * \author Hernan Badino (hernan.badino@gmail.com)
@@ -83,6 +83,9 @@ CMonoTrackerOp::CMonoTrackerOp ( COperator * const f_parent_p,
 void
 CMonoTrackerOp::registerDrawingLists(  )
 {
+   registerDrawingList ("Image 0",
+                        S2D<int> (0, 0),
+                        false);
 }
 
 void
@@ -143,6 +146,18 @@ CMonoTrackerOp::registerParameters(  )
                           CMonoTrackerOp );
 
 
+    END_PARAMETER_GROUP;
+
+    BEGIN_PARAMETER_GROUP("Display", false, SRgb(220,0,0));
+      ADD_BOOL_PARAMETER ( "Register Drawing Lists",
+                           "Register the drawing lists as output of the operator so that other operators can reuse the texture information",
+                           m_registerDL_b,
+                           this,
+                           RegisterDrawingLists,
+                           CMonoTrackerOp );
+
+      addDrawingListParameter ( "Image 0" );
+      addDrawingListParameter ( "Image 1" );      
     END_PARAMETER_GROUP;
 }
 
@@ -233,7 +248,6 @@ CMonoTrackerOp::cycle()
              
              m_camera.setU0( m_camera.getU0() - topleft.x );
              m_camera.setV0( m_camera.getV0() - topleft.y );
-             std::cout << ":LKJ:L" << topleft << " " << botright << std::endl;
 
              registerOutput<cv::Mat>("Image 0", &m_scaledImage2);
              registerOutput<cv::Mat>("Image 1", &m_scaledImage3);
@@ -293,17 +307,25 @@ bool CMonoTrackerOp::show()
 {
    cv::Mat img =  getInput<cv::Mat>("Image 0", cv::Mat() );
 
+   CDrawingList * list_p = getDrawingList("Image 0");
+   list_p->clear();
+
    /// Set the screen size if this is the parent operator.
-   if ( img.size().width > 0 &&
-        !getParentOp() )
+   if ( img.size().width > 0 )
    {
-      setScreenSize ( img.size() );
-   }
+	   if ( list_p->isVisible() || m_registerDL_b )
+	   {
+    	  list_p->addImage(img);
+	      registerOutput<CDrawingList>("Image 0 Drawing List", list_p);
+	   }
+      
+	   if (!getParentOp() )
+	   {
+	      setScreenSize ( img.size() );
+	   }
+	}
 
-   if (m_compute_b )
-      return COperator::show();
-
-   return true;
+   return COperator::show();
 }
 
 /// Init event.

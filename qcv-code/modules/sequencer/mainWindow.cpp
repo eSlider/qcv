@@ -31,6 +31,7 @@
 
 /* INCLUDES */
 #include <QSettings>
+#include <QFileInfo>
 
 #include "mainWindow.h"
 
@@ -50,8 +51,6 @@
 #include "glViewer.h"
 #endif
 
-std::string g_QCVAppId_str = "";
-
 CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
                            COperator *         f_rootOp_p,
                            int                 f_sx_i, 
@@ -65,8 +64,6 @@ CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
       m_clockTreeDlg_p (       NULL ),
       m_autoPlay_b (          false )
 {
-    g_QCVAppId_str = std::string("QCVApplication/") + m_rootOp_p->getName().c_str();
-    
     QStringList list = QCoreApplication::arguments ();
 
     for (int i = 1; i < list.size(); ++i)
@@ -82,9 +79,10 @@ CMainWindow::CMainWindow ( CSeqDeviceControl * f_device_p,
 
     /// Load number of screens for this app
     QSettings qSettings;
-    int sx_i = qSettings.value ( QString(g_QCVAppId_str.c_str()) + 
+    QString appName_str = QFileInfo( QCoreApplication::applicationFilePath() ).fileName();
+    int sx_i = qSettings.value ( appName_str + 
                                  QString("/ScreenXCount"), "-1").toInt();
-    int sy_i = qSettings.value ( QString(g_QCVAppId_str.c_str()) + 
+    int sy_i = qSettings.value ( appName_str + 
                                  QString("/ScreenYCount"), "-1").toInt();
     
     if (sx_i == -1) sx_i = f_sx_i;
@@ -100,10 +98,11 @@ CMainWindow::~CMainWindow( )
 {    
     /// Save number of screens for this app
     QSettings qSettings;
-    qSettings.setValue ( ( QString(g_QCVAppId_str.c_str()) + 
-                           QString("/ScreenXCount") ), m_display_p->getScreenCount().x);
-    qSettings.setValue ( ( QString(g_QCVAppId_str.c_str()) + 
-                           QString("/ScreenYCount") ), m_display_p->getScreenCount().y);
+    QString appName_str = QFileInfo( QCoreApplication::applicationFilePath() ).fileName();
+    qSettings.setValue ( appName_str + 
+			 QString("/ScreenXCount"), m_display_p->getScreenCount().x);
+    qSettings.setValue ( appName_str + 
+			 QString("/ScreenYCount"), m_display_p->getScreenCount().y);
    
 
     /// Delete all operators.

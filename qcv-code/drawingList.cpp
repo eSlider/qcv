@@ -81,6 +81,11 @@ CDrawingList::addImage ( cv::Mat            f_img,
                          const float        f_alpha_f,
                          const bool         f_makeCopy_b )
 {
+    if (f_img.cols <= 0 || 
+	f_img.rows <= 0 ||
+	!f_img.data)
+        return false;
+
     if (f_width_f == -1)
         f_width_f = f_img.size().width;
 

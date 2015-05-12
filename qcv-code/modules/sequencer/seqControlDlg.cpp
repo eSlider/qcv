@@ -32,6 +32,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QCloseEvent>
+#include <QFileInfo>
 #include <stdio.h>
 
 using namespace QCV;
@@ -69,8 +70,10 @@ CSeqControlDlg::CSeqControlDlg(QWidget *f_parent_p /* = 0 */ )
     /// Allowing signals to be emited in on_m_qsPosition_p_valueChanged ().
     m_sliderPressed_b = false;
 
+    QString appName_str = QFileInfo( QCoreApplication::applicationFilePath() ).fileName();
+
     QSettings qSettings;
-    bool exitOnLastFrame_b = qSettings.value ( QString(g_QCVAppId_str.c_str()) + 
+    bool exitOnLastFrame_b = qSettings.value ( appName_str + 
                                                QString("/ExitOnLastFrame"), "0").toBool();
     
     m_cbExit_p -> setCheckState (  exitOnLastFrame_b?Qt::Checked:Qt::Unchecked);
@@ -87,9 +90,12 @@ CSeqControlDlg::closeEvent ( QCloseEvent * /*f_event_p*/ )
 
 CSeqControlDlg::~CSeqControlDlg( )
 {    
+    QString appName_str = QFileInfo( QCoreApplication::applicationFilePath() ).fileName();
+
     QSettings qSettings;
-    qSettings.setValue ( QString(g_QCVAppId_str.c_str()) + 
+    qSettings.setValue ( appName_str + 
                          QString("/ExitOnLastFrame"), (m_cbExit_p->checkState()==Qt::Checked)?1:0);
+
 }
 
 void CSeqControlDlg::setCurrentFrame( const int f_currentFrame_i )
@@ -149,10 +155,6 @@ void CSeqControlDlg::on_m_cbExit_p_stateChanged ( int f_state_i )
     emit exitOnLastFrameChanged ( f_state_i == Qt::Checked );
 }
 
-// void CSeqControlDlg::on_m_sbRandomEvery_p_valueChanged (int /*f_value_i */)
-// {
-//     //printf("No signal emitted by now\n");
-// }
 
 /// In this slot we only handle when the user press on the bar changing the 
 /// slide to a new position (page change).
@@ -174,7 +176,6 @@ void CSeqControlDlg::on_m_qsPosition_p_actionTriggered ( int f_action_i )
         
         m_qlStatus_p -> setText( qsText );
 
-        printf("slider moving\n");
         return;
     }
 
@@ -229,20 +230,6 @@ void CSeqControlDlg::on_m_qsPosition_p_sliderReleased ( )
 
 void CSeqControlDlg::updateMode ()
 {
-    /*
-    printf("updating model\n\tactionMode = %s\n"
-           "\tdeviceType = %s\n"
-           "\tpositionMode = %s\n",
-           ( m_actionMode_e == AM_DISABLED?"AM_DISABLED":
-             m_actionMode_e == AM_PLAY?"AM_PLAY":
-             m_actionMode_e == AM_PLAY_BACKWARD?"AM_PLAY_BACKWARD":
-             m_actionMode_e == AM_PAUSE?"AM_PAUSE":"OTHER" ),
-           ( m_deviceType_e == DT_BIDIRECTIONAL?"DT_BIDIRECTIONAL":
-             m_deviceType_e == DT_FORWARD_ONLY?"DT_FORWARD_ONLY":"OTHER" ),
-           ( m_positionMode_e == IPM_FIRST_FRAME?"IPM_FIRST_FRAME":
-             m_positionMode_e == IPM_LAST_FRAME?"IPM_LAST_FRAME":
-             m_positionMode_e == IPM_LAST_FRAME?"IPM_MIDDLE_FRAME":"OTHER" ) );
-    */
     // If disabled, then disable all.
     if ( m_actionMode_e == AM_DISABLED )
     {

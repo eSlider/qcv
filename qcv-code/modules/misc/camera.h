@@ -67,18 +67,11 @@ namespace QCV
         
     /// Get/Set methods.
     public:
-        /*
         /// Focal length U.
-        virtual bool    setFu( double f_fu_d );
-        */
         virtual double  getFu() const;
 
-        /*
         /// Focal length V.
-        virtual bool    setFv(double f_fv_d);
-        */
-        virtual double  getFv() const;
-        
+        virtual double  getFv() const;        
 
         /// Principal Point U
         virtual bool    setU0( double f_u0_d );

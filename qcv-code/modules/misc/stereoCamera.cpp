@@ -39,14 +39,14 @@ using namespace QCV;
 
 CStereoCamera::CStereoCamera ( ) 
         : CCamera ( ),
-          m_baseline_d (         0. ),
+          m_baseline_d (         1. ),
           m_fuB_d (              0. )
 {
 }
 
 CStereoCamera::CStereoCamera ( const CParamIOHandling & fr_paraReader )
         : CCamera ( ),
-          m_baseline_d (         0. ),
+          m_baseline_d (         1. ),
           m_fuB_d (              0. )
 {
     load ( fr_paraReader );
@@ -56,6 +56,7 @@ CStereoCamera::~CStereoCamera()
 {
 
 }
+
 
 inline bool
 CStereoCamera::load ( const CParamIOHandling & fr_paraReader )

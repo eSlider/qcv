@@ -72,8 +72,8 @@ namespace QCV
         ADD_PARAM_ACCESS         (S2D<int>,    m_cropTopLeft,        CropTopLeft );
         ADD_PARAM_ACCESS         (S2D<int>,    m_cropBottomRight,    CropBottomRight );
 
-
-
+        ADD_PARAM_ACCESS         (bool,        m_registerDL_b,       RegisterDrawingLists );
+       
     /// Constructor, Desctructors
     public:    
         
@@ -161,7 +161,8 @@ namespace QCV
         /// Bottom-Right crop coordinate.
         S2D<int>                    m_cropBottomRight;
 
-       
+        /// Register drawing lists?
+        bool                        m_registerDL_b;
     };
 }
 #endif // __MONOTRACKER_H

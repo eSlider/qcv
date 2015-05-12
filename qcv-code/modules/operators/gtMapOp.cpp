@@ -158,25 +158,7 @@ bool CGTMapOp::show()
    list_p->clear();
    
    if ( list_p -> isVisible() )
-   {
-      // if (!m_poses_v.empty() )
-      // {
-      //    list_p->setLineWidth ( 1 );
-      //    list_p -> setLineColor ( SRgb( 255, 255, 255 ) );
-         
-      //    S2D<double> prevpos = m_mapper.world2Screen ( S2D<double> ( m_poses_v[0][0], 
-      //                                                                m_poses_v[0][1] ) );
-         
-      //    for (unsigned int i = 1; i < m_poses_v.size(); ++i)
-      //    {
-      //       S2D<double> pos = m_mapper.world2Screen ( S2D<double> ( m_poses_v[i][0], 
-      //                                                               m_poses_v[i][1] ) );
-            
-      //       list_p->addLine ( pos.x, pos.y, prevpos.x, prevpos.y );
-      //       prevpos=pos;
-      //    }
-      // }
-      
+   {      
       if (!m_voPoses_v.empty())
       {
          CColorEncoding colorEnc ( CColorEncoding::CET_HUE,S2D<float>(0,m_voPoses_v.size()));    
@@ -199,10 +181,11 @@ bool CGTMapOp::show()
             newVisRangeY.max = std::max(newVisRangeY.max, m_voPoses_v[i][1]);
          }
       
-         m_mapper.visRangeX.min = newVisRangeX.min;
-         m_mapper.visRangeX.max = newVisRangeX.max;
-         m_mapper.visRangeY.min = newVisRangeY.min;
-         m_mapper.visRangeY.max = newVisRangeY.max;
+         m_mapper.visRangeX.min = std::min(m_mapper.visRangeX.min, newVisRangeX.min);
+         m_mapper.visRangeX.max = std::max(m_mapper.visRangeX.max, newVisRangeX.max);
+         
+         m_mapper.visRangeY.min = std::min(m_mapper.visRangeY.min, newVisRangeY.min);
+         m_mapper.visRangeY.max = std::max(m_mapper.visRangeY.max, newVisRangeY.max);
          
          m_mapper.visScale_d = 0.9 * std::min(getScreenSize().width /(m_mapper.visRangeX.max-m_mapper.visRangeX.min),
                                               getScreenSize().height/(m_mapper.visRangeY.max-m_mapper.visRangeY.min) );
@@ -229,15 +212,26 @@ bool CGTMapOp::show()
                                                                     m_voPoses_v[i][1] ) );
            
             list_p->addSquare ( pos.x, pos.y, 2 );
-         }
-      
+         }             
       }
-             
-
-      //m_mapper.offset = S2D<double>(
-      //   (getScreenSize().width  - m_mapper.visScale_d * (m_mapper.visRangeX.max-m_mapper.visRangeX.min))/2, 
-      //   (getScreenSize().height - m_mapper.visScale_d * (m_mapper.visRangeY.max-m_mapper.visRangeY.min))/2 );
-
+      
+      if (!m_poses_v.empty() )
+      {
+         list_p->setLineWidth ( 1 );
+         list_p -> setLineColor ( SRgb( 255, 255, 255 ) );
+         
+         S2D<double> prevpos = m_mapper.world2Screen ( S2D<double> ( m_poses_v[0][0], 
+                                                                     m_poses_v[0][1] ) );
+         
+         for (unsigned int i = 1; i < m_poses_v.size(); ++i)
+         {
+            S2D<double> pos = m_mapper.world2Screen ( S2D<double> ( m_poses_v[i][0], 
+                                                                    m_poses_v[i][1] ) );
+            
+            list_p->addLine ( pos.x, pos.y, prevpos.x, prevpos.y );
+            prevpos=pos;
+         }
+      }
    }
 
    return COperator::show();
@@ -253,7 +247,6 @@ bool
 CGTMapOp::loadFromFile ( )
 {        
    std::string f_filePath_str = getInput<std::string> ("Image 0 Path", "");
-    
    int pos_i = f_filePath_str.find_last_of ("/\\");
     
    if ( pos_i != -1 )
@@ -319,7 +312,7 @@ CGTMapOp::loadFromFile ( )
       (getScreenSize().height - m_mapper.visScale_d * (m_mapper.visRangeY.max-m_mapper.visRangeY.min))/2 );
     
 
-   printf("%i Ground truth poses matrices read\n", (int)m_poses_v.size());
+   printf("%i Ground truth poses read\n", (int)m_poses_v.size());
     
    free(strData_p);
 

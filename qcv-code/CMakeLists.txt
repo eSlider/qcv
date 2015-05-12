@@ -12,9 +12,11 @@ set (CMAKE_VERBOSE_MAKEFILE true)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${QCV_BINARY_DIR}/bin)
 
-#set(CMAKE_BUILD_TYPE Debug)
-
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -DNDEBUG -Wall -Wextra -fno-strict-aliasing")
+#set default build type
+if(NOT CMAKE_BUILD_TYPE)
+  set (CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+  message(STATUS "Setting build type to: ${CMAKE_BUILD_TYPE}")
+endif()
 
 #################################################
 #DEPENDENCIES

@@ -3,7 +3,7 @@
 <vicpar version="1.0">
   <category name="Image Sequence">
     <parameter name="Relative Directory 0">
-      <value>/datasets/newcollege/</value>
+      <value>/home/hbadino/datasets/Stereo_Images/</value>
       <comment>Some comment</comment>
     </parameter>
     <parameter name="Filter Image 0">
@@ -11,7 +11,7 @@
       <comment>Some comment</comment>
     </parameter>
     <parameter name="Relative Directory 1">
-      <value>/datasets/newcollege/</value>
+      <value>/home/hbadino/datasets/Stereo_Images/</value>
       <comment>Some comment</comment>
     </parameter>
     <parameter name="Filter Image 1">

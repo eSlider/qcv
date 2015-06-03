@@ -52,7 +52,7 @@ CKltTrackerOp::CKltTrackerOp ( COperator * const f_parent_p,
       m_respCE (   CColorEncoding::CET_BLUE2GREEN2RED,
                                S2D<float> ( 0, 200 ) ),
       m_preFilter_b (                          false ),
-      m_pFMaskSize_i (                            27 ),
+      m_pFMaskSize_i (                            19 ),
       m_pFClampScale_f (                        10.f ),
 
       m_numFeatures_i (                         4096 ),
@@ -314,7 +314,7 @@ CKltTrackerOp::~CKltTrackerOp ()
 
 /// Cycle event.
 bool CKltTrackerOp::cycle()
-{   
+{
    if (m_currImg.cols > 0)
       m_currImg.copyTo(m_prevImg);
 
@@ -334,7 +334,7 @@ bool CKltTrackerOp::cycle()
          cv::Mat imgf,imgf2;
          //cv::Sobel( img,  m_currImg,  ddepth, 1, 1, 5, 255.f/500.f, 127.5f, cv::BORDER_DEFAULT );
 
-         cv::boxFilter( img, imgf, ddepth, cv::Size(19,19), cv::Point(-1,-1), true, cv::BORDER_DEFAULT );
+         cv::boxFilter( img, imgf, ddepth, cv::Size(m_pFMaskSize_i,m_pFMaskSize_i), cv::Point(-1,-1), true, cv::BORDER_DEFAULT );
          img.convertTo ( imgf2, CV_32F, 1., 0);
          imgf -= imgf2;
          imgf.convertTo ( m_currImg, CV_8U, m_pFClampScale_f, 127);

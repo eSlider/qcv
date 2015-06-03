@@ -68,7 +68,7 @@ namespace QCV
         
         /// Constructors.
         CKltTrackerOp ( COperator * const f_parent_p = NULL,
-                       const std::string f_name_str = "GFFT+Freak Operator" );
+                       const std::string f_name_str = "KLT Tracker" );
         
         /// Virtual destructor.
         virtual ~CKltTrackerOp ();

@@ -544,8 +544,6 @@ bool CStereoOp::show()
     list_p -> clear();    
     if (list_p -> isVisible() )
         list_p->addImage ( m_dispImg, 0, 0, getScreenSize().width, getScreenSize().height, 100);
-
-    printf("Screen size is %i %i\n", getScreenSize().width, getScreenSize().height);
     
 
 #ifdef HAVE_QGLVIEWER

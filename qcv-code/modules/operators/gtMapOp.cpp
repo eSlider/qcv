@@ -132,7 +132,7 @@ bool CGTMapOp::cycle()
 
       m_rotation    = rotation * m_rotation;
 	
-      m_translation = rotation * m_translation + translation;
+      m_translation = translation + rotation * m_translation;
         
       rotation    = m_rotation;
       translation = m_translation;

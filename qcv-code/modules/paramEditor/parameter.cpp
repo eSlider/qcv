@@ -90,7 +90,8 @@ CParameter::update()
         if (res_b == false)
         {
             res_b = updateFromContainer();
-            m_qtEditor_p -> updateWidget();
+            if ( m_qtEditor_p ) 
+                m_qtEditor_p -> updateWidget();
         }
     }
     else

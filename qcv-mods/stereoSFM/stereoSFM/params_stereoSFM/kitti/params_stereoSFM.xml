@@ -385,7 +385,7 @@
       <comment>Driving noise: system rotation variance [deg^2].</comment>
     </parameter>
     <parameter name="System Translation Variance">
-      <value>10</value>
+      <value>0.1</value>
       <comment>Driving noise: system translation variance [m^2].</comment>
     </parameter>
     <parameter name="Use Motion Prediction">

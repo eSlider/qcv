@@ -21,8 +21,8 @@
 
 #include <QApplication>
 
-#include "../cinterface.h"
-#include "../clock.h"
+#include "cinterface.h"
+#include "clock.h"
 
 using namespace QCV;
 

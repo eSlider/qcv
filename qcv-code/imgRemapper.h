@@ -37,7 +37,7 @@
 ******************************************************************************/
 
 /* INCLUDES */
-#include <cv.h>
+#include <opencv2/imgproc/imgproc.hpp>
 #include "s2d.h"
 
 /* CONSTANTS */

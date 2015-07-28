@@ -35,7 +35,7 @@
 
 #include "roadPlaneDetectionOp.h"
 #include "drawingList.h"
-#include <highgui.h>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #if defined ( _OPENMP )
  #undef _OPENMP

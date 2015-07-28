@@ -1,7 +1,7 @@
 ######### CVFRAMEWORK ###########
 
 cmake_minimum_required(VERSION 2.6)
-project (QCV)
+project (qcv)
 if (POLICY CMP0017)
   cmake_policy(SET CMP0017 NEW)
 endif()

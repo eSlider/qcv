@@ -32,20 +32,31 @@
 
 /* INCLUDES */
 #include "3DMatrix.h"
+#include "3DRowVector.h"
 
-class SRigidMotion
+namespace QCV
 {
-public:
-    
-    C3DMatrix rotation;
-    C3DVector translation;
-
-    void clear()
+    class SRigidMotion
     {
-        rotation.loadIdentity();
-        translation.clear();
-            
-    }    
-};
+    public:
+        
+        SRigidMotion(){clear();}
+        
+        C3DMatrix rotation;
+        C3DVector translation;
+        
+        void clear()
+        {
+            rotation.loadIdentity();
+            translation.clear();            
+        }    
+        
+        void print()
+        {
+            rotation.print();
+            translation.print();            
+        }    
+    };
+}
 
 #endif // __RIGIDMOTION_H

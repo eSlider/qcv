@@ -69,9 +69,13 @@ namespace QCV
         
         void print() const
         {
-            printf("u: %f v: %f d: %f age: %i e: %f\n",
-                   u,v,d,t,e);
-        }
+            printf("u: %f v: %f d: %f age: %i e: %f state: %s\n",
+                   u,v,d,t,e,
+		   state==FS_UNINITIALIZED?"Uninitialized":
+		   state==FS_NEW?"New":
+		   state==FS_TRACKED?"Tracked":
+		   "Lost" );
+	}
 
         void clear()
         {

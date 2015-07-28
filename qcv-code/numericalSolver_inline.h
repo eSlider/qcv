@@ -19,7 +19,7 @@
  * software, if you do not agree to this license.
  */
 
-#include <cv.h>
+#include <opencv2/core/core.hpp>
 
 namespace NumericalSolver
 {

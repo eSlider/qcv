@@ -39,7 +39,8 @@
 
 /* INCLUDES */
 #include <vector>
-#include <cv.h>
+#include <opencv2/imgproc/imgproc.hpp>
+
 
 /* CONSTANTS */
 #define DP4F_MAX_MEDFILT_KERNEL_SIZE 51

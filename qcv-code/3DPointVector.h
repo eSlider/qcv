@@ -42,8 +42,8 @@
 
 namespace QCV
 {
-    class C3DPointDataVector: public std::vector< C3DVector >
-    {};
+    //class C3DPointDataVector: public std::vector< C3DVector >
+    //{};
 }
 
 #endif // __C3DPOINTDATAVECTOR_H

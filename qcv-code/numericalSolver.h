@@ -19,6 +19,9 @@
  * software, if you do not agree to this license.
  */
 
+#ifndef NUMERICALSOLVER_H
+#define NUMERICALSOLVER_H
+
 namespace QCV
 {
    
@@ -53,3 +56,5 @@ namespace NumericalSolver
 #include "numericalSolver_inline.h"
 
 }
+
+#endif //NUMERICALSOLVER_H

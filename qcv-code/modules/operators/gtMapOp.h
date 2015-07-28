@@ -55,7 +55,8 @@ namespace QCV
     public:    
         
         /// Constructors.
-        CGTMapOp ( COperator * const f_parent_p = NULL );
+      CGTMapOp ( COperator * const f_parent_p = NULL,
+		 const std::string f_name_str = "Ground Truth Pose Visualizer");
         
         /// Virtual destructor.
         virtual ~CGTMapOp ();
@@ -126,7 +127,37 @@ namespace QCV
 
         /// Translation
         C3DVector                  m_translation;
-       
+
+        /// Output
+        SRigidMotion               m_totalMotion;
+
+        /// Vector of X translation
+        std::vector<float>         m_x_v; 
+
+        /// Vector of X translation
+        std::vector<float>         m_y_v;
+
+        /// Vector of X translation
+        std::vector<float>         m_z_v;
+
+        /// Vector of rotation axis X
+        std::vector<float>         m_rx_v; 
+
+        /// Vector of rotation axis Y
+        std::vector<float>         m_ry_v;
+
+        /// Vector of rotation axis Z
+        std::vector<float>         m_rz_v;
+
+        /// Vector of Pitch
+        std::vector<float>         m_pitch_v;
+
+        /// Vector of Yaw
+        std::vector<float>         m_yaw_v;
+
+        /// Vector of Roll
+        std::vector<float>         m_roll_v;
+      
    };
 }
 

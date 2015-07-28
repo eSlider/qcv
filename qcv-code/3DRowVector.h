@@ -235,7 +235,9 @@ namespace QCV
  
     /// Make Row vector be the default vector type.
     typedef C3DRowVector C3DVector;
+    typedef std::vector<C3DRowVector> C3DPointDataVector;
  };
+
 
 #include "3DRowVector_inline.h"
 

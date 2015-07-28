@@ -82,7 +82,8 @@ template <class _Type>
 inline bool
 CLinePlotter<_Type>::setYRange ( S2D<_Type> f_range )
 {
-    m_range = f_range;
+    m_range       = f_range;
+    m_autoRange_b = false;
     return true;
 }
 

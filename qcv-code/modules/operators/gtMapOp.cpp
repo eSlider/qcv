@@ -31,24 +31,34 @@
 #include "gtMapOp.h"
 #include "drawingList.h"
 #include "colorEncoding.h"
+#include "linePlotter.h"
 
 //#include "ippDefs.h"
 
 using namespace QCV;
 
 /// Constructors.
-CGTMapOp::CGTMapOp ( COperator * const f_parent_p )
-   : COperator ( f_parent_p, "Ground Truth Pose Visualizer" ),
+CGTMapOp::CGTMapOp ( COperator * const f_parent_p,
+		     const std::string f_name_str )
+   : COperator                     ( f_parent_p, f_name_str ),
      m_filePath_str (                           "poses.txt" ),
      m_egoMInpId_str (   "Integrated Ego-Motion Estimation" ),
      m_maxDistance_f (                                 1.e6 ),
      m_cencSections_i (                                  50 ),
-     m_rotation (                                           ),
-     m_translation (                                        )
+     m_x_v (                                                ),
+     m_y_v (                                                ),
+     m_z_v (                                                ),
+     m_rx_v (                                               ),
+     m_ry_v (                                               ),
+     m_rz_v (                                               ),
+     m_pitch_v (                                            ),
+     m_yaw_v (                                              ),
+     m_roll_v (                                             )
 {
    registerDrawingList( "Poses Overlay",
                         S2D<int> (0, 0),
                         false );
+
 
    ADD_STR_PARAMETER( "File Path", 
                       "Path to the file containing the vehicle data. "
@@ -82,6 +92,25 @@ CGTMapOp::CGTMapOp ( COperator * const f_parent_p )
 
    addDrawingListParameter ( "Poses Overlay" );
 
+
+   std::vector<std::string> names_v;
+   names_v.push_back("Translation X");
+   names_v.push_back("Translation Y");
+   names_v.push_back("Translation Z");
+   names_v.push_back("Rotation Axis X");
+   names_v.push_back("Rotation Axis Y");
+   names_v.push_back("Rotation Axis Z");
+   names_v.push_back("Pitch");
+   names_v.push_back("Yaw");
+   names_v.push_back("Roll");
+   
+   for (int i = 0; i < 9; ++i)
+   {
+       registerDrawingList( names_v[i],
+                            S2D<int> (0, 0),
+                            false );
+       addDrawingListParameter ( names_v[i] );
+   }
 }
 
 /// Virtual destructor.
@@ -101,9 +130,18 @@ bool CGTMapOp::initialize()
    }
     
    double idM_p[]={1,0,0,0,1,0,0,0,1};
-   m_rotation.loadIdentity();
-   m_translation.clear();
+   m_totalMotion.clear();
     
+   m_x_v.clear();
+   m_y_v.clear();
+   m_z_v.clear();
+   m_rx_v.clear();
+   m_ry_v.clear();
+   m_rz_v.clear();
+   m_pitch_v.clear();
+   m_yaw_v.clear();
+   m_roll_v.clear();
+
    return COperator::initialize();
 }
 
@@ -130,13 +168,12 @@ bool CGTMapOp::cycle()
       C3DVector translation = egoMotion_p->translation;       
       C3DMatrix invRotation = rotation.getInverse();
 
-      m_rotation    = rotation * m_rotation;
-	
-      m_translation = translation + rotation * m_translation;
+      m_totalMotion.rotation    = rotation * m_totalMotion.rotation;	
+      m_totalMotion.translation =  rotation * m_totalMotion.translation + translation;
         
-      rotation    = m_rotation;
-      translation = m_translation;
-        
+      rotation    = m_totalMotion.rotation;
+      translation = m_totalMotion.translation;
+
       C3DVector currPos = rotation.multiplyTransposed( -translation );
         
       Data newPos(2);
@@ -144,6 +181,24 @@ bool CGTMapOp::cycle()
       newPos[1] = currPos.z();
 
       m_voPoses_v.push_back( newPos );
+
+      m_x_v.push_back(m_totalMotion.translation.x());
+      m_y_v.push_back(m_totalMotion.translation.y());
+      m_z_v.push_back(m_totalMotion.translation.z());
+
+      C3DVector rotAxis;
+      m_totalMotion.rotation.getRotationAxis(rotAxis);
+      m_rx_v.push_back(rotAxis.x());
+      m_ry_v.push_back(rotAxis.y());
+      m_rz_v.push_back(rotAxis.z());
+
+      double p_d,y_d,r_d;
+      m_totalMotion.rotation.getRotationAngles(p_d,y_d,r_d);
+      m_pitch_v.push_back(p_d);
+      m_yaw_v.push_back(y_d);
+      m_roll_v.push_back(r_d);
+
+      registerOutput ( "Total " + m_egoMInpId_str, &m_totalMotion );
    }
 
    registerOutput ( "GT Pose2ScreenMapper", &m_mapper );
@@ -213,6 +268,30 @@ bool CGTMapOp::show()
            
             list_p->addSquare ( pos.x, pos.y, 2 );
          }             
+         
+         S2D<double> base = m_mapper.world2Screen ( S2D<double> ( m_voPoses_v.back()[0], 
+                                                                  m_voPoses_v.back()[1] ) );
+         
+  
+         C3DMatrix m = m_totalMotion.rotation.getInverse();
+         const double hfov_d = 100/180. * M_PI/2;
+         for (int i = 0; i < 3; ++i)
+         {
+             C3DVector dir;
+             if (i == 0)  
+                 dir = m * C3DVector(0,0,1); 
+             else if (i == 1)
+                 dir = m * C3DVector(sin(hfov_d),0,cos(hfov_d));
+             else
+                 dir = m * C3DVector(-sin(hfov_d),0,cos(hfov_d));
+
+             C3DVector v  = m_totalMotion.translation + dir*100;
+
+             S2D<double> pos = m_mapper.world2Screen ( S2D<double> ( v.x(), v.z() ) );
+             list_p->setLineWidth(1);
+             list_p->setLineColor((i==0)*255,(i==1)*255,(i==2)*255);         
+             list_p->addClippedLine( base.x, base.y, pos.x, pos.y, 0, 0, getScreenSize().width, getScreenSize().height );
+         }
       }
       
       if (!m_poses_v.empty() )
@@ -232,8 +311,45 @@ bool CGTMapOp::show()
             prevpos=pos;
          }
       }
-   }
 
+      std::vector<std::string> names_v;
+      names_v.push_back("Translation X");
+      names_v.push_back("Translation Y");
+      names_v.push_back("Translation Z");
+      names_v.push_back("Rotation Axis X");
+      names_v.push_back("Rotation Axis Y");
+      names_v.push_back("Rotation Axis Z");
+      names_v.push_back("Pitch");
+      names_v.push_back("Yaw");
+      names_v.push_back("Roll");
+
+      std::vector<float> * vectors[] = {&m_x_v, &m_y_v, &m_z_v, 
+                                        &m_rx_v, &m_ry_v, &m_rz_v, 
+                                        &m_pitch_v, &m_yaw_v, &m_roll_v};
+      
+      for (int i = 0; i < 9; ++i)
+      {
+          list_p = getDrawingList(names_v[i]);
+          list_p->clear();
+          if (list_p->isVisible())
+          {
+              CLinePlotter<float> plotter;
+              plotter.setData( vectors[i] );
+              
+              if (i >= 3)
+              {
+                  plotter.setYRange(S2D<float>(-M_PI, M_PI));
+              }
+              
+              list_p->setLineColor(255,255,255);
+              plotter.plot(list_p, getScreenSize().width,getScreenSize().height );
+              
+              list_p->addText(names_v[i], 20, 420, 20, false);
+              
+          }
+      }
+   }
+   
    return COperator::show();
 }
 

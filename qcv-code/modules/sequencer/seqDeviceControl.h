@@ -156,6 +156,11 @@ namespace QCV
     public:
         virtual bool registerOutputs ( 
             std::map< std::string, CIOBase* > & /*fr_map*/ ) { return false;  }
+
+    /// Provide feedback info to the device
+    public:
+        virtual void updateOutput ( 
+                                   std::map< std::string, CIOBase* > /*fr_map*/ ) {  }
         
 
     /// Virtual signals

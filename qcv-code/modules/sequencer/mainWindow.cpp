@@ -267,6 +267,11 @@ void CMainWindow::initialize()
     m_clockTreeDlg_p -> updateTimes();    
     m_rootOp_p -> stopClock ( "Clock Update" );
 
+    m_rootOp_p -> startClock ( "Device output update" );
+    m_rootOp_p -> getOutputMap(devOutput);
+    m_device_p -> updateOutput ( devOutput );
+    m_rootOp_p -> stopClock ( "Device output update" );
+
 }
 
 void CMainWindow::cycle() 
@@ -313,6 +318,11 @@ void CMainWindow::cycle()
     m_rootOp_p -> startClock ( "Clock Update" );
     m_clockTreeDlg_p -> updateTimes();
     m_rootOp_p -> stopClock ( "Clock Update" );	
+
+    m_rootOp_p -> startClock ( "Device output update" );
+    m_rootOp_p -> getOutputMap(devOutput);
+    m_device_p -> updateOutput ( devOutput );
+    m_rootOp_p -> stopClock ( "Device output update" );
 }
 
 void CMainWindow::stop() 
@@ -366,6 +376,11 @@ void CMainWindow::stop()
     m_rootOp_p -> startClock ( "Clock Update" );
     m_clockTreeDlg_p -> updateTimes();    
     m_rootOp_p -> stopClock ( "Clock Update" );
+
+    m_rootOp_p -> startClock ( "Device output update" );
+    m_rootOp_p -> getOutputMap(devOutput);
+    m_device_p -> updateOutput ( devOutput );
+    m_rootOp_p -> stopClock ( "Device output update" );
 }
 
 void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )

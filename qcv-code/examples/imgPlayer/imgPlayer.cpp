@@ -21,7 +21,7 @@
 
 #include <QApplication>
 
-#include "../cinterface.h"
+#include "cinterface.h"
 
 using namespace QCV;
 

@@ -471,7 +471,7 @@ CGTMapOp::loadFromFile ( )
       Data data(2);
 
       fieldsRead_i = sscanf ( strData_p,
-                              "%lf %lf\n", 
+                              "%f %f\n", 
                               &data[0],
                               &data[1] );
 

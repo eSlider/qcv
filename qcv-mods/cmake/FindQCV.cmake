@@ -81,27 +81,27 @@ else (QCV_LIBRARIES AND QCV_INCLUDE_DIRS)
     # find library paths
     find_library (QCV_MAIN_LIB
         NAMES qcv
-        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/" "$ENV{QCV_DIR}/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib" "${CMAKE_SOURCE_DIR}/../qcv-code/build/"
+        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/" "$ENV{QCV_DIR}/lib" "$ENV{QCV_DIR}/build/lib" "$ENV{QCV_DIR}/build/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib" "${CMAKE_SOURCE_DIR}/../qcv-code/build/"
     )
     # find library paths
     find_library (QCV_OP_LIB
         NAMES qcvoperators
-        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/modules/operators" "$ENV{QCV_DIR}/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib"  "${CMAKE_SOURCE_DIR}/../qcv-code/build/modules/operators"
+        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/modules/operators" "$ENV{QCV_DIR}/build/lib" "$ENV{QCV_DIR}/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib"  "${CMAKE_SOURCE_DIR}/../qcv-code/build/modules/operators"
     )
     # find library paths
     find_library (QCV_SEQ_LIB
         NAMES qcvsequencer
-        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/modules/sequencer" "$ENV{QCV_DIR}/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib"  "${CMAKE_SOURCE_DIR}/../qcv-code/build/modules/sequencer"
+        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/modules/sequencer" "$ENV{QCV_DIR}/lib" "$ENV{QCV_DIR}/build/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib"  "${CMAKE_SOURCE_DIR}/../qcv-code/build/modules/sequencer"
     )
     # find library paths
     find_library (QCV_PEDT_LIB
         NAMES qcvpeditor
-        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/modules/paramEditor" "$ENV{QCV_DIR}/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib"  "${CMAKE_SOURCE_DIR}/../qcv-code/build/modules/paramEditor"
+        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/modules/paramEditor" "$ENV{QCV_DIR}/lib" "$ENV{QCV_DIR}/build/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib"  "${CMAKE_SOURCE_DIR}/../qcv-code/build/modules/paramEditor"
     )
     # find library paths
     find_library (QCV_MISC_LIB
         NAMES qcvmisc
-        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/modules/misc"  "$ENV{QCV_DIR}/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib" "${CMAKE_SOURCE_DIR}/../qcv-code/build/modules/misc"
+        PATHS "$ENV{QCV_DIR}" "$ENV{QCV_DIR}/build/modules/misc"  "$ENV{QCV_DIR}/lib" "$ENV{QCV_DIR}/build/lib" "${CMAKE_SOURCE_DIR}/external/install/qcv/lib" "${CMAKE_SOURCE_DIR}/../qcv-code/build/modules/misc"
     ) 
 
     # set paths

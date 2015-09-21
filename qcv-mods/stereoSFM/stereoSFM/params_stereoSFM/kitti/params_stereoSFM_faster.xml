@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE vicpar>
+<vicpar>
+  <category name="Visual SFM Op">
+    <parameter name="Compute">
+      <value>true</value>
+      <comment>Compute VO?.</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.Stereo Tracker">
+    <parameter name="Compute">
+      <value>true</value>
+      <comment>Perform the scaling?.</comment>
+    </parameter>
+    <parameter name="Central point offset">
+      <value>0,0</value>
+      <comment>Camera central point offset [px]</comment>
+    </parameter>
+    <parameter name="FOV scale factor">
+      <value>0.60000002384185791015625</value>
+      <comment>Scale factor to apply to the fov for the left and right images.</comment>
+    </parameter>
+    <parameter name="Scale Horizontally Only">
+      <value>true</value>
+      <comment>Resize image only in horizontal direction</comment>
+    </parameter>
+    <parameter name="Resize to orig size">
+      <value>false</value>
+      <comment>Resize image to original size if fov scale factor &lt;&gt; 1</comment>
+    </parameter>
+    <parameter name="Crop Top-left">
+      <value>-1,-1</value>
+      <comment>Top-left image coordinates to define crop area. [px]</comment>
+    </parameter>
+    <parameter name="Crop Bottom-right">
+      <value>-1,-1</value>
+      <comment>Bottom-right image coordinates to define crop area. [px]</comment>
+    </parameter>
+    <parameter name="Register Drawing Lists">
+      <value>true</value>
+      <comment>Register the drawing lists as output of the operator so that other operators can reuse the texture information</comment>
+    </parameter>
+    <parameter name="Image 0">
+      <value>3,0,1</value>
+      <comment>Image 0</comment>
+    </parameter>
+    <parameter name="Image 1">
+      <value>1,2,0</value>
+      <comment>Image 1</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.Stereo Tracker.Harris-Freak Tracker">
+    <parameter name="Left Image Id">
+      <value>Image 0</value>
+      <comment>String Id of left image.</comment>
+    </parameter>
+    <parameter name="Output Feature Vector Id">
+      <value>Feature Vector</value>
+      <comment>Id of feature point vector.</comment>
+    </parameter>
+    <parameter name="Compute">
+      <value>false</value>
+      <comment>Compute SURF features on the input image?.</comment>
+    </parameter>
+    <parameter name="Correlation">
+      <value>false</value>
+      <comment>Use correlation instead of freak.</comment>
+    </parameter>
+    <parameter name="Normalized Correlation">
+      <value>false</value>
+      <comment>Normalized patches for correlation.</comment>
+    </parameter>
+    <parameter name="Maximum Number of Features">
+      <value>16</value>
+      <comment>Maximum Number of Features to ouptut.</comment>
+    </parameter>
+    <parameter name="Max Features Per Tile">
+      <value>16</value>
+      <comment>Maximum Number of Features per tile.</comment>
+    </parameter>
+    <parameter name="Squared max distance">
+      <value>1000</value>
+      <comment>Squared max distance between key points</comment>
+    </parameter>
+    <parameter name="Squared max distance 4 Pred">
+      <value>36</value>
+      <comment>Squared max distance between key points for predicted points</comment>
+    </parameter>
+    <parameter name="Apply SPE after GFTT">
+      <value>false</value>
+      <comment>Use Sub Pixel Estimation after GoodFeaturesToTrack</comment>
+    </parameter>
+    <parameter name="OpenCV Sub Pixel Estimation Block Size">
+      <value>1</value>
+      <comment>Block Size parameter of OpenCV cornerSubPix</comment>
+    </parameter>
+    <parameter name="SPE Max Iterations">
+      <value>2</value>
+      <comment>Maximum number of iterations for Sub Pixel Estimation</comment>
+    </parameter>
+    <parameter name="OpenCV Sub Pixel Estimation EPS">
+      <value>9.99999974737875163555145e-06</value>
+      <comment>Epsilon to stop estimation</comment>
+    </parameter>
+    <parameter name="GFTT quality level">
+      <value>1.00000000000000008180305e-05</value>
+      <comment>quality level parameter of OpenCV GoodFeaturesToTrack</comment>
+    </parameter>
+    <parameter name="GFTT quality factor">
+      <value>1.00000000000000008180305e-05</value>
+      <comment>Factor to multiply the patch std dev [1/luminance]</comment>
+    </parameter>
+    <parameter name="GFTT Min Distance">
+      <value>1</value>
+      <comment>Min Distance parameter of OpenCV GoodFeaturesToTrack</comment>
+    </parameter>
+    <parameter name="GFTT Block Size">
+      <value>1</value>
+      <comment>Block Size parameter of OpenCV GoodFeaturesToTrack</comment>
+    </parameter>
+    <parameter name="GFTT Use Harris">
+      <value>true</value>
+      <comment>Use Harris corner for OpenCV GoodFeaturesToTrack</comment>
+    </parameter>
+    <parameter name="Max Descriptor Distance">
+      <value>1000</value>
+      <comment>Max distance between two descriptors</comment>
+    </parameter>
+    <parameter name="Keypoints">
+      <value>2,1,0</value>
+      <comment>Keypoints</comment>
+    </parameter>
+    <parameter name="Matches">
+      <value>2,2,0</value>
+      <comment>Matches</comment>
+    </parameter>
+    <parameter name="Vector Length Color Mode">
+      <value>4</value>
+      <comment>Color encoding for the optical vector length.</comment>
+    </parameter>
+    <parameter name="Vector Length Range">
+      <value>0,200</value>
+      <comment>Color encoding for the optical vector length.</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.Stereo Tracker.KLT Tracker">
+    <parameter name="Left Image Id">
+      <value>Image 0</value>
+      <comment>String Id of left image.</comment>
+    </parameter>
+    <parameter name="Output Feature Vector Id">
+      <value>Feature Vector</value>
+      <comment>Id of feature point vector.</comment>
+    </parameter>
+    <parameter name="Pre-Filter?">
+      <value>true</value>
+      <comment>Apply mask normalization to input image.</comment>
+    </parameter>
+    <parameter name="Pre-Filter Mask Size">
+      <value>19</value>
+      <comment>Mask size for box-filter normalization [px]</comment>
+    </parameter>
+    <parameter name="Pre-Filter Clamp Scale">
+      <value>10</value>
+      <comment>Pre-filter clamp scale</comment>
+    </parameter>
+    <parameter name="Compute">
+      <value>true</value>
+      <comment>Compute SURF features on the input image?.</comment>
+    </parameter>
+    <parameter name="Maximum Number of Features">
+      <value>256</value>
+      <comment>Maximum Number of Features to ouptut.</comment>
+    </parameter>
+    <parameter name="KLT Pyramid levels">
+      <value>6</value>
+      <comment>Pyramid levels for klt tracker.</comment>
+    </parameter>
+    <parameter name="Check Collissions">
+      <value>true</value>
+      <comment>Check for feature collissions.</comment>
+    </parameter>
+    <parameter name="Sq. collision distance">
+      <value>4</value>
+      <comment>Squared distance between two tracked features to detect collision [px].</comment>
+    </parameter>
+    <parameter name="Kernel Size">
+      <value>5</value>
+      <comment>Kernel size parameter for KLT tracking</comment>
+    </parameter>
+    <parameter name="Use Prediction">
+      <value>true</value>
+      <comment>Use prediction from ego-motion to estimate future feature position</comment>
+    </parameter>
+    <parameter name="Min Feature Distance">
+      <value>5</value>
+      <comment>Min distance between detected features.</comment>
+    </parameter>
+    <parameter name="Adaptive Distance">
+      <value>false</value>
+      <comment>Min distance between detected features.</comment>
+    </parameter>
+    <parameter name="Detect GFTT">
+      <value>false</value>
+      <comment>If true, detects thresholding min eigenvalue. Otherwise Harris.</comment>
+    </parameter>
+    <parameter name="Harris K">
+      <value>0.0400000000000000008326673</value>
+      <comment>K parameter value for Harris corner detector.</comment>
+    </parameter>
+    <parameter name="Min Eigenvalue">
+      <value>0.00999999977648258209228516</value>
+      <comment>Min eigenvalue to consider for detection.</comment>
+    </parameter>
+    <parameter name="Min Harris Response">
+      <value>1.00000000000000008180305e-05</value>
+      <comment>Min Harris response to sort values.</comment>
+    </parameter>
+    <parameter name="Apply SPE after GFTT">
+      <value>false</value>
+      <comment>Use Sub Pixel Estimation after GoodFeaturesToTrack</comment>
+    </parameter>
+    <parameter name="SPE Block Size">
+      <value>2</value>
+      <comment>Block Size parameter of OpenCV cornerSubPix</comment>
+    </parameter>
+    <parameter name="SPE Max Iterations">
+      <value>2</value>
+      <comment>Maximum number of iterations for Sub Pixel Estimation</comment>
+    </parameter>
+    <parameter name="SPE epsilon">
+      <value>1.00000001168609742308035e-07</value>
+      <comment>Epsilon to stop estimation</comment>
+    </parameter>
+    <parameter name="Previous Image">
+      <value>0,2,0</value>
+      <comment>Previous Image</comment>
+    </parameter>
+    <parameter name="Current Image">
+      <value>1,2,0</value>
+      <comment>Current Image</comment>
+    </parameter>
+    <parameter name="Keypoints">
+      <value>0,0,0</value>
+      <comment>Keypoints</comment>
+    </parameter>
+    <parameter name="Matches">
+      <value>3,0,1</value>
+      <comment>Matches</comment>
+    </parameter>
+    <parameter name="Feature Mask">
+      <value>2,0,0</value>
+      <comment>Feature Mask</comment>
+    </parameter>
+    <parameter name="Vector Length Color Mode">
+      <value>12</value>
+      <comment>Color encoding for the optical vector length.</comment>
+    </parameter>
+    <parameter name="Vector Length Range">
+      <value>0,20</value>
+      <comment>Color encoding for the optical vector length.</comment>
+    </parameter>
+    <parameter name="Pyr LK Epsilon">
+      <value>5</value>
+      <comment>Epsilon for iterative LK algorithm</comment>
+    </parameter>
+    <parameter name="Pyr LK Max Count">
+      <value>10</value>
+      <comment>Max number of iteratinos for LK algorithm</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.Stereo Tracker.Feature Stereo">
+    <parameter name="Input Feature Vector Id">
+      <value>Unified Feature Vector</value>
+      <comment>Id of feature point vector. Must be a CFeatureVector type.</comment>
+    </parameter>
+    <parameter name="Left Image Id">
+      <value>Image 0</value>
+      <comment>Id of left image.</comment>
+    </parameter>
+    <parameter name="Right Image Id">
+      <value>Image 1</value>
+      <comment>Id of right image.</comment>
+    </parameter>
+    <parameter name="Compute">
+      <value>true</value>
+      <comment>Compute Feature Stereo?</comment>
+    </parameter>
+    <parameter name="Pre-Filter?">
+      <value>false</value>
+      <comment>Apply mask normalization to input images.</comment>
+    </parameter>
+    <parameter name="Disparity Range">
+      <value>0,30</value>
+      <comment>Disparity range [px].</comment>
+    </parameter>
+    <parameter name="Pyramid Levels">
+      <value>1</value>
+      <comment>0 is the first level (original size)</comment>
+    </parameter>
+    <parameter name="Disparity correction">
+      <value>1</value>
+      <comment>+- correction in pyramid transfer [px].</comment>
+    </parameter>
+    <parameter name="Mask Size">
+      <value>5,5</value>
+      <comment>Correlation mask size [px].</comment>
+    </parameter>
+    <parameter name="Check Variances?">
+      <value>false</value>
+      <comment>Check the variances of the masks?</comment>
+    </parameter>
+    <parameter name="Min Variance">
+      <value>1</value>
+      <comment>Min allowed variance for left and right windows [luminance^2].</comment>
+    </parameter>
+    <parameter name="Max ZSSD">
+      <value>190</value>
+      <comment>Max allowed zero-mean sum of square difference [luminance^2].</comment>
+    </parameter>
+    <parameter name="Max SSD">
+      <value>260</value>
+      <comment>Max allowed sum of square difference [luminance^2].</comment>
+    </parameter>
+    <parameter name="Disparity Offset">
+      <value>0</value>
+      <comment>Disparity offset [px].</comment>
+    </parameter>
+    <parameter name="Left Image Features">
+      <value>3,1,1</value>
+      <comment>Left Image Features</comment>
+    </parameter>
+    <parameter name="Right Image Features">
+      <value>1,1,0</value>
+      <comment>Right Image Features</comment>
+    </parameter>
+    <parameter name="Left Image Pyramid">
+      <value>0,0,0</value>
+      <comment>Left Image Pyramid</comment>
+    </parameter>
+    <parameter name="Right Image Pyramid">
+      <value>0,0,0</value>
+      <comment>Right Image Pyramid</comment>
+    </parameter>
+    <parameter name="Disparity Color Mode">
+      <value>0</value>
+      <comment>Color encoding for the disparity features</comment>
+    </parameter>
+    <parameter name="Show 3D Points">
+      <value>false</value>
+      <comment>Show points in 3D display.</comment>
+    </parameter>
+    <parameter name="CE Disparity Color Mode">
+      <value>0</value>
+      <comment>Color encoding for the disparity features</comment>
+    </parameter>
+    <parameter name="CE Disparity Range">
+      <value>0,40</value>
+      <comment>Color encoding for the disparity features</comment>
+    </parameter>
+    <parameter name="Show left image?">
+      <value>true</value>
+      <comment>Show left image as background for feature display.</comment>
+    </parameter>
+    <parameter name="Show right image?">
+      <value>true</value>
+      <comment>Show right image as background for feature display.</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.Stereo Ego-Motion">
+    <parameter name="Left Image Id">
+      <value>Image 0</value>
+      <comment>Id for left image</comment>
+    </parameter>
+    <parameter name="Camera Id">
+      <value>Rectified Camera</value>
+      <comment>Id for rectified camera</comment>
+    </parameter>
+    <parameter name="Input Feature Vector Id">
+      <value>Unified Feature Vector</value>
+      <comment>Id of feature point vector. Must be a CFeatureVector type.</comment>
+    </parameter>
+    <parameter name="Compute">
+      <value>true</value>
+      <comment>Compute Ego-motion?</comment>
+    </parameter>
+    <parameter name="Integrate with KF?">
+      <value>true</value>
+      <comment>Integrate motion estimates with KF?</comment>
+    </parameter>
+    <parameter name="System Rotation Variance">
+      <value>100</value>
+      <comment>Driving noise: system rotation variance [deg^2].</comment>
+    </parameter>
+    <parameter name="System Translation Variance">
+      <value>0.100000000000000005551115</value>
+      <comment>Driving noise: system translation variance [m^2].</comment>
+    </parameter>
+    <parameter name="Use Motion Prediction">
+      <value>true</value>
+      <comment>Use motion prediction?</comment>
+    </parameter>
+    <parameter name="Max Iterations">
+      <value>50</value>
+      <comment>Maximum number of iterations for optimization.</comment>
+    </parameter>
+    <parameter name="Max Minimization Iters">
+      <value>5</value>
+      <comment>Maximum number of minimization iterations.</comment>
+    </parameter>
+    <parameter name="Force Reevaluation">
+      <value>true</value>
+      <comment>At least two iterations of the optimization step is performed.</comment>
+    </parameter>
+    <parameter name="Initial Sigma Tolerance">
+      <value>25</value>
+      <comment>Sigma tolerance to use for initial feature selection [px]</comment>
+    </parameter>
+    <parameter name="Min Points">
+      <value>12</value>
+      <comment>Minimum number of points for optimization. If the number of points falls below this threshold, the optimization iteration stops</comment>
+    </parameter>
+    <parameter name="Expected Variance">
+      <value>0.0010000000474974513053894</value>
+      <comment>Max expected variance for. The optimization iteration will stop when a residuum smaller than this is obtained [px^2].</comment>
+    </parameter>
+    <parameter name="Min Reproj Residual">
+      <value>0.00999999977648258209228516</value>
+      <comment>Minimum reprojection residual to use for dynamic weighting.</comment>
+    </parameter>
+    <parameter name="Variance Tolerance">
+      <value>9</value>
+      <comment>Variance tolerance for outlier rejection [px^2]</comment>
+    </parameter>
+    <parameter name="Residuum Tolerance">
+      <value>1</value>
+      <comment>Optimization iteration stops when the score value of two consecutive iterations is less than this number [px^2].</comment>
+    </parameter>
+    <parameter name="Initial speed">
+      <value>-3</value>
+      <comment>Initial Z translation for first motion estimate [m/frame]</comment>
+    </parameter>
+    <parameter name="Translation Comp Step">
+      <value>9.99999974737875163555145e-06</value>
+      <comment>Step for the computation the the translation part of the Hesse Matrix [m].</comment>
+    </parameter>
+    <parameter name="Rotation Comp Step">
+      <value>0.0015000000130385160446167</value>
+      <comment>Step for the computation the rotation part of the Hesse Matrix [deg].</comment>
+    </parameter>
+    <parameter name="Min Disparity">
+      <value>0.0010000000474974513053894</value>
+      <comment>Min feature disparity to consider for motion estimation</comment>
+    </parameter>
+    <parameter name="Estimated Feature Motion">
+      <value>0,0,0</value>
+      <comment>Estimated Feature Motion</comment>
+    </parameter>
+    <parameter name="Integrated Features">
+      <value>0,0,0</value>
+      <comment>Integrated Features</comment>
+    </parameter>
+    <parameter name="Error Color Encoding Color Mode">
+      <value>7</value>
+      <comment>Color encoding for the error between predicted and measured reprojection [px].</comment>
+    </parameter>
+    <parameter name="Error Color Encoding Range">
+      <value>0,2</value>
+      <comment>Color encoding for the error between predicted and measured reprojection [px].</comment>
+    </parameter>
+    <parameter name="Include Disp in Color Enc">
+      <value>true</value>
+      <comment>Include the disparity estimate in the error color encoding?</comment>
+    </parameter>
+    <parameter name="Show Outliers">
+      <value>false</value>
+      <comment>Show outliers as circles?</comment>
+    </parameter>
+    <parameter name="Print out KITTI format">
+      <value>true</value>
+      <comment>Print out kitti format for evaluation/submission</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.Ground Truth Pose Visualizer">
+    <parameter name="File Path">
+      <value>poses.txt</value>
+      <comment>Path to the file containing the vehicle data. It must be relative to the image data directory.</comment>
+    </parameter>
+    <parameter name="Ego-Motion Input String Id">
+      <value>Integrated Ego-Motion Estimation</value>
+      <comment>String identification of the ego-motion. Input must be a SRigidMotion object type.</comment>
+    </parameter>
+    <parameter name="Max Distance?">
+      <value>1000000</value>
+      <comment>Max distance to show poses [m]</comment>
+    </parameter>
+    <parameter name="Color Encoding Sections">
+      <value>50</value>
+      <comment>Number of sections for color encoding</comment>
+    </parameter>
+    <parameter name="Poses Overlay">
+      <value>3,2,1</value>
+      <comment>Poses Overlay</comment>
+    </parameter>
+    <parameter name="Absolute pose?">
+      <value>false</value>
+      <comment>Ego-Motion input is a step or a total motion estimate?</comment>
+    </parameter>
+    <parameter name="Max number of poses">
+      <value>4096</value>
+      <comment>Max number of poses to show</comment>
+    </parameter>
+    <parameter name="Translation X">
+      <value>0,0,0</value>
+      <comment>Translation X</comment>
+    </parameter>
+    <parameter name="Translation Y">
+      <value>0,0,0</value>
+      <comment>Translation Y</comment>
+    </parameter>
+    <parameter name="Translation Z">
+      <value>0,0,0</value>
+      <comment>Translation Z</comment>
+    </parameter>
+    <parameter name="Rotation Axis X">
+      <value>0,0,0</value>
+      <comment>Rotation Axis X</comment>
+    </parameter>
+    <parameter name="Rotation Axis Y">
+      <value>0,0,0</value>
+      <comment>Rotation Axis Y</comment>
+    </parameter>
+    <parameter name="Rotation Axis Z">
+      <value>0,0,1</value>
+      <comment>Rotation Axis Z</comment>
+    </parameter>
+    <parameter name="Pitch">
+      <value>0,0,0</value>
+      <comment>Pitch</comment>
+    </parameter>
+    <parameter name="Yaw">
+      <value>0,0,0</value>
+      <comment>Yaw</comment>
+    </parameter>
+    <parameter name="Roll">
+      <value>0,0,0</value>
+      <comment>Roll</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.3D Feature KF">
+    <parameter name="Feat. Track Input String Id">
+      <value>Unified Feature Vector</value>
+      <comment>String identification of the input. Input must be a CKltFeatureVector object type.</comment>
+    </parameter>
+    <parameter name="Ego-Motion Input String Id">
+      <value>Integrated Ego-Motion Estimation</value>
+      <comment>String identification of the ego-motion. Input must be a SRigidMotion object type.</comment>
+    </parameter>
+    <parameter name="Compute">
+      <value>false</value>
+      <comment>Compute Kalman filter vectors?</comment>
+    </parameter>
+    <parameter name="Max No Measurement Count">
+      <value>4</value>
+      <comment>Maximum no measurement count.</comment>
+    </parameter>
+    <parameter name="Check N Sigma">
+      <value>true</value>
+      <comment>Check if measurement is within the N sigma of state variance.</comment>
+    </parameter>
+    <parameter name="Min Age 4 N Sigma Test">
+      <value>1</value>
+      <comment>Min age that a feature must have to apply the N Sigma Test.</comment>
+    </parameter>
+    <parameter name="Max Sq. N Sigma">
+      <value>16</value>
+      <comment>Value of maximum square N sigma for N Sigma Test.</comment>
+    </parameter>
+    <parameter name="NIS Fading Factor">
+      <value>0.819999999999999951150187</value>
+      <comment>Intensity of the low pass filter for NIS values.</comment>
+    </parameter>
+    <parameter name="Measurement Variance">
+      <value>1,1,0.160000000000000003330669</value>
+      <comment>Variances for each u,v,d measurement component [px^2].</comment>
+    </parameter>
+    <parameter name="Initial Vel Variance">
+      <value>1,0.100000000000000005551115,6</value>
+      <comment>Initial variances for each vx,vy,vz state component [m^2].</comment>
+    </parameter>
+    <parameter name="System Variance">
+      <value>0.000100000000000000004792174,0.00100000000000000002081668</value>
+      <comment>System variances for position and velocity components [m^2].</comment>
+    </parameter>
+    <parameter name="Fix Cycle Time">
+      <value>true</value>
+      <comment>Use a fix given cycle time?</comment>
+    </parameter>
+    <parameter name="Cycle Time">
+      <value>0.100000000000000005551115</value>
+      <comment>Assumed cycle time [s].</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.3D Feature KF.KF Visualizer">
+    <parameter name="Show">
+      <value>false</value>
+      <comment>Show?</comment>
+    </parameter>
+    <parameter name="Ego-Motion Input String Id">
+      <value>Integrated Ego-Motion Estimation</value>
+      <comment>String identification of the ego-motion. Input must be a SRigidMotion object type.</comment>
+    </parameter>
+    <parameter name="3D Velocity Vectors">
+      <value>0,0,1</value>
+      <comment>3D Velocity Vectors</comment>
+    </parameter>
+    <parameter name="Show 3D Anaglyph">
+      <value>false</value>
+      <comment>Show in red/cyan anaglyph.</comment>
+    </parameter>
+    <parameter name="Color Encoding Mode">
+      <value>1</value>
+      <comment>Set the color encoding mode.</comment>
+    </parameter>
+    <parameter name="Min Age">
+      <value>5</value>
+      <comment>Min age that a feature must have to display it.</comment>
+    </parameter>
+    <parameter name="X Velocity">
+      <value>-10,10</value>
+      <comment>Absolute X velocity range of estimated feature.</comment>
+    </parameter>
+    <parameter name="Y Velocity">
+      <value>-1,1</value>
+      <comment>Absolute Y velocity range of estimated feature.</comment>
+    </parameter>
+    <parameter name="Z Velocity">
+      <value>-10,10</value>
+      <comment>Absolute Z velocity range of estimated feature.</comment>
+    </parameter>
+    <parameter name="Vector Length">
+      <value>0,160</value>
+      <comment>Vector length range of estimated feature.</comment>
+    </parameter>
+    <parameter name="Max NIS">
+      <value>120000</value>
+      <comment>Maximum Normalized Innovation Square.</comment>
+    </parameter>
+    <parameter name="Intensify with NIS">
+      <value>false</value>
+      <comment>Intensify (transparency) with nis?</comment>
+    </parameter>
+    <parameter name="Line Width">
+      <value>1</value>
+      <comment>Width of the lines [px].</comment>
+    </parameter>
+    <parameter name="Prediction Time">
+      <value>2</value>
+      <comment>Time to predict future position [s].</comment>
+    </parameter>
+    <parameter name="Min Vel 4 Vector">
+      <value>0.20000000000000001110223</value>
+      <comment>Mininum velocity that a point must have to show it with a velocity vector [m/s].</comment>
+    </parameter>
+    <parameter name="Arrow Width">
+      <value>2</value>
+      <comment>Width of the arrow in [px].</comment>
+    </parameter>
+    <parameter name="Arrow Length">
+      <value>7</value>
+      <comment>Length of the arrow in [px].</comment>
+    </parameter>
+    <parameter name="Show 3D">
+      <value>false</value>
+      <comment>Show points in 3D viewer?</comment>
+    </parameter>
+    <parameter name="Max Points">
+      <value>16</value>
+      <comment>Max number of points allowed in the viewer.</comment>
+    </parameter>
+    <parameter name="Max Distance">
+      <value>50</value>
+      <comment>Don't add points farther away than this value.</comment>
+    </parameter>
+    <parameter name="Max Velocity">
+      <value>50</value>
+      <comment>Don't add points farther away than this value.</comment>
+    </parameter>
+    <parameter name="3D Color Mode">
+      <value>0</value>
+      <comment>Set the color encoding mode for 3D display.</comment>
+    </parameter>
+    <parameter name="Gray Scale Norm">
+      <value>1</value>
+      <comment>Normalization factor for gray scale values.</comment>
+    </parameter>
+    <parameter name="Rotation">
+      <value>0,0,0</value>
+      <comment>Rotation parameters in degrees.</comment>
+    </parameter>
+    <parameter name="Translation">
+      <value>0,0,0</value>
+      <comment>Translation parameters in meters.</comment>
+    </parameter>
+    <parameter name="Background color">
+      <value>96,96,96,255</value>
+      <comment>Color for the background of the 3D display.</comment>
+    </parameter>
+    <parameter name="Point Size">
+      <value>2</value>
+      <comment>Point size for drawings on the 3D display.</comment>
+    </parameter>
+    <parameter name="Ego-Position Point Size">
+      <value>4</value>
+      <comment>Point size for drawings on the 3D display.</comment>
+    </parameter>
+    <parameter name="Distance Color Enc Color Mode">
+      <value>0</value>
+      <comment>Color encoding for distance [m].</comment>
+    </parameter>
+    <parameter name="Distance Color Enc Range">
+      <value>1,5</value>
+      <comment>Color encoding for distance [m].</comment>
+    </parameter>
+    <parameter name="Speed Color Enc Color Mode">
+      <value>0</value>
+      <comment>Color encoding for speed [m/s].</comment>
+    </parameter>
+    <parameter name="Speed Color Enc Range">
+      <value>0,2</value>
+      <comment>Color encoding for speed [m/s].</comment>
+    </parameter>
+    <parameter name="Variance Color Enc Color Mode">
+      <value>6</value>
+      <comment>Color encoding for variance [m^2] or [m^2/s^2].</comment>
+    </parameter>
+    <parameter name="Variance Color Enc Range">
+      <value>0,1</value>
+      <comment>Color encoding for variance [m^2] or [m^2/s^2].</comment>
+    </parameter>
+    <parameter name="NIS Color Enc Color Mode">
+      <value>0</value>
+      <comment>Color encoding for NIS.</comment>
+    </parameter>
+    <parameter name="NIS Color Enc Range">
+      <value>0,1</value>
+      <comment>Color encoding for NIS.</comment>
+    </parameter>
+    <parameter name="Disp Rate Color Enc Color Mode">
+      <value>0</value>
+      <comment>Color encoding for Disp Rate</comment>
+    </parameter>
+    <parameter name="Disp Rate Color Enc Range">
+      <value>0,3</value>
+      <comment>Color encoding for Disp Rate</comment>
+    </parameter>
+    <parameter name="Count Color Enc Color Mode">
+      <value>12</value>
+      <comment>Color encoding for feature number.</comment>
+    </parameter>
+    <parameter name="Count Color Enc Range">
+      <value>0,41</value>
+      <comment>Color encoding for feature number.</comment>
+    </parameter>
+    <parameter name="Min Age (3D)">
+      <value>4</value>
+      <comment>Min age of points to visualize.</comment>
+    </parameter>
+    <parameter name="Line Width 3D">
+      <value>1</value>
+      <comment>Line width for drawings on the 3D display.</comment>
+    </parameter>
+    <parameter name="Point Size 3D">
+      <value>1</value>
+      <comment>Point size for drawings on the 3D display.</comment>
+    </parameter>
+    <parameter name="Feature Size">
+      <value>2</value>
+      <comment>Radius of the square to show features [px].</comment>
+    </parameter>
+    <parameter name="Display scale">
+      <value>3</value>
+      <comment>Scale display.</comment>
+    </parameter>
+    <parameter name="Min Speed">
+      <value>0.5</value>
+      <comment>Min speed of feature to display it.</comment>
+    </parameter>
+  </category>
+  <category name="Visual SFM Op.Stereo Tracker.Scaler">
+    <parameter name="Compute">
+      <value>true</value>
+      <comment>Perform the scaling?.</comment>
+    </parameter>
+    <parameter name="Algorithm">
+      <value>0</value>
+      <comment>ImageScaler algorithm to use</comment>
+    </parameter>
+    <parameter name="Factors">
+      <value>0.5,0.5</value>
+      <comment>Scale factors for scaling the image.</comment>
+    </parameter>
+    <parameter name="Size">
+      <value>320,240</value>
+      <comment>Fix size to scale the input image.</comment>
+    </parameter>
+    <parameter name="Interpolation">
+      <value>1</value>
+      <comment>Interpolation type to use.</comment>
+    </parameter>
+    <parameter name="Input Image 0">
+      <value>0,0,0</value>
+      <comment>Input Image 0</comment>
+    </parameter>
+    <parameter name="Output Image 0">
+      <value>1,0,0</value>
+      <comment>Output Image 0</comment>
+    </parameter>
+    <parameter name="Input Image 1">
+      <value>0,0,0</value>
+      <comment>Input Image 1</comment>
+    </parameter>
+    <parameter name="Output Image 1">
+      <value>1,0,0</value>
+      <comment>Output Image 1</comment>
+    </parameter>
+  </category>
+</vicpar>

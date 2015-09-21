@@ -79,6 +79,8 @@ namespace QCV
         /// Update the amount of screens.
         virtual void updateScreenCount ( );
 
+        /// Update the skip display number.
+        virtual void updateSkipDisplay ( );
         /// Set the size of each scren
         virtual bool setScreenSize ( const S2D<unsigned int> f_size );
 
@@ -87,6 +89,11 @@ namespace QCV
 
         /// Set how many  screens are displayed
         virtual S2D<unsigned int> getScreenCount (  ) const;
+        /// Set skip display
+        void setSkipDisplay ( int f_n_i );
+        
+        /// Get skip display
+        int  getSkipDisplay ( ) const;
 
         /// Show and hide tree dialog
         virtual void showHideTreeDlg();
@@ -149,6 +156,8 @@ namespace QCV
 
         /// Spin box for vertical screens.
         QSpinBox *             m_qsbNumVertScreens_p;
+        /// Spin box for vertical screens.
+        QSpinBox *             m_qsbSkipDisplay_p;
 
         /// QFrame for the status bar.
         QFrame *               m_qfStatusBar_p;
@@ -182,6 +191,8 @@ namespace QCV
 
         /// Formats
         QStringList            m_items;                
+        /// Counter
+        unsigned int           m_counter_ui;
    };
 
     inline bool 

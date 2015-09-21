@@ -51,6 +51,11 @@ namespace QCV
             translation.clear();            
         }    
         
+        SRigidMotion invert()
+        {
+            rotation.transpose();
+            translation = -rotation * translation;
+        }    
         void print()
         {
             rotation.print();

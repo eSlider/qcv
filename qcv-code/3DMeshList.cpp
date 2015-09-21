@@ -147,6 +147,8 @@ C3DMeshList::show ()
             SRgb *    cImg_p         = &m->dispTexture.at<SRgb>(0,0);
             uint8_t * gImg_p         = &m->dispTexture.at<unsigned char>(0,0);
 
+            float maxSqDist_f  = m->maxDist_f * m->maxDist_f;
+            float maxSqInvDist_f = 1./m->maxInvDist_f * 1./m->maxInvDist_f;
             for (int i = 0 ; i < rows_i-s_i-1; i+=s_i)
             {
                 for (int j = 0 ; j < cols_i-s_i-1; j+=s_i)
@@ -170,8 +172,9 @@ C3DMeshList::show ()
 
                         if (t < 3)
                         {
-                            if ( fabs(vecs[t].z()   - vecs[t+1].z())   > m->maxDist_f ||
-                                 fabs(1/vecs[t].z() - 1/vecs[t+1].z()) > m->maxInvDist_f )
+                            float sqDist_f = (vecs[t] - vecs[t+1]).sumOfSquares();
+                            if (  sqDist_f > maxSqDist_f ||
+                                  (sqDist_f && 1./sqDist_f < maxSqInvDist_f) )
                                 break;
                         }
 

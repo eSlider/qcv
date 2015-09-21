@@ -43,6 +43,7 @@ CGTMapOp::CGTMapOp ( COperator * const f_parent_p,
    : COperator                     ( f_parent_p, f_name_str ),
      m_filePath_str (                           "poses.txt" ),
      m_egoMInpId_str (   "Integrated Ego-Motion Estimation" ),
+      m_absolutePose_b (                               false ),
      m_maxDistance_f (                                 1.e6 ),
      m_cencSections_i (                                  50 ),
      m_x_v (                                                ),
@@ -53,7 +54,8 @@ CGTMapOp::CGTMapOp ( COperator * const f_parent_p,
      m_rz_v (                                               ),
      m_pitch_v (                                            ),
      m_yaw_v (                                              ),
-     m_roll_v (                                             )
+    m_roll_v (                                             ),
+    m_maxPoses_i (                                    4096 )
 {
    registerDrawingList( "Poses Overlay",
                         S2D<int> (0, 0),
@@ -75,6 +77,19 @@ CGTMapOp::CGTMapOp ( COperator * const f_parent_p,
                       this,
                       EgoMInputIdStr, 
                       CGTMapOp );
+    ADD_BOOL_PARAMETER( "Absolute pose?", 
+                        "Ego-Motion input is a step or a total motion estimate?",
+                        m_absolutePose_b,
+                        this,
+                        AbsolutePose, 
+                        CGTMapOp );
+
+    ADD_UINT_PARAMETER( "Max number of poses",
+                        "Max number of poses to show",
+                        m_maxPoses_i,
+                        this,
+                        MaxPoses,
+                        CGTMapOp);
 
    ADD_FLOAT_PARAMETER( "Max Distance?", 
                         "Max distance to show poses [m]",
@@ -121,6 +136,7 @@ CGTMapOp::~CGTMapOp ()
 /// Init event.
 bool CGTMapOp::initialize()
 {
+    m_idx_i = 0;
    m_voPoses_v.clear();
    /// Load only if not already initialized.
    if ( m_poses_v.size() == 0 )
@@ -168,8 +184,16 @@ bool CGTMapOp::cycle()
       C3DVector translation = egoMotion_p->translation;       
       C3DMatrix invRotation = rotation.getInverse();
 
+        if ( !m_absolutePose_b )
+        {
       m_totalMotion.rotation    = rotation * m_totalMotion.rotation;	
       m_totalMotion.translation =  rotation * m_totalMotion.translation + translation;
+        }
+        else
+        {
+            m_totalMotion.rotation    = rotation;
+            m_totalMotion.translation = translation;
+        }
         
       rotation    = m_totalMotion.rotation;
       translation = m_totalMotion.translation;
@@ -180,23 +204,64 @@ bool CGTMapOp::cycle()
       newPos[0] = currPos.x();
       newPos[1] = currPos.z();
 
+        if (m_voPoses_v.size() >= m_maxPoses_i )
+        {
+            size_t newSize_i = m_voPoses_v.size()/2;
+            for (size_t i = 1 ; i < newSize_i; ++i)
+                m_voPoses_v[i] = m_voPoses_v[i*2];
+
+            m_voPoses_v.resize(newSize_i);
+        }
+        else
       m_voPoses_v.push_back( newPos );
 
-      m_x_v.push_back(m_totalMotion.translation.x());
-      m_y_v.push_back(m_totalMotion.translation.y());
-      m_z_v.push_back(m_totalMotion.translation.z());
+        //if (m_x_v.size() != m_maxPoses_i);
+        {
+            int n_i = m_idx_i+1;
+            m_x_v    .resize(n_i, 0.);
+            m_y_v    .resize(n_i, 0.);
+            m_z_v    .resize(n_i, 0.);
+            m_rx_v   .resize(n_i, 0.);
+            m_ry_v   .resize(n_i, 0.);
+            m_rz_v   .resize(n_i, 0.);
+            m_pitch_v.resize(n_i, 0.);
+            m_yaw_v  .resize(n_i, 0.);
+            m_roll_v .resize(n_i, 0.);
+        }
+
+        if (m_idx_i == m_maxPoses_i-1)
+        {
+            std::copy(m_x_v.begin()+1, m_x_v.end(), m_x_v.begin());
+            std::copy(m_y_v.begin()+1, m_y_v.end(), m_y_v.begin());
+            std::copy(m_z_v.begin()+1, m_z_v.end(), m_z_v.begin());
+            std::copy(m_rx_v.begin()+1, m_rx_v.end(), m_rx_v.begin());
+            std::copy(m_ry_v.begin()+1, m_ry_v.end(), m_ry_v.begin());
+            std::copy(m_rz_v.begin()+1, m_rz_v.end(), m_rz_v.begin());
+            std::copy(m_rx_v.begin()+1, m_rx_v.end(), m_rx_v.begin());
+            std::copy(m_ry_v.begin()+1, m_ry_v.end(), m_ry_v.begin());
+            std::copy(m_rz_v.begin()+1, m_rz_v.end(), m_rz_v.begin());
+        }
+
+        m_x_v[m_idx_i] = m_totalMotion.translation.x();
+        m_y_v[m_idx_i] = m_totalMotion.translation.y();
+        m_z_v[m_idx_i] = m_totalMotion.translation.z();
 
       C3DVector rotAxis;
       m_totalMotion.rotation.getRotationAxis(rotAxis);
-      m_rx_v.push_back(rotAxis.x());
-      m_ry_v.push_back(rotAxis.y());
-      m_rz_v.push_back(rotAxis.z());
+        m_rx_v[m_idx_i] = rotAxis.x();
+        m_ry_v[m_idx_i] = rotAxis.y();
+        m_rz_v[m_idx_i] = rotAxis.z();
 
       double p_d,y_d,r_d;
       m_totalMotion.rotation.getRotationAngles(p_d,y_d,r_d);
-      m_pitch_v.push_back(p_d);
-      m_yaw_v.push_back(y_d);
-      m_roll_v.push_back(r_d);
+        m_pitch_v[m_idx_i] = p_d;
+        m_yaw_v  [m_idx_i] = y_d;
+        m_roll_v [m_idx_i] = r_d;
+
+        if (m_idx_i < m_maxPoses_i-1)
+            ++m_idx_i;
+
+        m_idx_i%=m_maxPoses_i;
 
       registerOutput ( "Total " + m_egoMInpId_str, &m_totalMotion );
    }
@@ -218,8 +283,8 @@ bool CGTMapOp::show()
       {
          CColorEncoding colorEnc ( CColorEncoding::CET_HUE,S2D<float>(0,m_voPoses_v.size()));    
          
-         S2D<double> newVisRangeX;
-         S2D<double> newVisRangeY;
+            S2D<float> newVisRangeX;
+            S2D<float> newVisRangeY;
          newVisRangeX.min = 1.e20;
          newVisRangeX.max = -1.e20;
          newVisRangeY.min = 1.e20;
@@ -227,7 +292,7 @@ bool CGTMapOp::show()
          
          for (unsigned int i = 0; i < m_voPoses_v.size(); ++i)
          {
-            S2D<double> pos = S2D<double> ( m_voPoses_v[i][0], 
+                S2D<float> pos = S2D<float> ( m_voPoses_v[i][0], 
                                             m_voPoses_v[i][1] );
             
             newVisRangeX.min = std::min(newVisRangeX.min, m_voPoses_v[i][0]);
@@ -236,11 +301,11 @@ bool CGTMapOp::show()
             newVisRangeY.max = std::max(newVisRangeY.max, m_voPoses_v[i][1]);
          }
       
-         m_mapper.visRangeX.min = std::min(m_mapper.visRangeX.min, newVisRangeX.min);
-         m_mapper.visRangeX.max = std::max(m_mapper.visRangeX.max, newVisRangeX.max);
+            m_mapper.visRangeX.min = std::min(m_mapper.visRangeX.min, (double)newVisRangeX.min);
+            m_mapper.visRangeX.max = std::max(m_mapper.visRangeX.max, (double)newVisRangeX.max);
          
-         m_mapper.visRangeY.min = std::min(m_mapper.visRangeY.min, newVisRangeY.min);
-         m_mapper.visRangeY.max = std::max(m_mapper.visRangeY.max, newVisRangeY.max);
+            m_mapper.visRangeY.min = std::min(m_mapper.visRangeY.min, (double)newVisRangeY.min);
+            m_mapper.visRangeY.max = std::max(m_mapper.visRangeY.max, (double)newVisRangeY.max);
          
          m_mapper.visScale_d = 0.9 * std::min(getScreenSize().width /(m_mapper.visRangeX.max-m_mapper.visRangeX.min),
                                               getScreenSize().height/(m_mapper.visRangeY.max-m_mapper.visRangeY.min) );
@@ -274,7 +339,7 @@ bool CGTMapOp::show()
          
   
          C3DMatrix m = m_totalMotion.rotation.getInverse();
-         const double hfov_d = 100/180. * M_PI/2;
+            const float hfov_d = 100/180. * M_PI/2;
          for (int i = 0; i < 3; ++i)
          {
              C3DVector dir;
@@ -413,10 +478,10 @@ CGTMapOp::loadFromFile ( )
       if ( fieldsRead_i == 2 )
       {
          m_poses_v.push_back(data);
-         m_mapper.visRangeX.min = std::min(m_mapper.visRangeX.min,data[0]);
-         m_mapper.visRangeX.max = std::max(m_mapper.visRangeX.max,data[0]);
-         m_mapper.visRangeY.min = std::min(m_mapper.visRangeY.min,data[1]);
-         m_mapper.visRangeY.max = std::max(m_mapper.visRangeY.max,data[1]);
+            m_mapper.visRangeX.min = std::min(m_mapper.visRangeX.min,(double)data[0]);
+            m_mapper.visRangeX.max = std::max(m_mapper.visRangeX.max,(double)data[0]);
+            m_mapper.visRangeY.min = std::min(m_mapper.visRangeY.min,(double)data[1]);
+            m_mapper.visRangeY.max = std::max(m_mapper.visRangeY.max,(double)data[1]);
       }
    }
 

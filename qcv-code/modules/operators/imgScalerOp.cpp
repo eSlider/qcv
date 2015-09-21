@@ -244,7 +244,7 @@ CImageScalerOp::show()
             CDrawingList *list_p  = getDrawingList ( name_str );
             list_p -> clear();    
             if ( list_p -> isVisible() ) // No preview but faster.
-                list_p->addImage ( m_img_v[i] );
+                list_p->addImage ( m_img_v[i], 0, 0, getScreenSize().width, getScreenSize().height );
         }
 
         if ( m_scaledImgs_v[i].size().width  > 0 && 
@@ -254,7 +254,7 @@ CImageScalerOp::show()
             CDrawingList *list_p  = getDrawingList ( name_str );
             list_p -> clear();    
             if ( list_p -> isVisible() ) // No preview but faster.
-                list_p->addImage ( m_scaledImgs_v[i] );
+                list_p->addImage ( m_scaledImgs_v[i], 0, 0, getScreenSize().width, getScreenSize().height );
         }
     }
 

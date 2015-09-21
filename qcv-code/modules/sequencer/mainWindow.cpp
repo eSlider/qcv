@@ -224,7 +224,10 @@ void CMainWindow::initialize()
     std::map< std::string, CIOBase * > devOutput;
     success_b = m_device_p -> registerOutputs ( devOutput );
 
+    m_rootOp_p -> startClock ( "OpenGL Display" );
+    if ( m_display_p->isVisible() )
     m_display_p -> update(true);
+    m_rootOp_p -> stopClock ( "OpenGL Display" );
 
     m_rootOp_p -> clearIOMap();
     
@@ -248,6 +251,7 @@ void CMainWindow::initialize()
     m_display_p -> setScreenSize ( m_rootOp_p -> getScreenSize() );
 
     m_rootOp_p -> startClock ( "OpenGL Display" );
+    if ( m_display_p->isVisible() )
     m_display_p -> update(true);
     m_rootOp_p -> stopClock ( "OpenGL Display" );
 
@@ -276,6 +280,7 @@ void CMainWindow::initialize()
 
 void CMainWindow::cycle() 
 {
+    m_rootOp_p -> stopClock ( "Out of cycle" );
     if ( not m_device_p -> isInitialized() )
     {
         printf("%s:%i Device %s not initialized\n", __FILE__, __LINE__, m_device_p ->getName().c_str());
@@ -306,6 +311,7 @@ void CMainWindow::cycle()
 
     //printf("In CMainWindow::cycle updating display\n");
     m_rootOp_p -> startClock ( "OpenGL Display" );
+    if ( m_display_p->isVisible() )
     m_display_p -> update();
     m_rootOp_p -> stopClock ( "OpenGL Display" );
     
@@ -323,6 +329,7 @@ void CMainWindow::cycle()
     m_rootOp_p -> getOutputMap(devOutput);
     m_device_p -> updateOutput ( devOutput );
     m_rootOp_p -> stopClock ( "Device output update" );
+    m_rootOp_p -> startClock ( "Out of cycle" );
 }
 
 void CMainWindow::stop() 
@@ -364,6 +371,7 @@ void CMainWindow::stop()
     m_display_p -> setScreenSize ( m_rootOp_p -> getScreenSize() );
 
     m_rootOp_p -> startClock ( "OpenGL Display" );
+    if ( m_display_p->isVisible() )
     m_display_p -> update();
     m_rootOp_p -> stopClock ( "OpenGL Display" );
 
@@ -429,6 +437,7 @@ void CMainWindow::keyPressed ( CKeyEvent * const f_event_p )
     }
 
     m_rootOp_p -> keyPressed ( f_event_p );
+    if ( m_display_p->isVisible() )
     m_display_p -> update ( false );
 }
 
@@ -440,6 +449,7 @@ CMainWindow::mousePressed   ( CMouseEvent *  f_event_p )
 
     m_rootOp_p -> mousePressed ( f_event_p );
 
+    if ( m_display_p->isVisible() )
     m_display_p -> update ( false );
 }
 
@@ -454,6 +464,7 @@ CMainWindow::mouseReleased  ( CMouseEvent *  f_event_p )
 
     m_rootOp_p -> mouseReleased ( f_event_p );
 
+    if ( m_display_p->isVisible() )
     m_display_p -> update ( false );
 }
 
@@ -467,6 +478,7 @@ void CMainWindow::mouseMoved     ( CMouseEvent *  f_event_p )
 
     m_rootOp_p -> mouseMoved ( f_event_p );
 
+    if ( m_display_p->isVisible() )
     m_display_p -> update ( false );
 }
 
@@ -480,6 +492,7 @@ void CMainWindow::wheelTurned    ( CWheelEvent *  f_event_p )
 
     m_rootOp_p ->wheelTurned  ( f_event_p );
 
+    if ( m_display_p->isVisible() )
     m_display_p -> update ( false );
 }
 
@@ -493,6 +506,7 @@ void CMainWindow::regionSelected ( CRegionSelectedEvent *  f_event_p )
 
     m_rootOp_p -> regionSelected ( f_event_p );
 
+    if ( m_display_p->isVisible() )
     m_display_p -> update ( false );
 }
 

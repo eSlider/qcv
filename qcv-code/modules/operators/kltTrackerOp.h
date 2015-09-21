@@ -176,10 +176,6 @@ namespace QCV
            SEigenvalue () {}
            SEigenvalue ( int f_x_f, int f_y_f, float f_eigenvalue_f )
               : x ( f_x_f ), y ( f_y_f), eigenvalue ( f_eigenvalue_f ) { }
-           SEigenvalue ( int f_x_f, int f_y_f, float f_eigenvalue_f,
-                         float f_x_32f, float f_y_32f)
-              : x ( f_x_f ), y ( f_y_f), eigenvalue ( f_eigenvalue_f ),
-                x_32f(f_x_32f), y_32f(f_y_32f){ }
            
            bool operator < ( const SEigenvalue & f_other ) const
            {
@@ -188,8 +184,6 @@ namespace QCV
            
            int x, y;
            float eigenvalue;
-           // 11.21.2012 A.Yamamoto
-           float x_32f, y_32f;
 
         };
 

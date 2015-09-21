@@ -87,6 +87,8 @@ class QWidget;
 
 namespace QCV
 {
+    // Useful macro to print stuff
+#define printd(fmt, ...) printf("%s:%i " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 /* PROTOTYPES */
 
     class CClockHandler;

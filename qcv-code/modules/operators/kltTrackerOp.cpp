@@ -40,6 +40,10 @@
 #include "stereoCamera.h"
 #include "rigidMotion.h"
 
+#ifdef USE_GPU
+#include "opencv2/gpu/gpu.hpp"
+#include "opencv2/nonfree/gpu.hpp"
+#endif
 using namespace QCV;
 
 /// Constructors.
@@ -338,7 +342,7 @@ bool CKltTrackerOp::cycle()
          img.convertTo ( imgf2, CV_32F, 1., 0);
          imgf -= imgf2;
          imgf.convertTo ( m_currImg, CV_8U, m_pFClampScale_f, 127);
-         stopClock ("Pre-filtering");            
+         stopClock ("Pre-filtering");
       }
       else
          img.copyTo(m_currImg);
@@ -455,6 +459,69 @@ bool CKltTrackerOp::cycle()
          startClock ("OpenCV KLT");
 
          // set window size and criteria
+         std::vector<uint8_t> status_ocv;
+         std::vector<float> error_ocv;
+
+#ifdef USE_GPU
+         cv::Mat tmpFeatPrev = cv::Mat(1, featprev_ocv.size(), CV_32FC2, &featprev_ocv[0]);
+         cv::Mat tmpFeatCurr = cv::Mat(1, featcurr_ocv.size(), CV_32FC2, &featcurr_ocv[0]);
+
+         cv::gpu::GpuMat gpuPrevImg(m_prevImg);
+         cv::gpu::GpuMat gpuCurrImg(m_currImg);
+         cv::gpu::GpuMat gpuFeatPrev(tmpFeatPrev);
+         cv::gpu::GpuMat gpuFeatCurr(tmpFeatCurr);
+         cv::gpu::GpuMat gpuStatus;
+         cv::gpu::GpuMat gpuErrors;
+
+
+         // sparse lk optical flow
+         cv::gpu::PyrLKOpticalFlow    gpuPyrLK;
+         
+         gpuPyrLK.winSize.width  = m_kernelSize_i;
+         gpuPyrLK.winSize.height = m_kernelSize_i;
+         gpuPyrLK.maxLevel       = m_pyrLevels_i;
+         gpuPyrLK.iters          = m_pyrLKMaxCount_i;
+         gpuPyrLK.derivLambda    = m_pyrLKEpsilon_f;
+         gpuPyrLK.useInitialFlow = m_usePrediction_b;
+         
+         cv::gpu::GpuMat d_nextPts;
+         cv::gpu::GpuMat d_status;
+         cv::gpu::GpuMat d_err;
+         
+         gpuPyrLK.sparse(gpuPrevImg, 
+                         gpuCurrImg, 
+                         gpuFeatPrev, 
+                         gpuFeatCurr, 
+                         gpuStatus, 
+                         &gpuErrors);
+         
+         tmpFeatPrev = cv::Mat(gpuFeatPrev);
+         tmpFeatCurr = cv::Mat(gpuFeatCurr);
+         
+         for (int i = 0 ; i < tmpFeatPrev.cols; ++i)
+         {
+             featprev_ocv[i] = tmpFeatPrev.at<cv::Point2f>(i);
+         }
+         
+         for (int i = 0 ; i < tmpFeatCurr.cols; ++i)
+         {
+             featcurr_ocv[i] = tmpFeatCurr.at<cv::Point2f>(i);
+         }
+         
+         cv::Mat tmpStatus ( gpuStatus );
+         status_ocv.resize(gpuStatus.cols);
+         for (int i = 0 ; i < tmpStatus.cols; ++i)
+         {
+             status_ocv[i] = tmpStatus.at<uint8_t>(i);
+         }
+
+         cv::Mat tmpError ( gpuErrors );
+         error_ocv.resize(gpuErrors.cols);
+         for (int i = 0 ; i < tmpError.cols; ++i)
+         {
+             error_ocv[i] = tmpError.at<float>(i);
+         }
+#else
          cv::TermCriteria criteria_ocv;
          cv::Size winsize_ocv;
          winsize_ocv.width     = m_kernelSize_i;
@@ -464,14 +531,13 @@ bool CKltTrackerOp::cycle()
          criteria_ocv.type = (CV_TERMCRIT_EPS | CV_TERMCRIT_ITER);
 
          int flags = (m_usePrediction_b)?cv::OPTFLOW_USE_INITIAL_FLOW:0;
-         std::vector<uint8_t> status_ocv;
-         std::vector<float> error_ocv;
          cv::calcOpticalFlowPyrLK(m_prevImg, m_currImg, 
                                   featprev_ocv, featcurr_ocv,
                                   status_ocv, error_ocv, 
                                   winsize_ocv, m_pyrLevels_i,
                                   criteria_ocv, flags);
          
+#endif    
          for (int i = 0; i < featprev_ocv.size(); ++i) 
          {
             int j = mapping_v[i];
@@ -515,27 +581,32 @@ bool CKltTrackerOp::cycle()
 /// Select good features to track.
 void
 CKltTrackerOp::selectGoodFeatures()
-{       
+{
+    int downScale_i = 2; // \todo: make parameter
    startClock ("Select Good Features - Occupancy Mask Update");
    /// First pass: update occupancy mask.
-   m_featureMask = cv::Mat(m_currImg.size(), CV_8U, cv::Scalar(0));
+    m_featureMask = cv::Mat(m_currImg.rows/downScale_i, m_currImg.cols/downScale_i, CV_8U, cv::Scalar(0));
 
    for (int i = 0; i < m_featureVector.size(); ++i)
    {
       if ( m_featureVector[i].state == SFeature::FS_TRACKED || 
            m_featureVector[i].state == SFeature::FS_NEW )
+        {
+            int minDist_i;
+            if  ( m_adaptiveDistance_b )
       {
          C3DVector p (m_featureVector[i].u - m_currImg.cols/2.,
                       m_featureVector[i].v - m_currImg.rows/2., 0.);
 
-         int minDist_i;
-         if  ( m_adaptiveDistance_b )
             minDist_i = std::min(std::max(1, int(m_minDistance_i * p.magnitude()/(m_currImg.cols/2.))), m_minDistance_i);
+            }
          else
             minDist_i = m_minDistance_i;
          
-         int fx = int(m_featureVector[i].u + .5);
-         int fy = int(m_featureVector[i].v + .5);
+            minDist_i /= downScale_i;
+
+            int fx = int(m_featureVector[i].u + .5)/downScale_i;
+            int fy = int(m_featureVector[i].v + .5)/downScale_i;
                 
          /// Mark region in mask image.
          int minK = std::max(fy - minDist_i, 0);
@@ -553,19 +624,27 @@ CKltTrackerOp::selectGoodFeatures()
    }
 
    stopClock ("Select Good Features - Occupancy Mask Update");
+    startClock ("Select Good Features - Scale Image");
+    cv::Mat currImg;
+    if (downScale_i > 1)
+    {
+        cv::resize(m_currImg, currImg, m_featureMask.size() );
+    }
+    else
+        currImg = m_currImg;
         
    startClock ("Select Good Features - Build corner reponse image");
 
    if (m_detectGFTT_b)
    {
-      cv::cornerMinEigenVal( m_currImg,
+        cv::cornerMinEigenVal( currImg,
                              m_eigenImg,
                              m_kernelSize_i,
                              m_kernelSize_i);
    }
    else
    {
-      cv::cornerHarris( m_currImg,
+        cv::cornerHarris( currImg,
                         m_eigenImg,
                         m_kernelSize_i,
                         3,
@@ -635,14 +714,15 @@ CKltTrackerOp::selectGoodFeatures()
 
          if ( !mask_i )
          {
-            C3DVector p (eigenvalue.x - m_currImg.cols/2.,
-                         eigenvalue.y - m_currImg.rows/2., 0.);
+                C3DVector p (eigenvalue.x - currImg.cols/2.,
+                             eigenvalue.y - currImg.rows/2., 0.);
             
             int minDist_i;
             if  ( m_adaptiveDistance_b )
-               minDist_i = std::min(std::max(1, int(m_minDistance_i * p.magnitude()/(m_currImg.cols/2.))), m_minDistance_i);
+                    minDist_i = std::min(std::max(1, int(m_minDistance_i * p.magnitude()/(currImg.cols/2.))), m_minDistance_i);
             else
                minDist_i = m_minDistance_i;
+                minDist_i /= downScale_i;
 
             /// Mark region in mask image.
             int minK = std::max(eigenvalue.y - minDist_i, 0);
@@ -659,14 +739,14 @@ CKltTrackerOp::selectGoodFeatures()
                }
             }
 
-            m_featureVector[i].u     = eigenvalue.x;
-            m_featureVector[i].v     = eigenvalue.y;
+                m_featureVector[i].u     = eigenvalue.x*downScale_i;
+                m_featureVector[i].v     = eigenvalue.y*downScale_i;
             m_featureVector[i].d     = -1;
             m_featureVector[i].f     = imgNr_u;
             m_featureVector[i].t     = 0;
             m_featureVector[i].state = SFeature::FS_NEW;
 
-            addedPts_v.push_back(cv::Point2f(eigenvalue.x,eigenvalue.y));
+                addedPts_v.push_back(cv::Point2f(m_featureVector[i].u, m_featureVector[i].v));
             addedIdx_v.push_back (i);
          }
          else
@@ -677,7 +757,7 @@ CKltTrackerOp::selectGoodFeatures()
       }
    }
    
-   // sub-pixel estimation
+    // Sub-pixel estimation at the original level
    if(m_useSubPix_b && !addedPts_v.empty())
    {
       startClock ("Select Good Features - Sub-pixel");

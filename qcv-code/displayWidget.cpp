@@ -50,6 +50,7 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
           m_qlabel1_p (                        NULL ),
           m_qsbNumHorScreens_p (               NULL ),
           m_qsbNumVertScreens_p (              NULL ),
+    m_qsbSkipDisplay_p (                 NULL ),
           m_qfStatusBar_p (                    NULL ),
           m_qStatusBarSplitter_p (             NULL ),
           m_qlUserMessage_p (                  NULL ),
@@ -59,7 +60,8 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
           m_qtwHelp_p (                        NULL ),
           m_imgBuffer_v (                         0 ),
           m_grabTimerId_i (                       0 ),
-          m_saveImgsTimerId_i (                   0 )
+    m_saveImgsTimerId_i (                   0 ),
+    m_counter_ui (                          0 )
 {
     setWindowTitle(tr("Main Display"));
     setObjectName(windowTitle());
@@ -79,6 +81,7 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
         
         m_qsbNumHorScreens_p  -> setValue ( qSettings.value(objectName() + QString("/num_x_screens"), 3 ).toInt() );
         m_qsbNumVertScreens_p -> setValue ( qSettings.value(objectName() + QString("/num_y_screens"), 3 ).toInt() );
+        m_qsbSkipDisplay_p    -> setValue ( qSettings.value(objectName() + QString("/skip_display"),  0 ).toInt() );
 
         m_treeDlg_p = new CDisplayTreeDlg ( NULL,
                                             m_glDisplay_p,
@@ -106,6 +109,8 @@ CDisplayWidget::CDisplayWidget( QWidget *              f_parent_p,
         connect( m_qsbNumVertScreens_p, SIGNAL( valueChanged ( int )),
                  this,                  SLOT(   updateScreenCount ( ) ) );
 
+        connect( m_qsbSkipDisplay_p,    SIGNAL( valueChanged ( int )),
+                 this,                  SLOT(   skipDisplay ( ) ) );
         connect( m_qpbDrawingList_p, SIGNAL(  clicked ( )), 
                  this,               SLOT(    showHideTreeDlg() ));
         
@@ -171,8 +176,8 @@ void CDisplayWidget::createForm()
     m_qfTopControls_p->setSizePolicy(sizePolicyFixed);
     m_qfTopControls_p->setFrameShape(QFrame::StyledPanel);
     m_qfTopControls_p->setFrameShadow(QFrame::Raised);
-    m_qfTopControls_p->setMinimumSize(QSize(150, 31));
-    m_qfTopControls_p->setMaximumSize(QSize(150, 31));
+    m_qfTopControls_p->setMinimumSize(QSize(225, 31));
+    m_qfTopControls_p->setMaximumSize(QSize(225, 31));
 
     /// Grid layout for top controls.
     QGridLayout *layoutTopCtrls_p = new QGridLayout(m_qfTopControls_p);
@@ -205,11 +210,11 @@ void CDisplayWidget::createForm()
     m_qfNumScreens_p = new QFrame(m_qfTopControls_p);
 
     m_qfNumScreens_p->setSizePolicy(sizePolicyFixed);
-    m_qfNumScreens_p->setMinimumSize(QSize(120, 21));
-    m_qfNumScreens_p->setMaximumSize(QSize(120, 21));
+    m_qfNumScreens_p->setMinimumSize(QSize(225, 21));
+    m_qfNumScreens_p->setMaximumSize(QSize(225, 21));
     m_qfNumScreens_p->setFrameShape(QFrame::NoFrame);
     m_qfNumScreens_p->setFrameShadow(QFrame::Raised);
-    m_qfNumScreens_p->setGeometry(QRect(100,0,120,21));
+    m_qfNumScreens_p->setGeometry(QRect(100,0,225,21));
 
     /// "X" label
     m_qlabel1_p = new QLabel(m_qfNumScreens_p);
@@ -229,6 +234,17 @@ void CDisplayWidget::createForm()
     m_qsbNumVertScreens_p->setMinimum(1);
     m_qsbNumVertScreens_p->setMaximum(9);
     m_qsbNumVertScreens_p->setValue(3);
+    {
+        QLabel *label_p = new QLabel(m_qfNumScreens_p);
+        label_p->setText("Skip");
+        label_p->setGeometry(QRect(110, 0, 30, 21));
+    }
+
+    m_qsbSkipDisplay_p = new QSpinBox(m_qfNumScreens_p);
+    m_qsbSkipDisplay_p->setGeometry(QRect(140, 0, 54, 21));
+    m_qsbSkipDisplay_p->setMinimum(0);
+    m_qsbSkipDisplay_p->setMaximum(1000);
+    m_qsbSkipDisplay_p->setValue(0);
 
     /// Add to the layout of the top controls.
     layoutTopCtrls_p->addWidget(m_qfNumScreens_p, 0, 1, 1, 1);
@@ -328,6 +344,8 @@ void CDisplayWidget::update ( int f_forceUpdate_b )
 
 void CDisplayWidget::update()
 {    
+    ++m_counter_ui;
+    if ( m_qsbSkipDisplay_p && (m_qsbSkipDisplay_p->value()==0 || !(m_counter_ui % (unsigned int)m_qsbSkipDisplay_p->value()) ) )
     m_glDisplay_p -> updateGL();
     
     QWidget::update();
@@ -600,6 +618,28 @@ CDisplayWidget::updateScreenCount ( )
     qSettings.setValue( objectName() + QString("/num_x_screens"), m_qsbNumHorScreens_p->value() );
     qSettings.setValue( objectName() + QString("/num_y_screens"), m_qsbNumVertScreens_p->value() );
     update();
+}
+
+void
+CDisplayWidget::setSkipDisplay ( int f_n_i )
+{
+    m_qsbSkipDisplay_p->setValue(f_n_i);
+}
+
+int
+CDisplayWidget::getSkipDisplay ( ) const
+{
+    return m_qsbSkipDisplay_p->value();
+}
+
+void
+CDisplayWidget::updateSkipDisplay ( )
+{
+    //m_glDisplay_p->setSkipDisplay ( m_qsbSkipDisplay_p->value() );
+
+    QSettings qSettings;
+        
+    qSettings.setValue( objectName() + QString("/skip_display"), m_qsbSkipDisplay_p->value() );
 }
 
 bool

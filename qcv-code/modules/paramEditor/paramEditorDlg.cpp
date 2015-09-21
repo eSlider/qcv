@@ -65,6 +65,7 @@ CParameterEditorDlg::CParameterEditorDlg  ( CParameterSet *    f_rootNode_p,
           m_qfParamPage_p (                    NULL ),
           m_parser_p (                   f_parser_p )
 {
+    std::locale::global(std::locale("C"));
     setWindowTitle ( tr("Parameter Editor") );
     setObjectName  ( windowTitle() );
 

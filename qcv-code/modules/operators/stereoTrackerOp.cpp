@@ -51,6 +51,7 @@ using namespace QCV;
 CStereoTrackerOp::CStereoTrackerOp ( COperator * const f_parent_p,
                      const std::string f_name_str )
     : COperator (             f_parent_p, f_name_str ),
+      m_scaler_p (                              NULL ),
       m_gftt_p (                                NULL ),
       m_kltTracker_p (                          NULL ),
       m_compute_b (                             true ),
@@ -72,10 +73,12 @@ CStereoTrackerOp::CStereoTrackerOp ( COperator * const f_parent_p,
       m_registerDL_b (                          true )
       
 {
-    m_gftt_p       = new CGfttFreakOp     ( this, "Harris-Freak Tracker" );
-    m_kltTracker_p = new CKltTrackerOp    ( this, "KLT Tracker" );
-    m_featStereo_p = new CFeatureStereoOp ( this, "Feature Stereo" );
+    m_scaler_p       = new CImageScalerOp         ( this, "Scaler", 2);
+    m_gftt_p         = new CGfttFreakOp           ( this, "Harris-Freak Tracker" );
+    m_kltTracker_p   = new CKltTrackerOp          ( this, "KLT Tracker" );
+    m_featStereo_p   = new CFeatureStereoOp       ( this, "Feature Stereo" );
 
+    addChild ( m_scaler_p );
     addChild ( m_gftt_p );
     addChild ( m_kltTracker_p );
     addChild ( m_featStereo_p );
@@ -181,9 +184,54 @@ CStereoTrackerOp::cycle()
     if ( m_compute_b )
     {
        m_camera = m_origCamera;
+        cv::Mat img0, img1;
 
-       cv::Mat img0 =  getInput<cv::Mat>("Image 0", cv::Mat() );
-       cv::Mat img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
+        cv::Mat imgRef =  getInput<cv::Mat>("Image 0", cv::Mat() );
+        cv::Size refSize = imgRef.size();
+
+        registerOutput<CStereoCamera> ( "Rectified Camera", &m_camera );
+
+        if (refSize.width > 0)
+        {
+            // Scale images if required.
+            COperator::cycle(m_scaler_p);
+       
+            CMatVector * matVector_p = getInput<CMatVector>("Scaled Images");
+
+            if ( !matVector_p )
+            {
+                m_scaledImage2 =  getInput<cv::Mat>("Image 0", cv::Mat() );
+                m_scaledImage3 =  getInput<cv::Mat>("Image 1", cv::Mat() );
+            }
+            else
+            {
+                if (matVector_p->size() >= 2)
+                {
+                    m_scaledImage2 =  (*matVector_p)[0];
+                    m_scaledImage3 =  (*matVector_p)[1];
+                }
+            }
+       
+            registerOutput<cv::Mat>("Image 0", &m_scaledImage2);
+            registerOutput<cv::Mat>("Image 1", &m_scaledImage3);
+
+            if (m_scaledImage2.cols > 0)
+            {
+                const float aspX_f = m_scaledImage2.cols / (float) refSize.width;
+                const float aspY_f = m_scaledImage2.rows / (float) refSize.height;
+
+                if (aspX_f != 1)
+                    m_camera.scale(aspX_f);
+
+                if ( aspX_f != aspY_f )
+                    m_camera.setSu( m_camera.getSu() * aspX_f/aspY_f );
+
+                m_camera.print();
+            }
+        }
+
+        img0 =  getInput<cv::Mat>("Image 0", cv::Mat() );
+        img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
 
        /// Convert to gray scale if in RGB format.
        if ( img0.type() != CV_8UC1 )
@@ -244,6 +292,8 @@ CStereoTrackerOp::cycle()
           cv::Mat img0 =  getInput<cv::Mat>("Image 0", cv::Mat() );
           cv::Mat img1 =  getInput<cv::Mat>("Image 1", cv::Mat() );
 
+            if (img0.cols > 0 && img1.cols > 0)
+            {
           cv::Point2i topleft  ( m_cropTopLeft.x<0?0:std::min( std::max(m_cropTopLeft.x, 0), img0.cols-1),
                                  m_cropTopLeft.y<0?0:std::min( std::max(m_cropTopLeft.y, 0), img0.rows-1) );
           cv::Point2i botright ( m_cropBottomRight.x<0?img0.cols:std::min( std::max(m_cropBottomRight.x, 0), img0.cols),
@@ -259,6 +309,7 @@ CStereoTrackerOp::cycle()
 
              registerOutput<cv::Mat>("Image 0", &m_scaledImage2);
              registerOutput<cv::Mat>("Image 1", &m_scaledImage3);
+                }
           }
        }
 

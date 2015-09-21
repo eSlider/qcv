@@ -45,6 +45,7 @@
 #include "colorEncoding.h"
 #include "matVector.h"
 #include "stereoCamera.h"
+#include "imgScalerOp.h"
 
 #include "feature.h"
 /* PROTOTYPES */
@@ -107,6 +108,8 @@ namespace QCV
         void registerParameters( );
 
     private:
+        /// Scaler
+        CImageScalerOp *            m_scaler_p;
 
         /// Good feature to track operator
         CGfttFreakOp *              m_gftt_p;

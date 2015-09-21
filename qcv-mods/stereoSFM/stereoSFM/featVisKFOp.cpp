@@ -772,7 +772,7 @@ void CFeatureKFDisplayOp::show3D()
    if ( !m_3dViewer_p) // || !leftImg_p )
       return;
 
-   m_3dViewer_p->clear();
+   //m_3dViewer_p->clear();
    
    /// Accumulate and update cloud of points.
    SRigidMotion *egoMotion_p = getInput<SRigidMotion> ( m_egoMInpId_str );

@@ -67,7 +67,9 @@ CFeatureStereoOp::CFeatureStereoOp ( COperator * const f_parent_p,
      m_ceDistance ( CColorEncoding::CET_GREEN2RED,
                                    S2D<float>(0.f,40.f) ),
      m_show3DPoints_b (                           false ),
-     m_preFilter_b (                              false )
+     m_preFilter_b (                              false ),
+     m_showLeftImage_b (                           true ),
+     m_showRightImage_b (                          true )
 
 {
    registerDrawingLists();
@@ -207,8 +209,20 @@ CFeatureStereoOp::registerParameters()
 
     BEGIN_PARAMETER_GROUP("Display", false, SRgb(220,0,0));
       addDrawingListParameter ( "Left Image Features" );
+      ADD_BOOL_PARAMETER( "Show left image?", 
+                          "Show left image as background for feature display.",
+                          m_showLeftImage_b,
+                          this,
+                          ShowLeftImage, 
+                          CFeatureStereoOp );
       
       addDrawingListParameter ( "Right Image Features" );
+      ADD_BOOL_PARAMETER( "Show right image?", 
+                          "Show right image as background for feature display.",
+                          m_showRightImage_b,
+                          this,
+                          ShowRightImage, 
+                          CFeatureStereoOp );
       
       addDrawingListParameter ( "Left Image Pyramid" );
       
@@ -864,8 +878,14 @@ bool CFeatureStereoOp::show()
             if ( list_p->isVisible() )
             {
                CDrawingList *imgdl = getInput<CDrawingList>((im == 0?m_idLeftImage_str:m_idRightImage_str) + " Drawing List");
+               if ( ( (im == 0 && m_showLeftImage_b) ||
+                      (im == 1 && m_showRightImage_b) ) )
+               {
                if (imgdl)
                   list_p->addDrawingList( *imgdl );
+                   else
+                       list_p->addImage(getInput<cv::Mat>(im==0?m_idLeftImage_str:m_idRightImage_str, cv::Mat()), 0, 0, srcWidth_f, srcHeight_f);
+               }
 
                list_p -> setLineColor ( SRgb(255,255,0 ) );
                 
@@ -874,13 +894,14 @@ bool CFeatureStereoOp::show()
                S2D<float> p0, p1, q1;
                 
                C3DVector p;
-               float featureSize_f = 2;
+               const float refFeatureSize_f = 0.1;
 
                SRgb color;
                for (int i = 0; i < (int)vec.size(); ++i)
                {
                   S2D<float> pr ( vec[i].u * scaleX_f,
                                   vec[i].v * scaleY_f );
+                  float featureSize_f = 20 * refFeatureSize_f; //vec[i].d * refFeatureSize_f;
                   
                   if (im == 1)
                      pr.x = pr.x - scaleX_f * vec[i].d;

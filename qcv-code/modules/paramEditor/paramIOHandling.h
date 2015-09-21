@@ -39,6 +39,7 @@
 
 /* INCLUDES */
 #include <string>
+#include <locale>
 
 /* CONSTANTS */
 
@@ -48,6 +49,7 @@ namespace QCV
     {
     /// Destructor.
     public:
+        CParamIOHandling () { std::locale::global(std::locale("C")); }
         virtual ~CParamIOHandling () {}
         
     /// Read and save

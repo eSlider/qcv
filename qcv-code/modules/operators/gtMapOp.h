@@ -86,10 +86,12 @@ namespace QCV
 
     /// Parameters.
     public:
-        ADD_PARAM_ACCESS_NOTIFIER (std::string,  m_filePath_str,   FilePath, loadFromFile );
-        ADD_PARAM_ACCESS (float,        m_maxDistance_f,  MaxDistance );
-        ADD_PARAM_ACCESS (int,          m_cencSections_i, ColorEncodingSections );
-        ADD_PARAM_ACCESS (std::string,  m_egoMInpId_str,  EgoMInputIdStr );
+        ADD_PARAM_ACCESS_NOTIFIER (std::string,  m_filePath_str,             FilePath, loadFromFile );
+        ADD_PARAM_ACCESS (bool,                  m_absolutePose_b,           AbsolutePose );
+        ADD_PARAM_ACCESS (float,                 m_maxDistance_f,            MaxDistance );
+        ADD_PARAM_ACCESS (int,                   m_cencSections_i,           ColorEncodingSections );
+        ADD_PARAM_ACCESS (std::string,           m_egoMInpId_str,            EgoMInputIdStr );
+        ADD_PARAM_ACCESS (unsigned int,          m_maxPoses_i,               MaxPoses );
 
     /// Protected Help Methods.
     protected:
@@ -99,7 +101,7 @@ namespace QCV
     /// Private Data Types
     private:
        
-       typedef std::vector<double> Data;
+       typedef std::vector<float> Data;
        
         /// GT Poses
         std::vector<Data>         m_poses_v;
@@ -112,6 +114,8 @@ namespace QCV
 
         /// Motion string id
         std::string               m_egoMInpId_str;
+        /// Absolute or relative pose?
+        bool                      m_absolutePose_b;
 
         /// Max distance for display
         float                     m_maxDistance_f;
@@ -158,6 +162,11 @@ namespace QCV
         /// Vector of Roll
         std::vector<float>         m_roll_v;
       
+        /// Counter
+        size_t                     m_idx_i;
+      
+        /// Max poses
+        unsigned int               m_maxPoses_i;
    };
 }
 

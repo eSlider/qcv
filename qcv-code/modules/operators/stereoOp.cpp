@@ -327,7 +327,7 @@ CStereoOp::registerParameters()
                                      "Disparity",
                                      "Color encoding for the disparity image" );
 
-#if HAVE_QGLVIEWER
+#ifdef HAVE_QGLVIEWER
         ADD_LINE_SEPARATOR;
         
         ADD_BOOL_PARAMETER ( "Show 3D Mesh",
@@ -557,6 +557,7 @@ bool CStereoOp::show()
 void CStereoOp::show3D()
 {
 #ifdef HAVE_QGLVIEWER
+    if (m_leftImg.cols <= 0) return;
     cv::Mat textureImg = m_leftImg;
 
     m_3dViewer_p -> clear(); /// This might clear 3D added by other operators.

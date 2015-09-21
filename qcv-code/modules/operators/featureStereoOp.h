@@ -115,6 +115,8 @@ namespace QCV
         ADD_PARAM_ACCESS (bool,        m_show3DPoints_b,      Show3DPoints );
         ADD_PARAM_ACCESS (bool,        m_preFilter_b,         PreFilter);
 
+        ADD_PARAM_ACCESS (bool,        m_showLeftImage_b,     ShowLeftImage);
+        ADD_PARAM_ACCESS (bool,        m_showRightImage_b,    ShowRightImage);
     /// Protected Data Types
     protected:
 
@@ -221,6 +223,11 @@ namespace QCV
 
         /// Rejection cause
         std::vector<ERejectionCause> m_rejCause_v;
+        /// Show left image
+        bool                         m_showLeftImage_b;
+       
+        /// Show right image
+        bool                         m_showRightImage_b;
        
     private:
         /// Data structure to store scores.

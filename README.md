@@ -1,6 +1,7 @@
-This is just a fork qcv project from sourceforge. 
-It's not be atomaticaly updated. So if you need fresh source or like to describe some bugs, 
-so please look on the mainter site: https://sourceforge.net/projects/qcv/
+This is just a fork of [qcv project](https://sourceforge.net/projects/qcv/) from [sourceforge](https://sourceforge.net) . 
+It's not be atomaticaly updated. 
+If you need fresh source or like to describe some bugs, so please look at maintainer site: 
+[qcv Web Site](https://sourceforge.net/projects/qcv/)
 
 # Description
 
@@ -14,6 +15,25 @@ QCV offers a 2D visualization tool, an on-line on-the-fly parameter editor, a cl
 
 Multiple application examples that demonstrate the main features of this framework are provided in the last
 
-Read qcv-code/README.txt and qcv-mods/README.txt
 
-Note: increment the number of horizontal and vertical screens in the main visualization widget to view all screens.
+Read [qcv-code](qcv-code/README.txt) and [qcv-mods](qcv-mods/README.txt) 
+
+*Note*: _increment the number of horizontal and vertical screens in the main visualization widget to view all screens._
+
+# Features
+
+* Computer vision toolbox including
+* Powerfull 2D visualization tool
+* 3D data visualization
+* On-the-fly parameter editor
+* Image sequence playback control tool
+* Clock handling
+* C and C++ interfaces
+* Application examples to show easy of use
+* Clear and intuitive programming style
+
+# License
+GNU Library or Lesser General Public License version 2.0 (LGPLv2)
+
+
+

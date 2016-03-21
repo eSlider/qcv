@@ -1,6 +1,6 @@
 This is just a fork of [qcv project](https://sourceforge.net/projects/qcv/) from [sourceforge](https://sourceforge.net) . 
 It's not be atomaticaly updated. 
-If you need fresh source or like to describe some bugs, so please look at maintainer site: 
+If you need fresh source or need to describe some bugs, so please look at maintainer site: 
 [qcv Web Site](https://sourceforge.net/projects/qcv/)
 
 # Description
